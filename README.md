@@ -3,4 +3,4 @@ user_function.txt and verification_function.txt are given by the user
 
 script.py is created by maker.py
 
-Container runs docker.sh 
+Container executes docker.sh 
