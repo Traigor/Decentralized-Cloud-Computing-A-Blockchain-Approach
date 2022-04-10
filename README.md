@@ -17,4 +17,5 @@ O host εκτελεί το script docker.sh (αφού δώσει δικαιώμ�
 Java try:
 
 O host  εκτελεί το αρχείο Script.jar (χωρίς να έχει πρόσβαση στον κώδικα).
+
 Περιορισμοί: το verification και τα metrics προστίθενται από τον χρήστη.
