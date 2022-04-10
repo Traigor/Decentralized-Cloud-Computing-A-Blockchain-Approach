@@ -1,5 +1,6 @@
 # Diploma_Project
 Python try: 
+
 imports.txt, requirements.txt, user_function.txt and verification_function.txt are given by the user
 
 script.py is created by maker.py
@@ -14,5 +15,6 @@ O host εκτελεί το script docker.sh (αφού δώσει δικαιώμ�
 
 
 Java try:
+
 O host  εκτελεί το αρχείο Script.jar (χωρίς να έχει πρόσβαση στον κώδικα).
 Περιορισμοί: το verification και τα metrics προστίθενται από τον χρήστη.
