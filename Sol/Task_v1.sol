@@ -7,14 +7,22 @@ contract Providers {
 
     struct providerRating {
         uint votes;
-        int upVotes;
-        int downVotes;
+        uint upVotes;
+        uint downVotes;
     }
 
     mapping(address => providerRating) public performance;
 
+    event ProviderCreated(address provider);
     event ProviderUpvoted(address provider);
     event ProviderDownvoted(address provider);
+
+    constructor(address provider) {
+        performance[provider].votes = 0;
+        performance[provider].upVotes = 0;
+        performance[provider].downVotes = 0;
+        emit ProviderCreated(provider);
+    }
 
     function upVote(address provider) public {
         performance[provider].votes += 1;
@@ -26,6 +34,11 @@ contract Providers {
         performance[provider].votes += 1;
         performance[provider].downVotes += 1;
         emit ProviderDownvoted(provider);
+    }
+
+    function getPerformance(address provider) public view returns (providerRating memory) {
+        return performance[provider];
+        // tuple: votes, upVotes, downVotes
     }
 
 }
@@ -49,6 +62,8 @@ contract Task {
     address payable internal provider;
     address payable internal client;
     address internal taskID; //by auction contract  //can be bytes32
+
+    Providers public providerVote;
     
     uint internal price;   //can be float at front-end, payment per sec of execution
     uint internal providerCollateral;   //can be float at front-end
@@ -194,11 +209,12 @@ contract Task {
 
     // - no requiresProvider so that it can be tested
     // function activateContract() public onlyProvider requiresValue(collateral) inTaskState(TaskState.Created) requiresBalance(payment + collateral)
-    function activateContract() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
+    function activateContract(address providersAddress) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     {
         activationTime = block.timestamp;
         taskState = TaskState.Active;
         emit TaskActivated(taskID);
+        providerVote = Providers(providersAddress);
     }
 
 
@@ -221,6 +237,7 @@ contract Task {
                 emit TransferMade(client, payment-clientCollateral);
                 paymentState = PaymentState.Completed;
                 emit PaymentCompleted(taskID);
+                
             }
             else {
                 provider.transfer(clientCollateral+providerCollateral);
@@ -228,10 +245,12 @@ contract Task {
                 paymentState = PaymentState.Pending;
                 emit PaymentPending(taskID,payment-clientCollateral);
             }
+            providerVote.upVote(provider);
         }
         else {
             client.transfer(clientCollateral + providerCollateral);
             emit TransferMade(client, clientCollateral + providerCollateral);
+            providerVote.downVote(provider);
         }
         taskState = TaskState.Completed;
         emit TaskCompleted(taskID);
@@ -302,7 +321,7 @@ contract Task {
         return deadline;
     }
 
-    function getactivationTime() public view returns (uint)
+    function getActivationTime() public view returns (uint)
     {
         return activationTime;
     }
@@ -341,6 +360,10 @@ contract Task {
 
     function getProviderVerification() public view returns (string memory){
         return providerVerification;
+    }
+
+    function getProviderVote() public view returns (Providers.providerRating memory) {
+        return providerVote.getPerformance(provider);
     }
 
     //Functions
