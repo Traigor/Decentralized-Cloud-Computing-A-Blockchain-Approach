@@ -1,12 +1,38 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.7.0 <0.9.0;
-//taskID to be byted32 instead of address
+//taskID to be bytes32 instead of address
 
+contract Providers {
 
-contract Task{
+    struct providerRating {
+        uint votes;
+        int upVotes;
+        int downVotes;
+    }
 
-    enum State {
+    mapping(address => providerRating) public performance;
+
+    event ProviderUpvoted(address provider);
+    event ProviderDownvoted(address provider);
+
+    function upVote(address provider) public {
+        performance[provider].votes += 1;
+        performance[provider].upVotes += 1;
+        emit ProviderUpvoted(provider);
+    }
+
+    function downVote(address provider) public {
+        performance[provider].votes += 1;
+        performance[provider].downVotes += 1;
+        emit ProviderDownvoted(provider);
+    }
+
+}
+
+contract Task {
+
+    enum TaskState {
         Created,
         Cancelled,
         Active,
@@ -14,34 +40,48 @@ contract Task{
         Invalid
     }
 
+    enum PaymentState {
+        Initialized,
+        Pending,
+        Completed
+    }
+
     address payable internal provider;
     address payable internal client;
     address internal taskID; //by auction contract  //can be bytes32
     
-    uint internal payment;   //can be float at front-end
-    uint internal collateral;   //can be float at front-end
+    uint internal price;   //can be float at front-end, payment per sec of execution
+    uint internal providerCollateral;   //can be float at front-end
+    uint internal clientCollateral;
+    uint internal payment;
+    uint internal deadline;
     uint internal duration;  //contract duration, in sec
-    uint internal activateDate;   //contract activation date, in sec since epoch
-
+    
+    uint internal activationTime;   //contract activation date, in sec since epoch
     uint internal timeResultProvided;     //time of result given by provider, in sec since epoch
     uint internal timeResultReceived;    //time of received result, in sec since epoch   
 
-    State internal state;   //state of contract
+    TaskState internal taskState;   //taskState of contract
+    PaymentState internal paymentState;
 
     string code;   //string for ipfs address 
 
-    string internal clientVerification;
+    bytes32 internal clientVerification;
     string internal providerVerification;
 
 
-    //Events
+    //Events 
+    //taskID to be deleted
+    event TaskActivated(address taskID);
     event TaskCompleted(address taskID);
     event TaskCancelled(address taskID);
     event TaskInvalidated(address taskID);
+    event PaymentPending(address taskID, uint payment);
+    event PaymentCompleted(address taskID);
     event TransferMade(address Address, uint Amount);
 
     //Modifiers 
-    modifier requiresClient() {
+    modifier onlyClient() {
         require(
             msg.sender == client,
             "Method can be called only by client."
@@ -49,7 +89,7 @@ contract Task{
         _;
     }
 
-    modifier requiresProvider() {
+    modifier onlyProvider() {
         require(
             msg.sender == provider,
             "Method can be called only by provider."
@@ -57,10 +97,26 @@ contract Task{
         _;
     }
 
-    modifier requiresState(State _state) {
+    modifier inTaskState(TaskState _taskState) {
         require(
-            state == _state,
-            "Invalid State."
+            taskState == _taskState,
+            "Invalid TaskState."
+        );
+        _;
+    }
+
+    modifier requiresBalance(uint amount) {
+        require(
+            address(this).balance >= amount,
+            "Not enough balance"
+        );
+        _;
+    }
+
+    modifier requiresValue(uint amount) {
+        require(
+            msg.value == amount,
+            "Value sent is not the expected"
         );
         _;
     }
@@ -71,102 +127,124 @@ contract Task{
         address _taskID,
         address payable _client,
         address payable _provider,
-        uint _payment,
-        uint _collateral,
-        uint _duration,
-        string memory _clientVerification 
+        uint _price,
+        uint _providerCollateral,
+        uint _deadline,
+        bytes32  _clientVerification 
     )
     payable
     {
         taskID = _taskID;
         client = _client;
         provider = _provider;
-        payment = _payment;
-        collateral = _collateral;
-        duration = _duration; 
+        price = _price;
+        clientCollateral = msg.value;
+        providerCollateral = _providerCollateral;
+        deadline = _deadline; 
         clientVerification = _clientVerification;
-        state = State.Created;
+        taskState = TaskState.Created;
+        paymentState = PaymentState.Initialized; 
     }
 
-    //  States to be called by smart contract or client/provider? 
+    // TaskState functions to be called by smart contract or client/provider? 
 
     //Cancel
-    //State -> Cancel
+    //TaskState -> Cancel
     //refunds payment to client
     //can be called only by client and only if contract hasnt been activated by provider
 
     // - no requiresClient so that it can be tested
-    // function cancelContract() public payable requiresClient requiresState(State.Created) 
-    function cancelContract() public payable requiresState(State.Created)
+    // function cancelContract() public onlyClient inTaskState(TaskState.Created) requiresBalance(payment)
+    function cancelContract() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
     {
-        state = State.Cancelled;
+        taskState = TaskState.Cancelled;
         // payable(msg.sender).transfer(address(this).balance);
         // sender is client, balance is payment, the contract is not activated so there is not collateral
-        client.transfer(payment);
-        emit TransferMade(client,payment);
+        client.transfer(clientCollateral);
+        emit TransferMade(client,clientCollateral);
         emit TaskCancelled(taskID);
     }
 
     //Invalidate
-    ///State -> Invalidate
+    ///TaskState -> Invalid
     //can be called only by client and only if contract is activated  // no by client but auto?
     //if time has passed and the task is not comleted by the provider
     //transfers payment and collateral to client
     
     // - no requiresClient so that it can be tested
-    // function invalidateContract() public payable requiresClient requiresState(State.Active)
-    function invalidateContract() public payable requiresState(State.Active)
+    // function invalidateContract() public  onlyClient inTaskState(TaskState.Active) requiresBalance(payment + collateral)
+    function invalidateContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
     {
         require(
-            (block.timestamp >  activateDate + duration),
+            (block.timestamp >  activationTime + deadline),
             "Time has not expired"
         );
-        state = State.Invalid;
+        taskState = TaskState.Invalid;
         //add transfer of payment
 
         // payable(msg.sender).transfer(address(this).balance);
-        uint payAmount = payment + collateral;
-        client.transfer(payAmount);
-        emit TransferMade(client, payAmount);
+        client.transfer(clientCollateral + providerCollateral);
+        emit TransferMade(client, clientCollateral + providerCollateral);
         emit TaskInvalidated(taskID);
     }
 
     // Activate
-    // State -> Activated
+    // TaskState -> Activated
     // can be called only by provider to start the process
 
     // - no requiresProvider so that it can be tested
-    // function activateContract() public requiresProvider requiresState(State.Created)
-    function activateContract() public requiresState(State.Created)
+    // function activateContract() public onlyProvider requiresValue(collateral) inTaskState(TaskState.Created) requiresBalance(payment + collateral)
+    function activateContract() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     {
-        activateDate = block.timestamp;
-        state = State.Active;
+        activationTime = block.timestamp;
+        taskState = TaskState.Active;
+        emit TaskActivated(taskID);
     }
 
 
     // Complete
-    // State -> Completed
+    // TaskState -> Completed
     // can be called only by provider when the computation is over
 
     // - no requiresProvider so that it can be tested
-    // function completeContract() public payable requiresProvider requiresState(State.Active)
-    function completeContract() public payable requiresState(State.Active)
+    // function completeContract() public onlyProvider inTaskState(TaskState.Active) requiresBalance(payment + collateral)
+    function completeContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
     {
-        state = State.Completed;
         // payable(msg.sender).transfer(address(this).balance);
-        uint payAmount = payment + collateral;
-        if (InTime() && CorrectVerification()){
-            provider.transfer(payment+collateral);
-            emit TransferMade(provider, payAmount);
+        if (InTime() && ProviderTime() && CorrectVerification()){
+            duration = timeResultProvided - activationTime;
+            payment = price * duration;
+            if (payment <= clientCollateral) {
+                provider.transfer(payment+providerCollateral);
+                emit TransferMade(provider, payment+providerCollateral);
+                client.transfer(payment-clientCollateral);
+                emit TransferMade(client, payment-clientCollateral);
+                paymentState = PaymentState.Completed;
+                emit PaymentCompleted(taskID);
+            }
+            else {
+                provider.transfer(clientCollateral+providerCollateral);
+                emit TransferMade(provider, clientCollateral+providerCollateral);
+                paymentState = PaymentState.Pending;
+                emit PaymentPending(taskID,payment-clientCollateral);
+            }
         }
         else {
-            emit TransferMade(client, payAmount);
-            client.transfer(payment+collateral);
+            client.transfer(clientCollateral + providerCollateral);
+            emit TransferMade(client, clientCollateral + providerCollateral);
         }
-        
+        taskState = TaskState.Completed;
         emit TaskCompleted(taskID);
     }
 
+    // function completePayment() public onlyClient inTaskState(TaskState.Completed) requiresValue(payment-clientCollateral)
+    function completePayment() public payable inTaskState(TaskState.Completed) requiresValue(payment - clientCollateral) {
+        require (paymentState == PaymentState.Pending, "Payment not needed");
+        provider.transfer(msg.value);
+        emit TransferMade(provider, payment-clientCollateral); 
+        paymentState = PaymentState.Completed;
+        emit PaymentCompleted(taskID);
+    }
     
     //Setters
     function setProviderVerification (string memory ver) public {
@@ -199,14 +277,19 @@ contract Task{
         return provider;
     }
 
-    function getPayment() public view returns (uint)
+    function getPrice() public view returns (uint)
     {
-        return payment;
+        return price;
     }
 
-    function getCollateral() public view returns (uint)
+    function getClientCollateral() public view returns (uint)
     {
-        return collateral;
+        return clientCollateral;
+    }
+
+    function getProviderCollateral() public view returns (uint)
+    {
+        return providerCollateral;
     }
 
     function getDuration() public view returns (uint)
@@ -214,9 +297,14 @@ contract Task{
         return duration;
     }
 
-    function getActivateDate() public view returns (uint)
+    function getDeadline() public view returns (uint)
     {
-        return activateDate;
+        return deadline;
+    }
+
+    function getactivationTime() public view returns (uint)
+    {
+        return activationTime;
     }
 
     function getTimeResultReceived() public view returns (uint){
@@ -231,38 +319,23 @@ contract Task{
         return code;
     }
 
-    //TODO: Add state transitions
-    // State: Created->0, Cancelled->1, Active->2, Complete->3, Invalid->4
-    function getState() public view returns (State)
+    // TaskState: Created->0, Cancelled->1, Active->2, Complete->3, Invalid->4
+    function getTaskState() public view returns (TaskState)
     {
-        return state;
-        // if (state == State.Created)
-        // {
-        //     return 0;
-        // }
-        // else if (state == State.Cancelled)
-        // {
-        //     return 1;
-        // }
-        // else if (state == State.Active)
-        // {
-        //     return 2;
-        // }
-        // else if (state == State.Completed)
-        // {
-        //     return 3;
-        // }
-        // else if (state == State.Invalid)
-        // {
-        //     return 4;
-        // }
-        // else
-        // {
-        //     return -1;
-        // }
+        return taskState;
+    }
+
+    function getPaymentState() public view returns (PaymentState)
+    {
+        return paymentState;
+    }
+
+    function getPayment() public view returns (uint)
+    {
+        return payment;
     }
    
-   function getClientVerification() public view returns (string memory){
+   function getClientVerification() public view returns (bytes32){
         return clientVerification;
     }
 
@@ -270,17 +343,17 @@ contract Task{
         return providerVerification;
     }
 
-    function getBalance() public view returns (uint) {
-        return address(this).balance;
-    }
-
     //Functions
     function InTime() public view returns (bool){
-        return ((block.timestamp <= (activateDate + duration)) && (timeResultReceived <= activateDate + duration));     //first argument may be deleted
+        return (timeResultReceived <= activationTime + deadline);  //first argument may be deleted
+    }
+
+    function ProviderTime() public view returns (bool) {
+        return (timeResultReceived <= timeResultProvided + 60); //gives 60 sec to provider to send the results
     }
 
     function CorrectVerification() public view returns (bool){
-        return (keccak256(abi.encodePacked(clientVerification)) == keccak256(abi.encodePacked(providerVerification)));    //use hash of bytes to compare strings
+        return (clientVerification == keccak256(abi.encodePacked(providerVerification)));
     }
 
     function getSC_Address() public view returns (address)  //returns address of smart contract
