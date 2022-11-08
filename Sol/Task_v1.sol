@@ -17,12 +17,12 @@ contract Providers {
     event ProviderUpvoted(address provider);
     event ProviderDownvoted(address provider);
 
-    constructor(address provider) {
-        performance[provider].votes = 0;
-        performance[provider].upVotes = 0;
-        performance[provider].downVotes = 0;
-        emit ProviderCreated(provider);
-    }
+    // constructor(address provider) {
+    //     performance[provider].votes = 0;
+    //     performance[provider].upVotes = 0;
+    //     performance[provider].downVotes = 0;
+    //     emit ProviderCreated(provider);
+    // }
 
     function upVote(address provider) public {
         performance[provider].votes += 1;
