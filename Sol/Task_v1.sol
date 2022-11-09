@@ -3,45 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 //taskID to be bytes32 instead of address
 
-contract Providers {
-
-    struct providerRating {
-        uint votes;
-        uint upVotes;
-        uint downVotes;
-    }
-
-    mapping(address => providerRating) public performance;
-
-    event ProviderCreated(address provider);
-    event ProviderUpvoted(address provider);
-    event ProviderDownvoted(address provider);
-
-    // constructor(address provider) {
-    //     performance[provider].votes = 0;
-    //     performance[provider].upVotes = 0;
-    //     performance[provider].downVotes = 0;
-    //     emit ProviderCreated(provider);
-    // }
-
-    function upVote(address provider) public {
-        performance[provider].votes += 1;
-        performance[provider].upVotes += 1;
-        emit ProviderUpvoted(provider);
-    }
-
-    function downVote(address provider) public {
-        performance[provider].votes += 1;
-        performance[provider].downVotes += 1;
-        emit ProviderDownvoted(provider);
-    }
-
-    function getPerformance(address provider) public view returns (providerRating memory) {
-        return performance[provider];
-        // tuple: votes, upVotes, downVotes
-    }
-
-}
+import "./Providers.sol";
 
 contract Task {
 
@@ -63,7 +25,7 @@ contract Task {
     address payable internal client;
     address internal taskID; //by auction contract  //can be bytes32
 
-    Providers public providerVote;
+    Providers internal providerVote;
     
     uint internal price;   //can be float at front-end, payment per sec of execution
     uint internal providerCollateral;   //can be float at front-end
@@ -96,7 +58,7 @@ contract Task {
     event TransferMade(address Address, uint Amount);
 
     //Modifiers 
-    modifier onlyClient() {
+    modifier clientOnly() {
         require(
             msg.sender == client,
             "Method can be called only by client."
@@ -104,7 +66,7 @@ contract Task {
         _;
     }
 
-    modifier onlyProvider() {
+    modifier providerOnly() {
         require(
             msg.sender == provider,
             "Method can be called only by provider."
@@ -169,7 +131,7 @@ contract Task {
     //can be called only by client and only if contract hasnt been activated by provider
 
     // - no requiresClient so that it can be tested
-    // function cancelContract() public onlyClient inTaskState(TaskState.Created) requiresBalance(payment)
+    // function cancelContract() public clientOnly inTaskState(TaskState.Created) requiresBalance(payment)
     function cancelContract() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
     {
         taskState = TaskState.Cancelled;
@@ -187,7 +149,7 @@ contract Task {
     //transfers payment and collateral to client
     
     // - no requiresClient so that it can be tested
-    // function invalidateContract() public  onlyClient inTaskState(TaskState.Active) requiresBalance(payment + collateral)
+    // function invalidateContract() public  clientOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
     function invalidateContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
     {
         require(
@@ -208,13 +170,13 @@ contract Task {
     // can be called only by provider to start the process
 
     // - no requiresProvider so that it can be tested
-    // function activateContract() public onlyProvider requiresValue(collateral) inTaskState(TaskState.Created) requiresBalance(payment + collateral)
-    function activateContract(address providersAddress) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
+    // function activateContract() public providerOnly requiresValue(collateral) inTaskState(TaskState.Created) requiresBalance(payment + collateral)
+    function activateContract(Providers _providers) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     {
         activationTime = block.timestamp;
         taskState = TaskState.Active;
         emit TaskActivated(taskID);
-        providerVote = Providers(providersAddress);
+        providerVote = _providers;
     }
 
 
@@ -223,7 +185,7 @@ contract Task {
     // can be called only by provider when the computation is over
 
     // - no requiresProvider so that it can be tested
-    // function completeContract() public onlyProvider inTaskState(TaskState.Active) requiresBalance(payment + collateral)
+    // function completeContract() public providerOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
     function completeContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
     {
         // payable(msg.sender).transfer(address(this).balance);
@@ -256,7 +218,7 @@ contract Task {
         emit TaskCompleted(taskID);
     }
 
-    // function completePayment() public onlyClient inTaskState(TaskState.Completed) requiresValue(payment-clientCollateral)
+    // function completePayment() public clientOnly inTaskState(TaskState.Completed) requiresValue(payment-clientCollateral)
     function completePayment() public payable inTaskState(TaskState.Completed) requiresValue(payment - clientCollateral) {
         require (paymentState == PaymentState.Pending, "Payment not needed");
         provider.transfer(msg.value);
@@ -382,6 +344,15 @@ contract Task {
     function getSC_Address() public view returns (address)  //returns address of smart contract
     {
         return address(this);
+    }
+
+    // Fallback Function
+    fallback() external payable{
+        revert();
+    }
+
+    receive() external payable {
+        revert("bad call");
     }
 
 }
