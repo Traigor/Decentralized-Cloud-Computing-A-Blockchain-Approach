@@ -3,7 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 //taskID to be bytes32 instead of address
 
-import "./Providers.sol";
+import "./ProvidersPerformance.sol";
 
 contract Task {
 
@@ -21,40 +21,40 @@ contract Task {
         Completed
     }
 
-    address payable internal provider;
-    address payable internal client;
-    address internal taskID; //by auction contract  //can be bytes32
+    address payable private provider;
+    address payable private client;
+    bytes32 private taskID; //by auction contract  //can be bytes32
 
-    Providers internal providerVote;
+    ProvidersPerformance private providerVote;
     
-    uint internal price;   //can be float at front-end, payment per sec of execution
-    uint internal providerCollateral;   //can be float at front-end
-    uint internal clientCollateral;
-    uint internal payment;
-    uint internal deadline;
-    uint internal duration;  //contract duration, in sec
+    uint private price;   //can be float at front-end, payment per sec of execution
+    uint private providerCollateral;   //can be float at front-end
+    uint private clientCollateral;
+    uint private payment;
+    uint private deadline;
+    uint private duration;  //contract duration, in sec
     
-    uint internal activationTime;   //contract activation date, in sec since epoch
-    uint internal timeResultProvided;     //time of result given by provider, in sec since epoch
-    uint internal timeResultReceived;    //time of received result, in sec since epoch   
+    uint private activationTime;   //contract activation date, in sec since epoch
+    uint private timeResultProvided;     //time of result given by provider, in sec since epoch
+    uint private timeResultReceived;    //time of received result, in sec since epoch   
 
-    TaskState internal taskState;   //taskState of contract
-    PaymentState internal paymentState;
+    TaskState private taskState;   //taskState of contract
+    PaymentState private paymentState;
 
     string code;   //string for ipfs address 
 
-    bytes32 internal clientVerification;
-    string internal providerVerification;
+    bytes32 private clientVerification;
+    string private providerVerification;
 
 
     //Events 
     //taskID to be deleted
-    event TaskActivated(address taskID);
-    event TaskCompleted(address taskID);
-    event TaskCancelled(address taskID);
-    event TaskInvalidated(address taskID);
-    event PaymentPending(address taskID, uint payment);
-    event PaymentCompleted(address taskID);
+    event TaskActivated(bytes32 taskID);
+    event TaskCompleted(bytes32 taskID);
+    event TaskCancelled(bytes32 taskID);
+    event TaskInvalidated(bytes32 taskID);
+    event PaymentPending(bytes32 taskID, uint payment);
+    event PaymentCompleted(bytes32 taskID);
     event TransferMade(address Address, uint Amount);
 
     //Modifiers 
@@ -101,7 +101,7 @@ contract Task {
 
     //Constructor
     constructor(
-        address _taskID,
+        bytes32 _taskID,
         address payable _client,
         address payable _provider,
         uint _price,
@@ -171,12 +171,13 @@ contract Task {
 
     // - no requiresProvider so that it can be tested
     // function activateContract() public providerOnly requiresValue(collateral) inTaskState(TaskState.Created) requiresBalance(payment + collateral)
-    function activateContract(Providers _providers) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
+    function activateContract(ProvidersPerformance _providers) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     {
         activationTime = block.timestamp;
         taskState = TaskState.Active;
         emit TaskActivated(taskID);
         providerVote = _providers;
+        providerVote.registerTask(address(this));
     }
 
 
@@ -243,7 +244,7 @@ contract Task {
     }
 
     //Getters
-    function getTaskID() public view returns (address)
+    function getTaskID() public view returns (bytes32)
     {
         return taskID;
     }
@@ -306,6 +307,7 @@ contract Task {
         return taskState;
     }
 
+    // PaymentState: Initiliazed->0, Pending->1, Completed->2
     function getPaymentState() public view returns (PaymentState)
     {
         return paymentState;
@@ -324,7 +326,7 @@ contract Task {
         return providerVerification;
     }
 
-    function getProviderVote() public view returns (Providers.providerRating memory) {
+    function getProviderVote() public view returns (ProvidersPerformance.providerRating memory) {
         return providerVote.getPerformance(provider);
     }
 
