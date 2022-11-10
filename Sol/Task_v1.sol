@@ -274,11 +274,6 @@ contract Task {
         return providerCollateral;
     }
 
-    function getDuration() public view returns (uint)
-    {
-        return duration;
-    }
-
     function getDeadline() public view returns (uint)
     {
         return deadline;
@@ -301,7 +296,7 @@ contract Task {
         return code;
     }
 
-    // TaskState: Created->0, Cancelled->1, Active->2, Complete->3, Invalid->4
+    // TaskState: Created->0, Cancelled->1, Active->2, Completed->3, Invalid->4
     function getTaskState() public view returns (TaskState)
     {
         return taskState;
