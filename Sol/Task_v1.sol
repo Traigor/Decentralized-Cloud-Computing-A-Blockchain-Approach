@@ -135,8 +135,7 @@ contract Task {
     function cancelContract() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
     {
         taskState = TaskState.Cancelled;
-        // payable(msg.sender).transfer(address(this).balance);
-        // sender is client, balance is payment, the contract is not activated so there is not collateral
+ 
         client.transfer(clientCollateral);
         emit TransferMade(client,clientCollateral);
         emit TaskCancelled(taskID);
@@ -157,9 +156,7 @@ contract Task {
             "Time has not expired"
         );
         taskState = TaskState.Invalid;
-        //add transfer of payment
-
-        // payable(msg.sender).transfer(address(this).balance);
+  
         client.transfer(clientCollateral + providerCollateral);
         emit TransferMade(client, clientCollateral + providerCollateral);
         emit TaskInvalidated(taskID);
@@ -200,6 +197,7 @@ contract Task {
                 emit TransferMade(client, payment-clientCollateral);
                 paymentState = PaymentState.Completed;
                 emit PaymentCompleted(taskID);
+                //send result of computation
                 
             }
             else {
@@ -226,6 +224,7 @@ contract Task {
         emit TransferMade(provider, payment-clientCollateral); 
         paymentState = PaymentState.Completed;
         emit PaymentCompleted(taskID);
+        //send result of computation
     }
     
     //Setters
