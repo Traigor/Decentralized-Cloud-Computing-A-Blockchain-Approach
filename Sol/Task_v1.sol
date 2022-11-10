@@ -167,7 +167,7 @@ contract Task {
     // can be called only by provider to start the process
 
     // - no requiresProvider so that it can be tested
-    // function activateContract() public providerOnly requiresValue(collateral) inTaskState(TaskState.Created) requiresBalance(payment + collateral)
+    // function activateContract(ProvidersPerformance _providers) public payable providerOnly requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     function activateContract(ProvidersPerformance _providers) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     {
         activationTime = block.timestamp;
