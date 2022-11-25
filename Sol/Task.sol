@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.7.0 <0.9.0;
-//taskID to be bytes32 instead of address
 
 import "./ProvidersPerformance.sol";
+import "./TasksRegistry.sol";
 
 contract Task {
 
@@ -21,13 +21,14 @@ contract Task {
         Completed
     }
 
-    address payable private provider;
-    address payable private client;
-    bytes32 private taskID; //by auction contract  //can be bytes32
+    address payable private immutable provider;
+    address payable private immutable client;
+    bytes32 private immutable taskID; //by auction contract  
 
-    ProvidersPerformance private providerVote;
+    TasksRegistry private tasksRegistry; //to be deleted later
+    // TasksRegistry private immutable tasksRegistry = <address>
     
-    uint private price;   //can be float at front-end, payment per sec of execution
+    uint private immutable price;   //can be float at front-end, payment per sec of execution
     uint private providerCollateral;   //can be float at front-end
     uint private clientCollateral;
     uint private payment;
@@ -43,7 +44,7 @@ contract Task {
 
     string code;   //string for ipfs address 
 
-    bytes32 private clientVerification;
+    bytes32 private immutable clientVerification;
     string private providerVerification;
 
 
@@ -99,7 +100,7 @@ contract Task {
     }
 
 
-    //Constructor
+    //Constructor ,TasksRegistry will be deleted
     constructor(
         bytes32 _taskID,
         address payable _client,
@@ -107,7 +108,8 @@ contract Task {
         uint _price,
         uint _providerCollateral,
         uint _deadline,
-        bytes32  _clientVerification 
+        bytes32  _clientVerification,
+        TasksRegistry _tasksRegistry 
     )
     payable
     {
@@ -121,6 +123,8 @@ contract Task {
         clientVerification = _clientVerification;
         taskState = TaskState.Created;
         paymentState = PaymentState.Initialized; 
+        tasksRegistry = _tasksRegistry;
+        tasksRegistry.registerTask(_client,_provider,_taskID);
     }
 
     // TaskState functions to be called by smart contract or client/provider? 
@@ -138,6 +142,7 @@ contract Task {
  
         client.transfer(clientCollateral);
         emit TransferMade(client,clientCollateral);
+        tasksRegistry.unregisterTask(client,provider,taskID);
         emit TaskCancelled(taskID);
     }
 
@@ -159,6 +164,7 @@ contract Task {
   
         client.transfer(clientCollateral + providerCollateral);
         emit TransferMade(client, clientCollateral + providerCollateral);
+        tasksRegistry.unregisterTask(client,provider,taskID);
         emit TaskInvalidated(taskID);
     }
 
@@ -168,13 +174,11 @@ contract Task {
 
     // - no requiresProvider so that it can be tested
     // function activateContract(ProvidersPerformance _providers) public payable providerOnly requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
-    function activateContract(ProvidersPerformance _providers) public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
+    function activateContract() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
     {
         activationTime = block.timestamp;
         taskState = TaskState.Active;
         emit TaskActivated(taskID);
-        providerVote = _providers;
-        providerVote.registerTask(address(this));
     }
 
 
@@ -206,14 +210,15 @@ contract Task {
                 paymentState = PaymentState.Pending;
                 emit PaymentPending(taskID,payment-clientCollateral);
             }
-            providerVote.upVote(provider);
+            tasksRegistry.upVoteProvider(client,provider,taskID);
         }
         else {
             client.transfer(clientCollateral + providerCollateral);
             emit TransferMade(client, clientCollateral + providerCollateral);
-            providerVote.downVote(provider);
+            tasksRegistry.downVoteProvider(client,provider,taskID);
         }
         taskState = TaskState.Completed;
+        tasksRegistry.unregisterTask(client,provider,taskID);
         emit TaskCompleted(taskID);
     }
 
@@ -320,11 +325,7 @@ contract Task {
         return providerVerification;
     }
 
-    function getProviderVote() public view returns (ProvidersPerformance.providerRating memory) {
-        return providerVote.getPerformance(provider);
-    }
-
-    //Functions
+    //Functions -> Private/internal
     function InTime() public view returns (bool){
         return (timeResultReceived <= activationTime + deadline);  //first argument may be deleted
     }
@@ -335,11 +336,6 @@ contract Task {
 
     function CorrectVerification() public view returns (bool){
         return (clientVerification == keccak256(abi.encodePacked(providerVerification)));
-    }
-
-    function getSC_Address() public view returns (address)  //returns address of smart contract
-    {
-        return address(this);
     }
 
     // Fallback Function

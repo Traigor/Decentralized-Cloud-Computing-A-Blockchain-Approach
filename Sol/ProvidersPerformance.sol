@@ -4,10 +4,20 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract ProvidersPerformance {
 
-    modifier taskOnly() {
+    address tasksRegistry;
+
+    modifier tasksRegistryOnly() {
         require(
-            exists(msg.sender),
-            "Method can be called only by task contract."
+            msg.sender == tasksRegistry,
+            "Method can be called only by tasksRegistry contract."
+        );
+        _;
+    }
+
+    modifier ownerOnly() {
+        require(
+            msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4,
+            "Method can be called only by owner."
         );
         _;
     }
@@ -18,25 +28,20 @@ contract ProvidersPerformance {
     }
 
     mapping(address => providerRating) private performance;
-    address [] internal tasksRegistry;
 
     event ProviderUpvoted(address provider, address task);
     event ProviderDownvoted(address provider, address task);
 
-    function registerTask(address _task) public {
-        tasksRegistry.push(_task);
-    }
 
-
-    // function upVote(address provider) taskOnly external { 
-    function upVote(address provider) external {
+    function upVote(address provider) tasksRegistryOnly public { 
+    // function upVote(address provider) external {
         // performance[provider].upVotes += 1;
         performance[provider].upVotes += 10; //for tests
         emit ProviderUpvoted(provider,msg.sender);
     }
 
-    // function downVote(address provider) taskOnly external {
-    function downVote(address provider) external {
+    function downVote(address provider) tasksRegistryOnly external {
+    // function downVote(address provider) external {
         // performance[provider].downVotes += 1;
         performance[provider].downVotes += 10; //for tests
         emit ProviderDownvoted(provider,msg.sender);
@@ -95,24 +100,12 @@ contract ProvidersPerformance {
             z = divider(temp+z,2,0);
         }
         return uint(y);
-}
-
-    //to be deleted
-    function getTasksRegistry() public view returns (address [] memory) {
-        return tasksRegistry;
     }
 
-    //TODO: implement it with mapper
-    //can be implemented with mapper -> O(1) but more storage
-    //internal
-    function exists(address adr) public view returns (bool) {
-        for (uint i = 0; i < tasksRegistry.length; i++) {
-            if (tasksRegistry[i] == adr) {
-                return true;
-            }
-        }
-        return false;
+    function setTasksRegistry(address adr) ownerOnly external{
+        tasksRegistry = adr;
     }
+
 
     // Fallback Function
     fallback() external payable{
