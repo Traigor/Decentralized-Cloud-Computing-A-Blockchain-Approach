@@ -6,8 +6,6 @@ import "./ProvidersPerformance.sol";
 
 contract TasksRegistry {
 
-    address private owner;
-
     mapping (bytes32 => bool) public registryExists;
     
     event TaskRegistered(address client,address provider,bytes32 taskID);
@@ -16,7 +14,6 @@ contract TasksRegistry {
     ProvidersPerformance private immutable providersVote;
 
     constructor(ProvidersPerformance _providersPerformance) {
-        owner = msg.sender;
         providersVote = _providersPerformance;
     }
 
@@ -34,7 +31,7 @@ contract TasksRegistry {
 
     //to be deleted
     function testHash(address client, address provider, bytes32 taskID) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(client,provider,taskID));
+        return keccak256(abi.encodePacked(client,provider,taskID)); //abi.encode if could be a collision of output (not possible in our case)
     }
 
     function isRegistered(address client, address provider, bytes32 taskID) public view returns (bool) {
@@ -52,10 +49,6 @@ contract TasksRegistry {
         if (isRegistered(client,provider,taskID)) {
             providersVote.downVote(provider);
         }
-    }
-
-    function getOWner() public view returns (address) {
-        return owner;
     }
 
 

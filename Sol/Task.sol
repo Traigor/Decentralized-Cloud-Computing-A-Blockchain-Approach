@@ -243,11 +243,12 @@ contract Task {
         timeResultProvided = _timeReceivedProvider;
     }
 
+    //code to be in constructor
     function setCode(string memory _code) public{
         code = _code;
     }
 
-    //Getters
+    //Getters - to be deleted
     function getTaskID() public view returns (bytes32)
     {
         return taskID;
