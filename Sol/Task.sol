@@ -102,7 +102,7 @@ contract Task {
 
     modifier registeredTaskOnly() {
         require(
-            tasksRegistry.isRegistered(client,provider),
+            tasksRegistry.isRegistered(),
             "Task must be registered"
         );
         _;
@@ -151,7 +151,7 @@ contract Task {
  
         client.transfer(clientCollateral);
         emit TransferMade(client,clientCollateral);
-        tasksRegistry.unregisterTask(client,provider);
+        tasksRegistry.unregisterTask();
         emit TaskCancelled(taskID);
     }
 
@@ -173,7 +173,7 @@ contract Task {
   
         client.transfer(clientCollateral + providerCollateral);
         emit TransferMade(client, clientCollateral + providerCollateral);
-        tasksRegistry.unregisterTask(client,provider);
+        tasksRegistry.unregisterTask();
         emit TaskInvalidated(taskID);
     }
 
@@ -219,15 +219,15 @@ contract Task {
                 paymentState = PaymentState.Pending;
                 emit PaymentPending(taskID,payment-clientCollateral);
             }
-            tasksRegistry.upVoteProvider(client,provider);
+            tasksRegistry.upVoteProvider(provider);
         }
         else {
             client.transfer(clientCollateral + providerCollateral);
             emit TransferMade(client, clientCollateral + providerCollateral);
-            tasksRegistry.downVoteProvider(client,provider);
+            tasksRegistry.downVoteProvider(provider);
         }
         taskState = TaskState.Completed;
-        tasksRegistry.unregisterTask(client,provider);
+        tasksRegistry.unregisterTask();
         emit TaskCompleted(taskID);
     }
 
