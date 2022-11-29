@@ -50,6 +50,7 @@ contract Task {
 
     //Events 
     //taskID to be deleted
+    event TaskCreated(address client, address provider, address task);
     event TaskActivated(bytes32 taskID);
     event TaskCompleted(bytes32 taskID);
     event TaskCancelled(bytes32 taskID);
@@ -99,6 +100,14 @@ contract Task {
         _;
     }
 
+    modifier registeredTaskOnly() {
+        require(
+            tasksRegistry.isRegistered(client,provider),
+            "Task must be registered"
+        );
+        _;
+    }
+
 
     //Constructor ,TasksRegistry will be deleted
     constructor(
@@ -124,7 +133,7 @@ contract Task {
         taskState = TaskState.Created;
         paymentState = PaymentState.Initialized; 
         tasksRegistry = _tasksRegistry;
-        tasksRegistry.registerTask(_client,_provider,_taskID);
+        emit TaskCreated(_client,_provider,address(this));
     }
 
     // TaskState functions to be called by smart contract or client/provider? 
@@ -142,19 +151,19 @@ contract Task {
  
         client.transfer(clientCollateral);
         emit TransferMade(client,clientCollateral);
-        tasksRegistry.unregisterTask(client,provider,taskID);
+        tasksRegistry.unregisterTask(client,provider);
         emit TaskCancelled(taskID);
     }
 
     //Invalidate
     ///TaskState -> Invalid
-    //can be called only by client and only if contract is activated  // no by client but auto?
+    //can be called only by client and only if contract is activated  
     //if time has passed and the task is not comleted by the provider
     //transfers payment and collateral to client
     
     // - no requiresClient so that it can be tested
     // function invalidateContract() public  clientOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
-    function invalidateContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
+    function invalidateContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral) 
     {
         require(
             (block.timestamp >  activationTime + deadline),
@@ -164,7 +173,7 @@ contract Task {
   
         client.transfer(clientCollateral + providerCollateral);
         emit TransferMade(client, clientCollateral + providerCollateral);
-        tasksRegistry.unregisterTask(client,provider,taskID);
+        tasksRegistry.unregisterTask(client,provider);
         emit TaskInvalidated(taskID);
     }
 
@@ -174,7 +183,7 @@ contract Task {
 
     // - no requiresProvider so that it can be tested
     // function activateContract(ProvidersPerformance _providers) public payable providerOnly requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
-    function activateContract() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
+    function activateContract() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral) registeredTaskOnly
     {
         activationTime = block.timestamp;
         taskState = TaskState.Active;
@@ -210,15 +219,15 @@ contract Task {
                 paymentState = PaymentState.Pending;
                 emit PaymentPending(taskID,payment-clientCollateral);
             }
-            tasksRegistry.upVoteProvider(client,provider,taskID);
+            tasksRegistry.upVoteProvider(client,provider);
         }
         else {
             client.transfer(clientCollateral + providerCollateral);
             emit TransferMade(client, clientCollateral + providerCollateral);
-            tasksRegistry.downVoteProvider(client,provider,taskID);
+            tasksRegistry.downVoteProvider(client,provider);
         }
         taskState = TaskState.Completed;
-        tasksRegistry.unregisterTask(client,provider,taskID);
+        tasksRegistry.unregisterTask(client,provider);
         emit TaskCompleted(taskID);
     }
 

@@ -4,23 +4,9 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract ProvidersPerformance {
 
+    address private owner = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4; //address of my remix
+
     address tasksRegistry;
-
-    modifier tasksRegistryOnly() {
-        require(
-            msg.sender == tasksRegistry,
-            "Method can be called only by tasksRegistry contract."
-        );
-        _;
-    }
-
-    modifier ownerOnly() {
-        require(
-            msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, //address of remix
-            "Method can be called only by owner."
-        );
-        _;
-    }
 
     struct providerRating {
         uint upVotes;
@@ -32,6 +18,25 @@ contract ProvidersPerformance {
     event ProviderUpvoted(address provider, address task);
     event ProviderDownvoted(address provider, address task);
 
+    modifier tasksRegistryOnly() {
+        require(
+            msg.sender == tasksRegistry,
+            "Method can be called only by tasksRegistry contract."
+        );
+        _;
+    }
+
+    modifier ownerOnly() {
+        require(
+            msg.sender == owner,
+            "Method can be called only by owner."
+        );
+        _;
+    }
+
+    function setTasksRegistry(address adr) ownerOnly external{
+        tasksRegistry = adr;
+    }
 
     function upVote(address provider) tasksRegistryOnly public { 
     // function upVote(address provider) external {
@@ -52,6 +57,7 @@ contract ProvidersPerformance {
         // tuple: upVotes, downVotes
     }
 
+    // could be calculated in the app
     function getScore(address provider) public view returns (uint) {
        return confidence(performance[provider].upVotes,performance[provider].downVotes);
     }
@@ -70,16 +76,11 @@ contract ProvidersPerformance {
         // uint z = 1645;  //z-score for 90% two-sided confidence = 1.645
         // uint z = 1440; //-score for 85% two-sided confidence = 1.44
         // uint z = 1282; //z-score for 80% two sided confidence = 1.282
-        uint p = divider(ups,n,3);
-        // return p;
         
-
+        uint p = divider(ups,n,3);
         uint left = p + divider(1,2*n,3)*z*z/1000000; 
-        // return left;
         uint right = z * sqrt(divider(p*(1000-p),n,0) + divider(z*z,4*n*n,0))/1000; 
-        // return right;
         uint denominator = 1000 + divider(1,n,3)*z*z/1000000;
-        // return denominator;
 
         return divider(left-right, denominator, 3);
 
@@ -100,10 +101,6 @@ contract ProvidersPerformance {
             z = divider(temp+z,2,0);
         }
         return uint(y);
-    }
-
-    function setTasksRegistry(address adr) ownerOnly external{
-        tasksRegistry = adr;
     }
 
 
