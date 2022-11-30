@@ -91,7 +91,7 @@ contract ProvidersPerformance {
     }
 
     //babylonian method
-    function sqrt(uint x) public pure returns (uint) {
+    function sqrt(uint x) private pure returns (uint) {
         uint z = divider(x+1,2,0); 
         uint y = x;
         uint temp;

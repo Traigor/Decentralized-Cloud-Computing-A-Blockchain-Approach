@@ -144,8 +144,8 @@ contract Task {
     //can be called only by client and only if contract hasnt been activated by provider
 
     // - no requiresClient so that it can be tested
-    // function cancelContract() public clientOnly inTaskState(TaskState.Created) requiresBalance(payment)
-    function cancelContract() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
+    // function cancelTask() public clientOnly inTaskState(TaskState.Created) requiresBalance(payment)
+    function cancelTask() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
     {
         taskState = TaskState.Cancelled;
  
@@ -162,8 +162,8 @@ contract Task {
     //transfers payment and collateral to client
     
     // - no requiresClient so that it can be tested
-    // function invalidateContract() public  clientOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
-    function invalidateContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral) 
+    // function invalidateTask() public  clientOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
+    function invalidateTask() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral) 
     {
         require(
             (block.timestamp >  activationTime + deadline),
@@ -182,8 +182,8 @@ contract Task {
     // can be called only by provider to start the process
 
     // - no requiresProvider so that it can be tested
-    // function activateContract(ProvidersPerformance _providers) public payable providerOnly requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral)
-    function activateContract() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral) registeredTaskOnly
+    // function activateTask() public payable providerOnly requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral) registeredTaskOnly
+    function activateTask() public payable requiresValue(providerCollateral) inTaskState(TaskState.Created) requiresBalance(clientCollateral + providerCollateral) registeredTaskOnly
     {
         activationTime = block.timestamp;
         taskState = TaskState.Active;
@@ -196,8 +196,8 @@ contract Task {
     // can be called only by provider when the computation is over
 
     // - no requiresProvider so that it can be tested
-    // function completeContract() public providerOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
-    function completeContract() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
+    // function completeTask() public providerOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
+    function completeTask() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
     {
         // payable(msg.sender).transfer(address(this).balance);
         if (InTime() && ProviderTime() && CorrectVerification()){
@@ -242,12 +242,8 @@ contract Task {
     }
     
     //Setters
-    function setProviderVerification (string memory ver) public {
-        providerVerification = ver;
-    }
-
-    // times can be compared too
-    function setTimeResultReceived (uint _timeReceivedProvider) public{
+    function receiveResults(string memory ver, uint _timeReceivedProvider) public {
+        providerVerification = ver;   
         timeResultReceived = block.timestamp;
         timeResultProvided = _timeReceivedProvider;
     }
@@ -258,52 +254,9 @@ contract Task {
     }
 
     //Getters - to be deleted
-    function getTaskID() public view returns (bytes32)
-    {
-        return taskID;
-    }
-
-    function getClientAddress() public view returns (address)
-    {
-        return client;
-    }
-
-    function getProviderAddress() public view returns (address)
-    {
-        return provider;
-    }
-
-    function getPrice() public view returns (uint)
-    {
-        return price;
-    }
-
-    function getClientCollateral() public view returns (uint)
-    {
-        return clientCollateral;
-    }
-
-    function getProviderCollateral() public view returns (uint)
-    {
-        return providerCollateral;
-    }
-
-    function getDeadline() public view returns (uint)
-    {
-        return deadline;
-    }
-
     function getActivationTime() public view returns (uint)
     {
         return activationTime;
-    }
-
-    function getTimeResultReceived() public view returns (uint){
-        return timeResultReceived;
-    }
-
-     function getTimeResultProvided() public view returns (uint){
-        return timeResultProvided;
     }
 
     function getCode() public view returns (string memory){
@@ -325,14 +278,6 @@ contract Task {
     function getPayment() public view returns (uint)
     {
         return payment;
-    }
-   
-   function getClientVerification() public view returns (bytes32){
-        return clientVerification;
-    }
-
-    function getProviderVerification() public view returns (string memory){
-        return providerVerification;
     }
 
     //Functions -> Private/internal
