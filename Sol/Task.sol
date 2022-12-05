@@ -2,8 +2,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import "./ProvidersPerformance.sol";
-import "./TasksRegistry.sol";
+import "./Registry.sol";
 
 contract Task {
 
@@ -25,8 +24,8 @@ contract Task {
     address payable private immutable client;
     bytes32 private immutable taskID; //by auction contract  
 
-    TasksRegistry private tasksRegistry; //to be deleted later
-    // TasksRegistry private immutable tasksRegistry = <address>
+    Registry private registry; //to be deleted later
+    // Registry private immutable registry = <address>
     
     uint private immutable price;   //can be float at front-end, payment per sec of execution
     uint private providerCollateral;   //can be float at front-end
@@ -50,7 +49,7 @@ contract Task {
 
     //Events 
     //taskID to be deleted
-    event TaskCreated(address client, address provider, address task);
+    event TaskCreated(address task);
     event TaskActivated(bytes32 taskID);
     event TaskCompleted(bytes32 taskID);
     event TaskCancelled(bytes32 taskID);
@@ -102,7 +101,7 @@ contract Task {
 
     modifier registeredTaskOnly() {
         require(
-            tasksRegistry.isRegistered(),
+            registry.isRegistered(),
             "Task must be registered"
         );
         _;
@@ -118,7 +117,7 @@ contract Task {
         uint _providerCollateral,
         uint _deadline,
         bytes32  _clientVerification,
-        TasksRegistry _tasksRegistry 
+        Registry _registry 
     )
     payable
     {
@@ -132,8 +131,8 @@ contract Task {
         clientVerification = _clientVerification;
         taskState = TaskState.Created;
         paymentState = PaymentState.Initialized; 
-        tasksRegistry = _tasksRegistry;
-        emit TaskCreated(_client,_provider,address(this));
+        registry = _registry;
+        emit TaskCreated(address(this));
     }
 
     // TaskState functions to be called by smart contract or client/provider? 
@@ -151,7 +150,7 @@ contract Task {
  
         client.transfer(clientCollateral);
         emit TransferMade(client,clientCollateral);
-        tasksRegistry.unregisterTask();
+        registry.unregisterTask();
         emit TaskCancelled(taskID);
     }
 
@@ -173,7 +172,7 @@ contract Task {
   
         client.transfer(clientCollateral + providerCollateral);
         emit TransferMade(client, clientCollateral + providerCollateral);
-        tasksRegistry.unregisterTask();
+        registry.unregisterTask();
         emit TaskInvalidated(taskID);
     }
 
@@ -219,15 +218,15 @@ contract Task {
                 paymentState = PaymentState.Pending;
                 emit PaymentPending(taskID,payment-clientCollateral);
             }
-            tasksRegistry.upVoteProvider(provider);
+            registry.upVote(provider);
         }
         else {
             client.transfer(clientCollateral + providerCollateral);
             emit TransferMade(client, clientCollateral + providerCollateral);
-            tasksRegistry.downVoteProvider(provider);
+            registry.downVote(provider);
         }
         taskState = TaskState.Completed;
-        tasksRegistry.unregisterTask();
+        registry.unregisterTask();
         emit TaskCompleted(taskID);
     }
 
@@ -238,7 +237,7 @@ contract Task {
         emit TransferMade(provider, payment-clientCollateral); 
         paymentState = PaymentState.Completed;
         emit PaymentCompleted(taskID);
-        //send result of computation
+        //send or emit result of computation
     }
     
     //Setters
