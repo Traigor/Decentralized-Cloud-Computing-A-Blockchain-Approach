@@ -1,31 +1,34 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { ethers } from "hardhat";
 
 const deployTask: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
 ) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy, log } = deployments;
-  const { deployer } = await getNamedAccounts();
+  // const { deployer, client, provider } = await getNamedAccounts(); //it is for manually setting the accounts
+  const [deployer, client, provider] = await ethers.getSigners();
 
   const args: any[] = [
     "0xaaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff",
-    "0xC3DFE1646524c6F3303C647Cc3B7Ef90967feFC9",
-    "0x9F1a751994D1709D8A1e8d3a2d0223eB00B30391",
+    client.address,
+    provider.address,
     30,
-    500,
+    ethers.utils.parseEther("0.0000000000000005"),
     600,
     "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da",
-    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "0x5FbDB2315678afecb367f032d93F642f64180aa3", //to fix this, make it automatically get the address of the registry
   ];
   const task = await deploy("Task", {
-    from: deployer,
+    from: deployer.address,
     args: args,
     log: true,
   });
 
   log("----------------------------------------------------");
-  log(`Task deployed to: ${task.address} with deployer: ${deployer}`);
+  log(`Task deployed to: ${task.address} with deployer: ${deployer.address}`);
+  log("----------------------------------------------------");
 };
 
 export default deployTask;

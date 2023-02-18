@@ -9,7 +9,7 @@ import "hardhat-deploy";
 import { HardhatUserConfig } from "hardhat/config";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: "0.8.8",
   namedAccounts: {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
