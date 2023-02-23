@@ -428,6 +428,98 @@ describe("Task Unit Tests", function () {
     });
   });
 
+  describe("completePayment", function () {
+    it("reverts if not called by the client", async function () {
+      await expect(task.completePayment()).to.be.revertedWith(
+        "Method can be called only by client."
+      );
+    });
+
+    it("reverts if task is not in state Completed", async function () {
+      task = taskContract.connect(client);
+      await expect(task.completePayment()).to.be.revertedWith(
+        "Invalid TaskState."
+      );
+    });
+
+    it("reverts if value sent is not the expected", async function () {
+      await registry.registerTask(task.address);
+      task = taskContract.connect(provider);
+      await task.activateTask({
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      await task.receiveResults("Helloworld!", Date.now());
+      await task.completeTask();
+      task = taskContract.connect(client);
+      await expect(
+        task.completePayment({
+          value: ethers.utils.parseEther("0.0000000000000004"),
+        })
+      ).to.be.revertedWith("Value sent is not the expected");
+    });
+
+    it("completePayment is successful", async function () {
+      await registry.registerTask(task.address);
+      task = taskContract.connect(provider);
+      await task.activateTask({
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      const time = Date.now();
+      await task.receiveResults("Helloworld!", time);
+      const duration = time - (await task.getActivationTime()).toNumber();
+      const payment = ((price * duration) / wei).toString();
+      await task.completeTask();
+      task = taskContract.connect(client);
+      await task.completePayment({
+        value: ethers.utils.parseEther(payment),
+      });
+      const paymentState = await task.getPaymentState();
+      expect(paymentState).to.equal(2);
+    });
+
+    it("emits a TransferMade event", async function () {
+      await registry.registerTask(task.address);
+      task = taskContract.connect(provider);
+      await task.activateTask({
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      const time = Date.now();
+      await task.receiveResults("Helloworld!", time);
+      const duration = time - (await task.getActivationTime()).toNumber();
+      const payment = ((price * duration) / wei).toString();
+      await task.completeTask();
+      task = taskContract.connect(client);
+      await expect(
+        task.completePayment({
+          value: ethers.utils.parseEther(payment),
+        })
+      )
+        .to.emit(task, "TransferMade")
+        .withArgs(provider.address, ethers.utils.parseEther(payment));
+    });
+
+    it("emits a PaymentCompleted event", async function () {
+      await registry.registerTask(task.address);
+      task = taskContract.connect(provider);
+      await task.activateTask({
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      const time = Date.now();
+      await task.receiveResults("Helloworld!", time);
+      const duration = time - (await task.getActivationTime()).toNumber();
+      const payment = ((price * duration) / wei).toString();
+      await task.completeTask();
+      task = taskContract.connect(client);
+      await expect(
+        task.completePayment({
+          value: ethers.utils.parseEther(payment),
+        })
+      )
+        .to.emit(task, "PaymentCompleted")
+        .withArgs(taskID);
+    });
+  });
+
   describe("fallback", function () {
     it("reverts", async function () {
       await expect(

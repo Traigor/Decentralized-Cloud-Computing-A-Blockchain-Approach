@@ -83,6 +83,14 @@ contract Task {
         _;
     }
 
+    modifier inPaymentState(PaymentState _paymentState) {
+        require(
+            paymentState == _paymentState,
+            "Invalid PaymentState."
+        );
+        _;
+    }
+
     modifier requiresBalance(uint amount) {
         require(
             address(this).balance >= amount,
@@ -230,8 +238,8 @@ contract Task {
         emit TaskCompleted(taskID);
     }
 
-    // function completePayment() public clientOnly inTaskState(TaskState.Completed) requiresValue(payment-clientCollateral)
-    function completePayment() public payable inTaskState(TaskState.Completed) requiresValue(payment - clientCollateral) {
+    function completePayment() public payable clientOnly inTaskState(TaskState.Completed) inPaymentState(PaymentState.Pending) requiresValue(payment-clientCollateral) {
+    // function completePayment() public payable inTaskState(TaskState.Completed) requiresValue(payment - clientCollateral) {
         require (paymentState == PaymentState.Pending, "Payment not needed");
         provider.transfer(msg.value);
         emit TransferMade(provider, payment-clientCollateral); 
@@ -275,10 +283,10 @@ contract Task {
         return paymentState;
     }
 
-    // function getPayment() public view returns (uint)
-    // {
-    //     return payment;
-    // }
+    function getPayment() public view returns (uint)
+    {
+        return payment;
+    }
 
     function getProviderCollateral() public view returns (uint)
     {
