@@ -144,8 +144,9 @@ describe("Registry Unit Tests", function () {
 
   describe("fallback", function () {
     it("reverts", async function () {
-      await expect(deployer.sendTransaction({ to: registry.address })).to.be
-        .reverted;
+      await expect(
+        deployer.sendTransaction({ to: registry.address, data: "0x1234" })
+      ).to.be.revertedWith("");
     });
   });
 

@@ -427,4 +427,20 @@ describe("Task Unit Tests", function () {
         .withArgs(client.address, ethers.utils.parseEther(amount.toString()));
     });
   });
+
+  describe("fallback", function () {
+    it("reverts", async function () {
+      await expect(
+        deployer.sendTransaction({ to: task.address, data: "0x1234" })
+      ).to.be.revertedWith("");
+    });
+  });
+
+  describe("receive", function () {
+    it("reverts with bad call", async function () {
+      await expect(
+        deployer.sendTransaction({ to: task.address, value: 1 })
+      ).to.be.revertedWith("bad call");
+    });
+  });
 });
