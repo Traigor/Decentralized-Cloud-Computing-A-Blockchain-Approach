@@ -143,8 +143,8 @@ contract Task {
     //can be called only by client and only if contract hasnt been activated by provider
 
     // - no requiresClient so that it can be tested
-    // function cancelTask() public clientOnly inTaskState(TaskState.Created) requiresBalance(payment)
-    function cancelTask() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
+    function cancelTask() public clientOnly inTaskState(TaskState.Created) requiresBalance(clientCollateral)
+    // function cancelTask() public inTaskState(TaskState.Created) requiresBalance(clientCollateral)
     {
         taskState = TaskState.Cancelled;
  
@@ -161,12 +161,12 @@ contract Task {
     //transfers payment and collateral to client
     
     // - no requiresClient so that it can be tested
-    // function invalidateTask() public  clientOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
-    function invalidateTask() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral) 
+    function invalidateTask() public  clientOnly inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
+    // function invalidateTask() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral) 
     {
         require(
             (block.timestamp >  activationTime + deadline),
-            "Time has not expired"
+            "Time has not expired."
         );
         taskState = TaskState.Invalid;
   
@@ -195,8 +195,8 @@ contract Task {
     // can be called only by provider when the computation is over
 
     // - no requiresProvider so that it can be tested
-    // function completeTask() public providerOnly inTaskState(TaskState.Active) requiresBalance(payment + collateral)
-    function completeTask() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
+    function completeTask() public providerOnly inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
+    // function completeTask() public inTaskState(TaskState.Active) requiresBalance(clientCollateral + providerCollateral)
     {
         // payable(msg.sender).transfer(address(this).balance);
         if (InTime() && ProviderTime() && CorrectVerification()){
@@ -241,6 +241,7 @@ contract Task {
     }
     
     //Setters
+    //to be inside completeTask
     function receiveResults(string memory ver, uint _timeReceivedProvider) public {
         providerVerification = ver;   
         timeResultReceived = block.timestamp;
@@ -258,9 +259,9 @@ contract Task {
         return activationTime;
     }
 
-    function getCode() public view returns (string memory){
-        return code;
-    }
+    // function getCode() public view returns (string memory){
+    //     return code;
+    // }
 
     // TaskState: Created->0, Cancelled->1, Active->2, Completed->3, Invalid->4
     function getTaskState() public view returns (TaskState)
@@ -274,10 +275,10 @@ contract Task {
         return paymentState;
     }
 
-    function getPayment() public view returns (uint)
-    {
-        return payment;
-    }
+    // function getPayment() public view returns (uint)
+    // {
+    //     return payment;
+    // }
 
     function getProviderCollateral() public view returns (uint)
     {
