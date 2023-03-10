@@ -235,13 +235,14 @@ contract TasksManager {
                 tasks[_taskID].paymentState = PaymentState.Pending;
                 emit PaymentPending(_taskID,tasks[_taskID].payment-tasks[_taskID].clientCollateral);
             }
-            upVote(_taskID, tasks[_taskID].provider);
+            performance[tasks[_taskID].provider].upVotes += 1;
+            emit ProviderUpvoted(tasks[_taskID].provider,_taskID);
         }
         else {
             tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
             emit TransferMade(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
-            downVote(_taskID, tasks[_taskID].provider);
-
+            performance[tasks[_taskID].provider].downVotes += 1;
+            emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
         }
         tasks[_taskID].taskState = TaskState.Completed;
         if (tasks[_taskID].paymentState == PaymentState.Completed){
@@ -250,6 +251,8 @@ contract TasksManager {
         emit TaskCompleted(_taskID);
         emit TaskUnregistered(_taskID);
     }
+    //not tested the occasion of client collateral because it is not decided yet if
+    //createTask will be called by client, owner or the auction contract
 
     function completePayment(bytes32 _taskID) public payable clientOnly(_taskID) inTaskState(_taskID,TaskState.Completed) inPaymentState(_taskID,PaymentState.Pending) requiresValue(tasks[_taskID].payment-tasks[_taskID].clientCollateral) {
     // function completePayment() public payable inTaskState(TaskState.Completed) requiresValue(payment - clientCollateral) {
@@ -275,10 +278,10 @@ contract TasksManager {
         tasks[_taskID].timeResultProvided = _timeReceivedProvider;
     }
 
-    //code to be in constructor
-    function setCode(bytes32 _taskID, string memory _code) public{
-        tasks[_taskID].code = _code;
-    }
+    //code to be in constructor in createTask
+    // function setCode(bytes32 _taskID, string memory _code) public{
+    //     tasks[_taskID].code = _code;
+    // }
 
     //Functions -> Private/internal
     function InTime(bytes32 _taskID) public view returns (bool){
@@ -295,22 +298,6 @@ contract TasksManager {
 
     function isRegistered(bytes32 _taskID) public view returns (bool) {
         return (tasks[_taskID].client != address(0));
-    }
-
-    //ownerOnly
-    function upVote(bytes32 _taskID, address provider) registeredTaskOnly(_taskID) public { 
-    // function upVote(address provider) external {
-        performance[provider].upVotes += 1;
-        // performance[provider].upVotes += 10; //for tests
-        emit ProviderUpvoted(provider,_taskID);
-    }
-
-    //ownerOnly
-    function downVote(bytes32 _taskID, address provider) registeredTaskOnly(_taskID) public {
-    // function downVote(address provider) external {
-        performance[provider].downVotes += 1;
-        // performance[provider].downVotes += 10; //for tests
-        emit ProviderDownvoted(provider,_taskID);
     }
 
     function getPerformance(address provider) public view returns (providerRating memory) {
@@ -340,10 +327,10 @@ contract TasksManager {
         return tasks[_taskID].paymentState;
     }
 
-    function getPayment(bytes32 _taskID) public view returns (uint)
-    {
-        return tasks[_taskID].payment;
-    }
+    // function getPayment(bytes32 _taskID) public view returns (uint)
+    // {
+    //     return tasks[_taskID].payment;
+    // }
 
     function getProviderCollateral(bytes32 _taskID) public view returns (uint)
     {

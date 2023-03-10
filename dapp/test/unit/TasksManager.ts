@@ -353,6 +353,22 @@ describe("TasksManager Unit Tests", function () {
       expect(balance).to.equal(ethers.utils.parseEther("0"));
       expect(paymentState).to.equal(1);
     });
+
+    it("upVote is successful", async function () {
+      const previousUpVotes = await (
+        await tasksManager.getPerformance(provider.address)
+      ).upVotes.toNumber();
+      tasksManager = tasksManagerContract.connect(provider);
+      await tasksManager.activateTask(taskID, {
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
+      await tasksManager.completeTask(taskID);
+      const currentUpVotes = await (
+        await tasksManager.getPerformance(provider.address)
+      ).upVotes.toNumber();
+      expect(currentUpVotes).to.equal(previousUpVotes + 1);
+    });
     it("emits a TransferMade event", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await tasksManager.activateTask(taskID, {
@@ -365,6 +381,16 @@ describe("TasksManager Unit Tests", function () {
       await expect(tasksManager.completeTask(taskID))
         .to.emit(tasksManager, "TransferMade")
         .withArgs(provider.address, ethers.utils.parseEther(amount.toString()));
+    });
+    it("emits a ProviderUpvoted event", async function () {
+      tasksManager = tasksManagerContract.connect(provider);
+      await tasksManager.activateTask(taskID, {
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
+      await expect(tasksManager.completeTask(taskID))
+        .to.emit(tasksManager, "ProviderUpvoted")
+        .withArgs(provider.address, taskID);
     });
     it("emits a PaymentPending event", async function () {
       tasksManager = tasksManagerContract.connect(provider);
@@ -401,6 +427,22 @@ describe("TasksManager Unit Tests", function () {
       expect(balance).to.equal(ethers.utils.parseEther("0"));
     });
 
+    it("downVote is successful", async function () {
+      const previousUpVotes = await (
+        await tasksManager.getPerformance(provider.address)
+      ).upVotes.toNumber();
+      tasksManager = tasksManagerContract.connect(provider);
+      await tasksManager.activateTask(taskID, {
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      await tasksManager.receiveResults(taskID, "Helloworld!!", Date.now());
+      await tasksManager.completeTask(taskID);
+      const currentUpVotes = await (
+        await tasksManager.getPerformance(provider.address)
+      ).downVotes.toNumber();
+      expect(currentUpVotes).to.equal(previousUpVotes + 1);
+    });
+
     it("emits a TransferMade event", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await tasksManager.activateTask(taskID, {
@@ -413,6 +455,17 @@ describe("TasksManager Unit Tests", function () {
       await expect(tasksManager.completeTask(taskID))
         .to.emit(tasksManager, "TransferMade")
         .withArgs(client.address, ethers.utils.parseEther(amount.toString()));
+    });
+
+    it("emits a ProviderUpvoted event", async function () {
+      tasksManager = tasksManagerContract.connect(provider);
+      await tasksManager.activateTask(taskID, {
+        value: ethers.utils.parseEther("0.0000000000000005"),
+      });
+      await tasksManager.receiveResults(taskID, "Helloworld!!", Date.now());
+      await expect(tasksManager.completeTask(taskID))
+        .to.emit(tasksManager, "ProviderDownvoted")
+        .withArgs(provider.address, taskID);
     });
 
     it("completeTask is successful, correct verification and out of time", async function () {
@@ -521,6 +574,7 @@ describe("TasksManager Unit Tests", function () {
         .withArgs(taskID);
     });
   });
+
   describe("fallback", function () {
     it("reverts", async function () {
       await expect(
