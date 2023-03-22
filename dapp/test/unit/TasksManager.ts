@@ -331,23 +331,22 @@ describe("TasksManager Unit Tests", function () {
       );
     });
     it("reverts if not called by the provider", async function () {
-      await expect(tasksManager.completeTask(taskID)).to.be.revertedWith(
-        "Method can be called only by provider."
-      );
+      await expect(
+        tasksManager.completeTask(taskID, "Helloworld!", Date.now())
+      ).to.be.revertedWith("Method can be called only by provider.");
     });
     it("reverts if task is not in state Active", async function () {
       tasksManager = tasksManagerContract.connect(provider);
-      await expect(tasksManager.completeTask(taskID)).to.be.revertedWith(
-        "Invalid TaskState."
-      );
+      await expect(
+        tasksManager.completeTask(taskID, "Helloworld!", Date.now())
+      ).to.be.revertedWith("Invalid TaskState.");
     });
     it("completeTask is successful, correct verification and in time", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!", Date.now());
       const balance = await ethers.provider.getBalance(tasksManager.address);
       const paymentState = await tasksManager.getPaymentState(taskID);
       expect(balance).to.equal(ethers.utils.parseEther("0"));
@@ -362,8 +361,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!", Date.now());
       const currentUpVotes = await (
         await tasksManager.getPerformance(provider.address)
       ).upVotes.toNumber();
@@ -374,11 +372,10 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
       const amount = (
         (await tasksManager.getProviderCollateral(taskID)).toNumber() / wei
       ).toFixed(18);
-      await expect(tasksManager.completeTask(taskID))
+      await expect(tasksManager.completeTask(taskID, "Helloworld!", Date.now()))
         .to.emit(tasksManager, "TransferMade")
         .withArgs(provider.address, ethers.utils.parseEther(amount.toString()));
     });
@@ -387,8 +384,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
-      await expect(tasksManager.completeTask(taskID))
+      await expect(tasksManager.completeTask(taskID, "Helloworld!", Date.now()))
         .to.emit(tasksManager, "ProviderUpvoted")
         .withArgs(provider.address, taskID);
     });
@@ -398,11 +394,10 @@ describe("TasksManager Unit Tests", function () {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
       const time = Date.now();
-      await tasksManager.receiveResults(taskID, "Helloworld!", time);
       const duration =
         time - (await tasksManager.getActivationTime(taskID)).toNumber();
       const payment = ((price * duration) / wei).toString();
-      await expect(tasksManager.completeTask(taskID))
+      await expect(tasksManager.completeTask(taskID, "Helloworld!", time))
         .to.emit(tasksManager, "PaymentPending")
         .withArgs(taskID, ethers.utils.parseEther(payment));
     });
@@ -411,8 +406,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
-      await expect(tasksManager.completeTask(taskID))
+      await expect(tasksManager.completeTask(taskID, "Helloworld!", Date.now()))
         .to.emit(tasksManager, "TaskCompleted")
         .withArgs(taskID);
     });
@@ -421,8 +415,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "HelloWorld!", Date.now());
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "HelloWorld!", Date.now());
       const balance = await ethers.provider.getBalance(tasksManager.address);
       expect(balance).to.equal(ethers.utils.parseEther("0"));
     });
@@ -435,8 +428,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!!", Date.now());
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!!", Date.now());
       const currentUpVotes = await (
         await tasksManager.getPerformance(provider.address)
       ).downVotes.toNumber();
@@ -448,22 +440,24 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "HelloWorld!", Date.now());
       const amount = (
         (await tasksManager.getProviderCollateral(taskID)).toNumber() / wei
       ).toFixed(18);
-      await expect(tasksManager.completeTask(taskID))
+      await expect(
+        tasksManager.completeTask(taskID, "Helloworld!!", Date.now())
+      )
         .to.emit(tasksManager, "TransferMade")
         .withArgs(client.address, ethers.utils.parseEther(amount.toString()));
     });
 
-    it("emits a ProviderUpvoted event", async function () {
+    it("emits a ProviderDownvoted event", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!!", Date.now());
-      await expect(tasksManager.completeTask(taskID))
+      await expect(
+        tasksManager.completeTask(taskID, "Helloworld!!", Date.now())
+      )
         .to.emit(tasksManager, "ProviderDownvoted")
         .withArgs(provider.address, taskID);
     });
@@ -474,8 +468,7 @@ describe("TasksManager Unit Tests", function () {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
       await ethers.provider.send("evm_increaseTime", [601]);
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!", Date.now());
       const balance = await ethers.provider.getBalance(tasksManager.address);
       expect(balance).to.equal(ethers.utils.parseEther("0"));
     });
@@ -485,11 +478,11 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "HelloWorld!", Date.now());
       const amount = (
         (await tasksManager.getProviderCollateral(taskID)).toNumber() / wei
       ).toFixed(18);
-      await expect(tasksManager.completeTask(taskID))
+      await ethers.provider.send("evm_increaseTime", [601]);
+      await expect(tasksManager.completeTask(taskID, "Helloworld!", Date.now()))
         .to.emit(tasksManager, "TransferMade")
         .withArgs(client.address, ethers.utils.parseEther(amount.toString()));
     });
@@ -523,8 +516,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.activateTask(taskID, {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
-      await tasksManager.receiveResults(taskID, "Helloworld!", Date.now());
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!", Date.now());
       tasksManager = tasksManagerContract.connect(client);
       await expect(
         tasksManager.completePayment(taskID, {
@@ -538,11 +530,10 @@ describe("TasksManager Unit Tests", function () {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
       const time = Date.now();
-      await tasksManager.receiveResults(taskID, "Helloworld!", time);
       const duration =
         time - (await tasksManager.getActivationTime(taskID)).toNumber();
       const payment = ((price * duration) / wei).toString();
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!", time);
       tasksManager = tasksManagerContract.connect(client);
       await expect(
         tasksManager.completePayment(taskID, {
@@ -559,11 +550,10 @@ describe("TasksManager Unit Tests", function () {
         value: ethers.utils.parseEther("0.0000000000000005"),
       });
       const time = Date.now();
-      await tasksManager.receiveResults(taskID, "Helloworld!", time);
       const duration =
         time - (await tasksManager.getActivationTime(taskID)).toNumber();
       const payment = ((price * duration) / wei).toString();
-      await tasksManager.completeTask(taskID);
+      await tasksManager.completeTask(taskID, "Helloworld!", time);
       tasksManager = tasksManagerContract.connect(client);
       await expect(
         tasksManager.completePayment(taskID, {
@@ -579,7 +569,7 @@ describe("TasksManager Unit Tests", function () {
     it("reverts", async function () {
       await expect(
         deployer.sendTransaction({ to: tasksManager.address, data: "0x1234" })
-      ).to.be.revertedWith("");
+      ).to.be.reverted;
     });
   });
 
