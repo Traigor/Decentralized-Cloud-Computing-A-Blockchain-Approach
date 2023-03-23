@@ -1,5 +1,4 @@
 import { ethers } from "hardhat";
-import { completePayment } from "./index";
 
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xaddress";
 

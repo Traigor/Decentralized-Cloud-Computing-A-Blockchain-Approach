@@ -120,6 +120,14 @@ contract TasksManager {
         _;
     }
 
+    modifier notRegisteredTask(bytes32 _taskID) {
+        require(
+            !isRegistered(_taskID),
+            "Task already exists"
+        );
+        _;
+    }
+
     constructor() {
         owner = msg.sender;
     }
@@ -133,7 +141,7 @@ contract TasksManager {
         uint _providerCollateral,
         uint _deadline,
         bytes32 _clientVerification
-    ) 
+    ) notRegisteredTask(_taskID)
     public
     {
         tasks[_taskID].client = _client;

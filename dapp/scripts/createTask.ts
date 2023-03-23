@@ -1,14 +1,9 @@
-import { ethers, deployments } from "hardhat";
+import { ethers } from "hardhat";
 
 export async function createTask() {
   const [deployer, client, provider] = await ethers.getSigners();
   const tasksManagerContract = await ethers.getContract("TasksManager");
   const tasksManager = tasksManagerContract.connect(deployer);
-
-  //   const TasksManager = await ethers.getContractFactory("TasksManager");
-  //   const tasksManager = await TasksManager.deploy();
-
-  //   await tasksManager.deployed();
 
   const taskID =
     "0xaaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
