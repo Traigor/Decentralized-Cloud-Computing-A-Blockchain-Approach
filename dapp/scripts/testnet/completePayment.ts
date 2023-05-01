@@ -1,7 +1,13 @@
 import { ethers } from "hardhat";
+import { abi, address } from "../../deployments/sepolia/TasksManager.json";
 
 export async function completePayment(payment: number) {
-  const tasksManager = await ethers.getContract("TasksManager");
+  // const tasksManager = await ethers.getContract("TasksManager");
+  const tasksManager = new ethers.Contract(
+    address,
+    abi,
+    ethers.provider.getSigner()
+  );
   // const wei = 1000000000000000000;
   // const value = ethers.utils.parseEther((payment / wei).toFixed(18).toString());
   const taskID =

@@ -1,7 +1,12 @@
 import { ethers } from "hardhat";
+import { abi, address } from "../../deployments/sepolia/TasksManager.json";
 
 export async function getPerformance(provider: string) {
-  const tasksManager = await ethers.getContract("TasksManager");
+  const tasksManager = new ethers.Contract(
+    address,
+    abi,
+    ethers.provider.getSigner()
+  );
   const performance = await tasksManager.getPerformance(provider);
 
   console.log("----------------------------------------------------");
