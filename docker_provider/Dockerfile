@@ -8,7 +8,17 @@
 
 # CMD ["cat", "performance.txt"]
 
-FROM node:16-alpine AS build1
+#Java
+FROM openjdk:18-ea-jdk as build1
+
+WORKDIR /app
+# copy all the files to the container
+COPY Java .
+
+RUN java Main > output.txt
+
+#Node
+FROM node:16-alpine AS build2
 
 WORKDIR /app
 COPY . .
@@ -16,19 +26,10 @@ COPY . .
 RUN yarn &&\
  yarn hardhat run scripts/getPerformance.ts  > performance.txt 
 
-
-FROM openjdk:18-ea-jdk as build2
-
-WORKDIR /app
-# copy all the files to the container
-COPY Main.jar .
-
-RUN java -jar Main.jar > output.txt
-
-
+#Alpine
 FROM alpine:3.14
-COPY --from=build1 /app/performance.txt .
-COPY --from=build2 /app/output.txt .
+COPY --from=build1 /app/output.txt .
+COPY --from=build2 /app/performance.txt .
 COPY cat.sh .
 
 RUN chmod -R 777 cat.sh 

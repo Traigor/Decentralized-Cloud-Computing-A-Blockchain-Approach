@@ -3,6 +3,7 @@
   "dependencies": {
     "hardhat": "^2.14.0",
     "ipfs-core": "^0.18.0",
+    "it-to-buffer": "^4.0.1",
     "prom-client": "^14.2.0"
   },
   "devDependencies": {

@@ -22,23 +22,6 @@ console.log(
   splitFields("19998 ----- Hello world ----- 45 ----- 1682867531908\n")
 );
 
-async function ipfsTest() {
-  const { create } = await import("ipfs-core");
-  const node = await create();
-
-  const stream = node.cat("QmPChd2hVbrJ6bfo3WBcTW4iZnpHm8TEzWkLHmLpXhF68A");
-  const decoder = new TextDecoder();
-  let data = "";
-
-  for await (const chunk of stream) {
-    // chunks of data are returned as a Uint8Array, convert it back to a string
-    data += decoder.decode(chunk, { stream: true });
-  }
-
-  console.log(data);
-}
-
-ipfsTest();
 getPerformance(provider).catch((error) => {
   console.error(error);
   process.exitCode = 1;

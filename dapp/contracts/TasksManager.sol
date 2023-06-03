@@ -8,36 +8,38 @@ contract TasksManager {
 
     enum TaskState {
         Created,
-        Cancelled, //to be cut
+        Cancelled, 
         Active,
-        Completed,
-        Invalid //to be cut
+        CompletedSuccessfully,
+        CompletedUnsuccessfully,
+        Invalid, 
+        ResultsReceived
     }
 
     enum PaymentState {
         Initialized,
         Pending,
-        Completed //to be cut
+        Completed 
     }
 
-
     struct Task {
-        address payable provider;
         address payable client; 
-        uint price;
+        address payable provider;
         uint providerCollateral;
-        uint clientCollateral; //maybe to be cut if createTask is not called by client
-        uint payment;
+        uint clientCollateral; 
         uint deadline;
+        uint price;
         uint duration;
+        uint cost;       
         uint activationTime;
         uint timeResultProvided;
         uint timeResultReceived;
+        string computationCode;
+        string verificationCode;
+        string results;
+        bytes32 clientVerification;
         TaskState taskState;
         PaymentState paymentState;
-        string code;
-        bytes32 clientVerification;
-        string providerVerification;
     }
 
     struct providerRating {
@@ -51,16 +53,18 @@ contract TasksManager {
     //Events
     event TaskCreated(bytes32 taskID);
     event TaskActivated(bytes32 taskID);
-    event TaskCompleted(bytes32 taskID);
+    event TaskCompletedSuccessfully(bytes32 taskID);
+    event TaskCompletedUnsuccessfully(bytes32 taskID);
+    event TaskReceivedResults(bytes32 taskID);
     event TaskCancelled(bytes32 taskID);
     event TaskInvalidated(bytes32 taskID);
     event PaymentPending(bytes32 taskID, uint payment);
     event PaymentCompleted(bytes32 taskID);
-    event TransferMade(address Address, uint Amount);
-    event ProviderUpvoted(address provider, bytes32 task);
-    event ProviderDownvoted(address provider, bytes32 task);
-    event TaskRegistered(bytes32 task);
-    event TaskUnregistered(bytes32 task);
+    event TransferMadeToClient(address client, uint amount);
+    event TransferMadeToProvider(address provider, uint amount);
+    event ProviderUpvoted(address provider, bytes32 taskID);
+    event ProviderDownvoted(address provider, bytes32 taskID);
+    event TaskDeleted(bytes32 taskID);
 
     //Modifiers
 
@@ -84,6 +88,14 @@ contract TasksManager {
         require(
             msg.sender == tasks[_taskID].provider,
             "Method can be called only by provider."
+        );
+        _;
+    }
+
+    modifier clientOrProviderOnly(bytes32 _taskID) {
+        require(
+            (msg.sender == tasks[_taskID].client) || (msg.sender == tasks[_taskID].provider) || (msg.sender == owner),
+            "Method can be called only by client, provider or the owner."
         );
         _;
     }
@@ -132,28 +144,30 @@ contract TasksManager {
         owner = msg.sender;
     }
 
-    //owner only or by auction contract or by client
+    //called by client, client = msg.sender
     function createTask(
         bytes32 _taskID, 
-        address payable _client, //if called by client, this is msg.sender
         address payable _provider,
         uint _price,
-        uint _providerCollateral,
         uint _deadline,
-        bytes32 _clientVerification
-    ) notRegisteredTask(_taskID)
-    public
+        bytes32 _clientVerification,
+        string memory _verificationCode,
+        string memory _computationCode
+    ) public payable notRegisteredTask(_taskID)
     {
-        tasks[_taskID].client = _client;
+        require (msg.value >= _price * 2, "Client collateral is not enough");
+        tasks[_taskID].client = payable (msg.sender);
+        tasks[_taskID].clientCollateral = msg.value;
         tasks[_taskID].provider = _provider;
+        tasks[_taskID].providerCollateral = _price * 10;
         tasks[_taskID].price = _price;
-        tasks[_taskID].providerCollateral = _providerCollateral;
         tasks[_taskID].deadline = _deadline;
         tasks[_taskID].clientVerification = _clientVerification;
+        tasks[_taskID].verificationCode = _verificationCode;
+        tasks[_taskID].computationCode = _computationCode;
         tasks[_taskID].taskState = TaskState.Created;
         tasks[_taskID].paymentState = PaymentState.Initialized;
         emit TaskCreated(_taskID);
-        emit TaskRegistered(_taskID);
     }
 
     //Cancel
@@ -165,10 +179,10 @@ contract TasksManager {
     {
         tasks[_taskID].taskState = TaskState.Cancelled;
         tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral);
-        emit TransferMade(tasks[_taskID].client,tasks[_taskID].clientCollateral);
-        delete(tasks[_taskID]);
+        emit TransferMadeToClient(tasks[_taskID].client,tasks[_taskID].clientCollateral);
+        // delete(tasks[_taskID]);
         emit TaskCancelled(_taskID);
-        emit TaskUnregistered(_taskID);
+        // emit TaskDeleted(_taskID);
     }
 
     function invalidateTask(bytes32 _taskID) public  clientOnly(_taskID) inTaskState(_taskID, TaskState.Active) 
@@ -180,19 +194,21 @@ contract TasksManager {
         tasks[_taskID].taskState = TaskState.Invalid;
   
         tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
-        emit TransferMade(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
-        delete(tasks[_taskID]);
+        emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
+        // delete(tasks[_taskID]);
         emit TaskInvalidated(_taskID);
-        emit TaskUnregistered(_taskID);
+        // emit TaskDeleted(_taskID);
     }
 
     // Activate
     // TaskState -> Activated
     // can be called only by provider to start the process
 
-    function activateTask(bytes32 _taskID) public payable providerOnly(_taskID) requiresValue(tasks[_taskID].providerCollateral) inTaskState(_taskID,TaskState.Created) registeredTaskOnly(_taskID)
+    function activateTask(bytes32 _taskID) public payable providerOnly(_taskID) inTaskState(_taskID,TaskState.Created) registeredTaskOnly(_taskID)
     {
+        require (msg.value >= tasks[_taskID].providerCollateral, "Provider collateral is not enough");
         tasks[_taskID].activationTime = block.timestamp;
+        tasks[_taskID].providerCollateral = msg.value;
         tasks[_taskID].taskState = TaskState.Active;
         emit TaskActivated(_taskID);
     }
@@ -201,84 +217,86 @@ contract TasksManager {
     // TaskState -> Completed
     // can be called only by provider when the computation is over
 
-    function completeTask(bytes32 _taskID,string memory ver, uint _timeReceivedProvider) public providerOnly(_taskID) inTaskState(_taskID,TaskState.Active) 
+    //called by docker container
+    function completeTask(bytes32 _taskID,string memory ver,  uint _duration, uint _timeReceivedProvider) public providerOnly(_taskID) inTaskState(_taskID,TaskState.Active) 
     {
-        tasks[_taskID].providerVerification = ver;   
-        tasks[_taskID].timeResultReceived = block.timestamp;
         tasks[_taskID].timeResultProvided = _timeReceivedProvider;
-        // payable(msg.sender).transfer(address(this).balance);
-        if (InTime(_taskID) && ProviderTime(_taskID) && CorrectVerification(_taskID)){
-            tasks[_taskID].duration = tasks[_taskID].timeResultProvided - tasks[_taskID].activationTime;
-            tasks[_taskID].payment = tasks[_taskID].price * tasks[_taskID].duration;
-            if (tasks[_taskID].payment <= tasks[_taskID].clientCollateral) {
-                tasks[_taskID].provider.transfer(tasks[_taskID].payment+tasks[_taskID].providerCollateral);
-                emit TransferMade(tasks[_taskID].provider, tasks[_taskID].payment+tasks[_taskID].providerCollateral);
-                tasks[_taskID].client.transfer(tasks[_taskID].payment-tasks[_taskID].clientCollateral);
-                //  emit TransferMade(tasks[_taskID].client, tasks[_taskID].payment-tasks[_taskID].clientCollateral);
-                emit TransferMade(tasks[_taskID].client, tasks[_taskID].duration);
+        tasks[_taskID].duration = _duration;
+        if (InTime(_taskID) && CorrectVerification(_taskID, ver)){
+            tasks[_taskID].cost = tasks[_taskID].price * tasks[_taskID].duration;
+            tasks[_taskID].taskState = TaskState.CompletedSuccessfully;
+            emit TaskCompletedSuccessfully(_taskID);
+        }
+        else {
+            tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
+            emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
+            performance[tasks[_taskID].provider].downVotes += 1;
+            emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
+            tasks[_taskID].taskState = TaskState.CompletedUnsuccessfully;
+            emit TaskCompletedUnsuccessfully(_taskID);
+        }
+    }
+
+
+    //called by provider
+    function receiveResults(bytes32 _taskID, string memory _results) public providerOnly(_taskID) inTaskState(_taskID,TaskState.CompletedSuccessfully) inPaymentState(_taskID,PaymentState.Initialized){
+        tasks[_taskID].timeResultReceived = block.timestamp;
+        tasks[_taskID].results = _results;
+        if (ProviderTime(_taskID)){
+            if (tasks[_taskID].cost <= tasks[_taskID].clientCollateral) {
+                tasks[_taskID].provider.transfer(tasks[_taskID].cost + tasks[_taskID].providerCollateral);
+                emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].cost + tasks[_taskID].providerCollateral);
+                tasks[_taskID].client.transfer(tasks[_taskID].cost - tasks[_taskID].clientCollateral);
+                emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].cost - tasks[_taskID].clientCollateral);
                 tasks[_taskID].paymentState = PaymentState.Completed;
-                emit PaymentCompleted(_taskID);
-                //send result of computation
-                
+                emit PaymentCompleted(_taskID);                
             }
             else {
                 tasks[_taskID].provider.transfer(tasks[_taskID].clientCollateral+tasks[_taskID].providerCollateral);
-                emit TransferMade(tasks[_taskID].provider, tasks[_taskID].clientCollateral+tasks[_taskID].providerCollateral);    
+                emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].clientCollateral+tasks[_taskID].providerCollateral);
                 tasks[_taskID].paymentState = PaymentState.Pending;
-                emit PaymentPending(_taskID,tasks[_taskID].payment-tasks[_taskID].clientCollateral);
+                emit PaymentPending(_taskID,tasks[_taskID].cost - tasks[_taskID].clientCollateral);
             }
             performance[tasks[_taskID].provider].upVotes += 1;
             emit ProviderUpvoted(tasks[_taskID].provider,_taskID);
         }
         else {
             tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
-            emit TransferMade(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
+            emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
             performance[tasks[_taskID].provider].downVotes += 1;
             emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
         }
-        tasks[_taskID].taskState = TaskState.Completed;
-        if (tasks[_taskID].paymentState == PaymentState.Completed || tasks[_taskID].paymentState == PaymentState.Initialized){
-            delete(tasks[_taskID]);
-        }
-        emit TaskCompleted(_taskID);
-        emit TaskUnregistered(_taskID);
+        tasks[_taskID].taskState = TaskState.ResultsReceived;
+        emit TaskReceivedResults(_taskID);
     }
-    //not tested the occasion of client collateral because it is not decided yet if
-    //createTask will be called by client, owner or the auction contract
 
-    function completePayment(bytes32 _taskID) public payable clientOnly(_taskID) inTaskState(_taskID,TaskState.Completed) inPaymentState(_taskID,PaymentState.Pending) requiresValue(tasks[_taskID].payment-tasks[_taskID].clientCollateral) {
+
+    function completePayment(bytes32 _taskID) public payable clientOnly(_taskID) inTaskState(_taskID,TaskState.ResultsReceived) inPaymentState(_taskID,PaymentState.Pending) requiresValue(tasks[_taskID].cost - tasks[_taskID].clientCollateral) {
         require (tasks[_taskID].paymentState == PaymentState.Pending, "Payment not needed");
         tasks[_taskID].provider.transfer(msg.value);
-        emit TransferMade(tasks[_taskID].provider, tasks[_taskID].payment-tasks[_taskID].clientCollateral);
+        emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].cost - tasks[_taskID].clientCollateral);
         tasks[_taskID].paymentState = PaymentState.Completed;
         emit PaymentCompleted(_taskID);
+        // delete(tasks[_taskID]);
+    }
+
+
+    function deleteTask(bytes32 _taskID) public {
         delete(tasks[_taskID]);
-        //send or emit result of computation
+        emit TaskDeleted(_taskID);
     }
-
-    function getTask(bytes32 _taskID) public view returns (Task memory) {
-        return tasks[_taskID];
-    }
-
-    //Setters
-
-
-    //code to be in constructor in createTask
-    // function setCode(bytes32 _taskID, string memory _code) public{
-    //     tasks[_taskID].code = _code;
-    // }
 
     //Functions -> Private/internal
-    function InTime(bytes32 _taskID) public view returns (bool){
-        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].activationTime + tasks[_taskID].deadline);  //first argument may be deleted
+    function InTime(bytes32 _taskID) private view returns (bool){
+        return (tasks[_taskID].timeResultProvided <= tasks[_taskID].activationTime + tasks[_taskID].deadline) && (tasks[_taskID].duration <= tasks[_taskID].deadline);  
     }
 
-    function ProviderTime(bytes32 _taskID) public view returns (bool) {
-        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 60); //gives 60 sec to provider to send the results
+    function ProviderTime(bytes32 _taskID) private view returns (bool) {
+        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 60) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].timeResultProvided) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].activationTime) && (tasks[_taskID].timeResultProvided >= tasks[_taskID].activationTime); //gives 60 sec to provider to send the results, time received must be greater than time provided
     }
 
-    function CorrectVerification(bytes32 _taskID) public view returns (bool){
-        return (tasks[_taskID].clientVerification == keccak256(abi.encodePacked(tasks[_taskID].providerVerification)));
+    function CorrectVerification(bytes32 _taskID, string memory ver) private view returns (bool){
+        return (tasks[_taskID].clientVerification == keccak256(abi.encodePacked(ver)));
     }
 
     function isRegistered(bytes32 _taskID) public view returns (bool) {
@@ -290,40 +308,68 @@ contract TasksManager {
         // tuple: upVotes, downVotes
     }
 
-    //Getters - to be deleted
+    //Getters - some to be deleted
     function getActivationTime(bytes32 _taskID) public view returns (uint)
     {
         return tasks[_taskID].activationTime;
     }
 
-    // function getCode() public view returns (string memory){
-    //     return code;
-    // }
-
-    // TaskState: Created->0, Cancelled->1, Active->2, Completed->3, Invalid->4
-    function getTaskState(bytes32 _taskID) public view returns (TaskState)
-    {
-        return tasks[_taskID].taskState;
+    function getResults(bytes32 _taskID) public clientOnly(_taskID) inTaskState(_taskID,TaskState.ResultsReceived) inPaymentState(_taskID,PaymentState.Completed) view returns (string memory)  {
+        return tasks[_taskID].results;
     }
 
-    // PaymentState: Initiliazed->0, Pending->1, Completed->2
-    function getPaymentState(bytes32 _taskID) public view returns (PaymentState)
+    function getTaskState(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (string memory)
     {
-        return tasks[_taskID].paymentState;
+        string memory ret = "";
+        if (tasks[_taskID].taskState == TaskState.Created) 
+            ret = "Created";
+        else if (tasks[_taskID].taskState == TaskState.Cancelled)
+            ret = "Cancelled";
+        else if (tasks[_taskID].taskState == TaskState.Active)
+            ret = "Active";
+        else if (tasks[_taskID].taskState == TaskState.CompletedSuccessfully)
+            ret = "CompletedSuccessfully";
+        else if (tasks[_taskID].taskState == TaskState.CompletedUnsuccessfully)
+            ret = "CompletedUnsuccessfully";  
+        else if (tasks[_taskID].taskState == TaskState.Invalid)
+            ret = "Invalid";  
+        else if (tasks[_taskID].taskState == TaskState.ResultsReceived)
+            ret = "ResultsReceived";
+        else 
+            ret = "Error";
+        return ret; 
     }
 
-    function getPayment(bytes32 _taskID) public view returns (uint)
+    function getPaymentState(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (string memory)
     {
-        return tasks[_taskID].payment;
+        string memory ret = "";
+        if (tasks[_taskID].paymentState == PaymentState.Initialized) 
+            ret = "Initialized";
+        else if (tasks[_taskID].paymentState == PaymentState.Pending) 
+            ret = "Pending";
+        else if (tasks[_taskID].paymentState == PaymentState.Completed) 
+            ret = "Completed";
+        else 
+            ret = "Error";  
+        return ret; 
     }
 
-    function getProviderCollateral(bytes32 _taskID) public view returns (uint)
+    function getCost(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (uint)
     {
-        return tasks[_taskID].providerCollateral;
+        return tasks[_taskID].cost;
+    }
+
+    function getPayment(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (uint) 
+    {
+        return (tasks[_taskID].cost - tasks[_taskID].clientCollateral);
     }
 
     function getOwner() public view returns (address) {
         return owner;
+    }
+
+    function getTask(bytes32 _taskID) public ownerOnly view returns (Task memory) {
+        return tasks[_taskID];
     }
 
     // Fallback Function

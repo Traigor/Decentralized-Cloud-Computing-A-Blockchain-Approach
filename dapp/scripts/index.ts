@@ -6,7 +6,7 @@ import { completeTaskUnsuccessfully } from "./completeTaskUnsuccessfully";
 import { cancelTask } from "./cancelTask";
 import { invalidateTask } from "./invalidateTask";
 import { getPerformance } from "./getPerformance";
-
+import { getTask } from "./getTask";
 export {
   createTask,
   cancelTask,
@@ -16,4 +16,5 @@ export {
   completeTaskUnsuccessfully,
   completePayment,
   getPerformance,
+  getTask,
 };
