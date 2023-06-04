@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { abi, address } from "../../deployments/sepolia/TasksManager.json";
+import { abi, address } from "../TasksManager.json";
 
 export async function completeTaskSuccessfully() {
   // const tasksManager = await ethers.getContract("TasksManager");

@@ -1,36 +1,30 @@
 import { ethers } from "hardhat";
 import { abi, address } from "../../deployments/sepolia/TasksManager.json";
 
-export async function activateTask() {
-  const [deployer, client, provider] = await ethers.getSigners();
+export async function receiveResults() {
   // const tasksManager = await ethers.getContract("TasksManager");
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-
+  // const wei = 1000000000000000000;
+  // const value = ethers.utils.parseEther((payment / wei).toFixed(18).toString());
   const taskID =
     "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
-  const wei = 1000000000000000000;
-  const price = 30;
-  const providerCollateral = price * 10;
 
-  const value = ethers.utils.parseEther(
-    (providerCollateral / wei).toFixed(18).toString()
-  );
-  await tasksManager.activateTask(taskID, { value: value });
+  await tasksManager.receiveResults(taskID, "ipfsCID");
 
   const taskState = await tasksManager.getTaskState(taskID);
-  const activationTime = await tasksManager.getActivationTime(taskID);
+  const paymentState = await tasksManager.getPaymentState(taskID);
   console.log("----------------------------------------------------");
   console.log(
-    `Task activated!\n Task ID: ${taskID}\n State: ${taskState}\n Activation time: ${activationTime}`
+    `Received Results!\n Task ID: ${taskID}\n State: ${taskState}\n PaymentState: ${paymentState}`
   );
   console.log("----------------------------------------------------");
 }
 
-activateTask().catch((error) => {
+receiveResults().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

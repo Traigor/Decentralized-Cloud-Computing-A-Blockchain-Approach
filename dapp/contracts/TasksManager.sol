@@ -132,7 +132,7 @@ contract TasksManager {
         _;
     }
 
-    modifier notRegisteredTask(bytes32 _taskID) {
+    modifier notRegisteredTaskOnly(bytes32 _taskID) {
         require(
             !isRegistered(_taskID),
             "Task already exists"
@@ -153,7 +153,7 @@ contract TasksManager {
         bytes32 _clientVerification,
         string memory _verificationCode,
         string memory _computationCode
-    ) public payable notRegisteredTask(_taskID)
+    ) public payable notRegisteredTaskOnly(_taskID)
     {
         require (msg.value >= _price * 2, "Client collateral is not enough");
         tasks[_taskID].client = payable (msg.sender);
@@ -180,9 +180,8 @@ contract TasksManager {
         tasks[_taskID].taskState = TaskState.Cancelled;
         tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral);
         emit TransferMadeToClient(tasks[_taskID].client,tasks[_taskID].clientCollateral);
-        // delete(tasks[_taskID]);
         emit TaskCancelled(_taskID);
-        // emit TaskDeleted(_taskID);
+        // deleteTask(_taskID);
     }
 
     function invalidateTask(bytes32 _taskID) public  clientOnly(_taskID) inTaskState(_taskID, TaskState.Active) 
@@ -195,9 +194,8 @@ contract TasksManager {
   
         tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
         emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
-        // delete(tasks[_taskID]);
         emit TaskInvalidated(_taskID);
-        // emit TaskDeleted(_taskID);
+        // deleteTask(_taskID);
     }
 
     // Activate
@@ -234,6 +232,7 @@ contract TasksManager {
             emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
             tasks[_taskID].taskState = TaskState.CompletedUnsuccessfully;
             emit TaskCompletedUnsuccessfully(_taskID);
+            // deleteTask(_taskID);
         }
     }
 
@@ -277,11 +276,12 @@ contract TasksManager {
         emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].cost - tasks[_taskID].clientCollateral);
         tasks[_taskID].paymentState = PaymentState.Completed;
         emit PaymentCompleted(_taskID);
-        // delete(tasks[_taskID]);
     }
 
-
-    function deleteTask(bytes32 _taskID) public {
+    //for now for specific taskID,
+    //it could be for all tasks that can be deleted 
+    //only by owner
+    function deleteTask(bytes32 _taskID) public ownerOnly registeredTaskOnly(_taskID) { 
         delete(tasks[_taskID]);
         emit TaskDeleted(_taskID);
     }
@@ -361,7 +361,12 @@ contract TasksManager {
 
     function getPayment(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (uint) 
     {
-        return (tasks[_taskID].cost - tasks[_taskID].clientCollateral);
+        if (tasks[_taskID].cost > tasks[_taskID].clientCollateral) {
+            return (tasks[_taskID].cost - tasks[_taskID].clientCollateral);
+        }
+        else {
+            return 0;
+        }
     }
 
     function getOwner() public view returns (address) {

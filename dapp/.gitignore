@@ -7,6 +7,8 @@ typechain-types
 gas-report.txt
 gas-report-tests.txt
 gas-report-scenarios.txt
+gas-report-all.txt
+
 
 # Hardhat files
 cache

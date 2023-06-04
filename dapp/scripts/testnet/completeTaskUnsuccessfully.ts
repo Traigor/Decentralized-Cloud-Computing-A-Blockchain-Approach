@@ -12,8 +12,9 @@ export async function completeTaskUnsuccessfully() {
   const taskID =
     "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
   const verification = "Helloworld!!(wrong)";
-  const time = Date.now();
-  await tasksManager.completeTask(taskID, verification, time);
+  const time = Math.floor(Date.now() / 1000);
+  const duration = 10;
+  await tasksManager.completeTask(taskID, verification, duration, time);
 
   console.log("----------------------------------------------------");
   console.log(`Task completed!\n Task ID: ${taskID}`);

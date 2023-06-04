@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { deploy } from "./deploy";
 
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xaddress";
 
@@ -12,9 +13,6 @@ export default async function listen() {
   tasksManager.on("TaskCreated", (taskID) => {
     console.log(`[TaskCreated] Task ID: ${taskID}`);
   });
-  tasksManager.on("TaskRegistered", (taskID) => {
-    console.log(`[TaskRegistered] Task ID: ${taskID}`);
-  });
   tasksManager.on("TaskCancelled", (taskID) => {
     console.log(`[TaskCancelled] Task ID: ${taskID}`);
   });
@@ -24,17 +22,28 @@ export default async function listen() {
   tasksManager.on("TaskInvalidated", (taskID) => {
     console.log(`[TaskInvalidated] Task ID: ${taskID}`);
   });
-  tasksManager.on("TransferMade", (Address, Amount) => {
-    console.log(`[TransferMade] Address: ${Address} Amount: ${Amount}`);
+  tasksManager.on("TransferMadeToClient", (Address, Amount) => {
+    console.log(`[TransferMadeToClient] Address: ${Address} Amount: ${Amount}`);
+  });
+  tasksManager.on("TransferMadeToProvider", (Address, Amount) => {
+    console.log(
+      `[TransferMadeToProvider] Address: ${Address} Amount: ${Amount}`
+    );
   });
   tasksManager.on("PaymentPending", (taskID, payment) => {
     console.log(`[PaymentPending] Task ID: ${taskID} Payment: ${payment}`);
   });
-  tasksManager.on("TaskCompleted", (taskID) => {
-    console.log(`[TaskCompleted] Task ID: ${taskID}`);
+  tasksManager.on("TaskCompletedSuccessfully", (taskID) => {
+    console.log(`[TaskCompletedSuccessfully] Task ID: ${taskID}`);
   });
-  tasksManager.on("TaskUnregistered", (taskID) => {
-    console.log(`[TaskUnregistered] Task ID: ${taskID}`);
+  tasksManager.on("TaskCompletedUnsuccessfully", (taskID) => {
+    console.log(`[TaskCompletedUnsuccessfully] Task ID: ${taskID}`);
+  });
+  tasksManager.on("TaskReceivedResults", (taskID) => {
+    console.log(`[TaskReceivedResults] Task ID: ${taskID}`);
+  });
+  tasksManager.on("TaskDeleted", (taskID) => {
+    console.log(`[TaskDeleted] Task ID: ${taskID}`);
   });
   tasksManager.on("PaymentCompleted", (taskID) => {
     console.log(`[PaymentCompleted] Task ID: ${taskID}`);
