@@ -1,13 +1,13 @@
 import { ethers } from "hardhat";
-
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xaddress";
+import { abi, address } from "../../deployments/sepolia/TasksManager.json";
 
 export default async function listen() {
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  const tasksManager = await tasksManagerContract.attach(CONTRACT_ADDRESS);
-  console.log(
-    `Listening on events of TasksManager contract... ${CONTRACT_ADDRESS}`
+  const tasksManager = new ethers.Contract(
+    address,
+    abi,
+    ethers.provider.getSigner()
   );
+  console.log(`Listening on events of TasksManager contract... ${address}`);
 
   tasksManager.on("TaskCreated", (taskID) => {
     console.log(`[TaskCreated] Task ID: ${taskID}`);
