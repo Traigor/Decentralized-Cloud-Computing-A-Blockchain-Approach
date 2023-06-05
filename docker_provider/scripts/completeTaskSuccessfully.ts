@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { abi, address } from "../TasksManager.json";
+import { splitFields } from "../splitFields";
 
 export async function completeTaskSuccessfully() {
-  // const tasksManager = await ethers.getContract("TasksManager");
   const tasksManager = new ethers.Contract(
     address,
     abi,
@@ -10,18 +10,8 @@ export async function completeTaskSuccessfully() {
   );
   const taskID =
     "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
-  const verification = "Helloworld!";
-  const duration = 60;
-  const time = Math.floor(Date.now() / 1000);
+  const { verification, duration, time } = splitFields();
   await tasksManager.completeTask(taskID, verification, duration, time);
-  const taskState = await tasksManager.getTaskState(taskID);
-  const paymentState = await tasksManager.getPaymentState(taskID);
-  const payment = await tasksManager.getPayment(taskID);
-  console.log("----------------------------------------------------");
-  console.log(
-    `Task completed!\n Task ID: ${taskID}\n State: ${taskState}\n PaymentState: ${paymentState}\n Payment: ${payment}`
-  );
-  console.log("----------------------------------------------------");
 }
 
 completeTaskSuccessfully().catch((error) => {

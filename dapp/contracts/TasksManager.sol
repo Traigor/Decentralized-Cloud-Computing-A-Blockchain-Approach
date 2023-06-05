@@ -291,6 +291,7 @@ contract TasksManager {
         return (tasks[_taskID].timeResultProvided <= tasks[_taskID].activationTime + tasks[_taskID].deadline) && (tasks[_taskID].duration <= tasks[_taskID].deadline);  
     }
 
+    //TODO add time to send the results
     function ProviderTime(bytes32 _taskID) private view returns (bool) {
         return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 60) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].timeResultProvided) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].activationTime) && (tasks[_taskID].timeResultProvided >= tasks[_taskID].activationTime); //gives 60 sec to provider to send the results, time received must be greater than time provided
     }

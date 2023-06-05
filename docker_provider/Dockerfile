@@ -1,37 +1,33 @@
-# FROM node:16-alpine
 
-# COPY . .
 
-# RUN yarn &&\
-#  chmod -R 777 run.sh &&\
-#  yarn hardhat run scripts/getPerformance.ts  > performance.txt 
+#Java
+FROM openjdk:18-ea-jdk as build1
 
-# CMD ["cat", "performance.txt"]
+WORKDIR /app 
+# copy all the files to the container
+COPY Java . 
 
-# #Java
-# FROM openjdk:18-ea-jdk as build1
+RUN java Main > output.txt 
 
-# WORKDIR /app
-# # copy all the files to the container
-# COPY Java .
+# Node
+FROM node:16-alpine AS build2 
 
-# RUN java Main > output.txt
-
-#Node
-FROM node:16-alpine AS build2
-
-WORKDIR /app
-COPY . .
+WORKDIR /app 
+COPY --from=build1 /app/output.txt . 
+COPY scripts scripts/.
+COPY hardhat.config.ts .
+COPY package.json .
+COPY yarn.lock .
+COPY tsconfig.json .
+COPY splitFields.ts .
+COPY TasksManager.json .
+COPY .env .
 
 RUN yarn &&\
- yarn hardhat run scripts/completeTaskSuccessfully.ts  > performance.txt 
+ yarn hardhat run scripts/completeTaskSuccessfully.ts --network sepolia  
 
-# #Alpine
-# FROM alpine:3.14
-# COPY --from=build1 /app/output.txt .
-# COPY --from=build2 /app/performance.txt .
-# COPY cat.sh .
+#Alpine
+FROM alpine:latest
+COPY --from=build2 /app/computationResult.txt .
 
-# RUN chmod -R 777 cat.sh 
-
-# CMD ./cat.sh
+CMD cp computationResult.txt /output/computationResult.txt
