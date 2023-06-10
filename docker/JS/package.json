@@ -1,6 +1,0 @@
-{
-  "type": "module",
-  "dependencies": {
-    "ipfs-core": "^0.18.0"
-  }
-}
