@@ -10,6 +10,7 @@ import { getTask } from "./getTask";
 import { receiveResults } from "./receiveResults";
 import { deploy } from "./deploy";
 import { getResults } from "./getResults";
+import { staller } from "./staller";
 export {
   createTask,
   cancelTask,
@@ -23,4 +24,5 @@ export {
   receiveResults,
   deploy,
   getResults,
+  staller,
 };

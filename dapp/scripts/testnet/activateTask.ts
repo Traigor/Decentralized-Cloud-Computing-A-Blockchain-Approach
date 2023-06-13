@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
 import { abi, address } from "../../deployments/sepolia/TasksManager.json";
+import { staller } from "../staller";
+
+const maxRetries = 5;
+let retries = 0;
 
 export async function activateTask() {
   const [deployer, client, provider] = await ethers.getSigners();
@@ -19,18 +23,36 @@ export async function activateTask() {
   const value = ethers.utils.parseEther(
     (providerCollateral / wei).toFixed(18).toString()
   );
-  await tasksManager.activateTask(taskID, { value: value });
+  await tasksManager.activateTask(taskID, {
+    value: value,
+  });
 
-  const taskState = await tasksManager.getTaskState(taskID);
-  const activationTime = await tasksManager.getActivationTime(taskID);
   console.log("----------------------------------------------------");
-  console.log(
-    `Task activated!\n Task ID: ${taskID}\n State: ${taskState}\n Activation time: ${activationTime}`
-  );
+  console.log(`Task activated!`);
   console.log("----------------------------------------------------");
 }
 
-activateTask().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+async function makeRequest() {
+  try {
+    await activateTask();
+  } catch (error) {
+    if (error._isProviderError && !error.reason && retries < maxRetries) {
+      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
+      retries++;
+      console.log(
+        `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
+      );
+      staller(retryAfter);
+      await makeRequest();
+    } else if (error.reason) {
+      console.log("----------------------------------------------------");
+      console.log(error.reason);
+      console.log("----------------------------------------------------");
+    } else {
+      throw new Error(error);
+    }
+  }
+}
+makeRequest().catch((error) => {
+  if (!error._isProviderError) console.error(error);
 });

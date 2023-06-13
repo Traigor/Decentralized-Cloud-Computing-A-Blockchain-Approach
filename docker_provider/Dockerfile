@@ -19,7 +19,6 @@ COPY hardhat.config.ts .
 COPY package.json .
 COPY yarn.lock .
 COPY tsconfig.json .
-COPY splitFields.ts .
 COPY TasksManager.json .
 COPY .env .
 

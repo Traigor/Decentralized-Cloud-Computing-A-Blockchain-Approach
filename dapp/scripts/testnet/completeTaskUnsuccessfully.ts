@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
 import { abi, address } from "../../deployments/sepolia/TasksManager.json";
+import { staller } from "../staller";
+
+const maxRetries = 5;
+let retries = 0;
 
 export async function completeTaskUnsuccessfully() {
   const tasksManager = new ethers.Contract(
@@ -17,11 +21,31 @@ export async function completeTaskUnsuccessfully() {
   await tasksManager.completeTask(taskID, verification, duration, time);
 
   console.log("----------------------------------------------------");
-  console.log(`Task completed!\n Task ID: ${taskID}`);
+  console.log(`Task completed!`);
   console.log("----------------------------------------------------");
 }
 
-completeTaskUnsuccessfully().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+async function makeRequest() {
+  try {
+    await completeTaskUnsuccessfully();
+  } catch (error) {
+    if (error._isProviderError && !error.reason && retries < maxRetries) {
+      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
+      retries++;
+      console.log(
+        `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
+      );
+      staller(retryAfter);
+      await makeRequest();
+    } else if (error.reason) {
+      console.log("----------------------------------------------------");
+      console.log(error.reason);
+      console.log("----------------------------------------------------");
+    } else {
+      throw new Error(error);
+    }
+  }
+}
+makeRequest().catch((error) => {
+  if (!error._isProviderError) console.error(error);
 });

@@ -10,7 +10,7 @@ export async function getTask() {
   const taskID =
     "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
   const task = await tasksManager.getTask(taskID);
-  console.log(task);
+  // console.log(task);
   console.log("----------------------------------------------------");
   console.log(
     `TaskID: ${taskID}
