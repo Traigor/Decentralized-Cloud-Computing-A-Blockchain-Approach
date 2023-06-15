@@ -4,7 +4,9 @@ import { staller } from "../staller";
 
 const maxRetries = 5;
 let retries = 0;
-const payment = 580;
+// const payment = 580;
+const payment = 40;
+const taskID = process.env.TASK_ID;
 
 export async function completePayment(payment: number) {
   // const tasksManager = await ethers.getContract("TasksManager");
@@ -14,8 +16,6 @@ export async function completePayment(payment: number) {
     ethers.provider.getSigner()
   );
 
-  const taskID =
-    "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
   const wei = 1000000000000000000;
 
   const value = ethers.utils.parseEther((payment / wei).toFixed(18).toString());

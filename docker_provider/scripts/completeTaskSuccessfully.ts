@@ -2,8 +2,10 @@ import { ethers } from "hardhat";
 import { abi, address } from "../TasksManager.json";
 import { splitFields } from "./splitFields";
 import { staller } from "./staller";
+
 const maxRetries = 5;
 let retries = 0;
+const taskID = process.env.TASK_ID;
 
 export async function completeTaskSuccessfully() {
   const tasksManager = new ethers.Contract(
@@ -11,8 +13,6 @@ export async function completeTaskSuccessfully() {
     abi,
     ethers.provider.getSigner()
   );
-  const taskID =
-    "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
   const { verification, duration, time } = splitFields();
   await tasksManager.completeTask(taskID, verification, duration, time);
   console.log("----------------------------------------------------");

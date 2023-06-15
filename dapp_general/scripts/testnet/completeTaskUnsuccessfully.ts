@@ -4,28 +4,28 @@ import { staller } from "../staller";
 
 const maxRetries = 5;
 let retries = 0;
+const taskID = process.env.TASK_ID;
 
-export async function cancelTask() {
-  // const tasksManager = await ethers.getContract("TasksManager");
+export async function completeTaskUnsuccessfully() {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
 
-  const taskID =
-    "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
-
-  await tasksManager.cancelTask(taskID);
+  const verification = "Helloworld!!(wrong)";
+  const time = Math.floor(Date.now() / 1000);
+  const duration = 10;
+  await tasksManager.completeTask(taskID, verification, duration, time);
 
   console.log("----------------------------------------------------");
-  console.log(`Task cancelled!`);
+  console.log(`Task completed!`);
   console.log("----------------------------------------------------");
 }
 
 async function makeRequest() {
   try {
-    await cancelTask();
+    await completeTaskUnsuccessfully();
   } catch (error) {
     if (error._isProviderError && !error.reason && retries < maxRetries) {
       const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms

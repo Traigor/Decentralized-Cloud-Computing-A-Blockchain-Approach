@@ -2,12 +2,8 @@ import "@typechain/hardhat";
 import "@nomiclabs/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/config";
 
-const SEPOLIA_RPC_URL =
-  process.env.SEPOLIA_RPC_URL ||
-  "https://eth-sepolia.g.alchemy.com/v2/7Nt2dAlQCjcqLR25xvoxZMdrGeNIbqP_";
-const PRIVATE_KEY =
-  process.env.PRIVATE_KEY ||
-  "ae1596f09d555af8f7ec34c6bd246dcea63fbbb552cd9ad2b37b74e2d36d1a86";
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "sepolia",

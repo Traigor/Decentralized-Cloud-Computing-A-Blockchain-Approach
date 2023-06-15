@@ -1,28 +1,29 @@
-import { ethers } from "hardhat";
+import { ethers, deployments } from "hardhat";
 import { abi, address } from "../../deployments/sepolia/TasksManager.json";
 import { staller } from "../staller";
 
 const maxRetries = 5;
 let retries = 0;
+const taskID = process.env.TASK_ID;
 
-export async function deleteTask() {
+export async function invalidateTask() {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-  const taskID =
-    "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
-  await tasksManager.deleteTask(taskID);
+  // const tasksManager = await ethers.getContract("TasksManager");
+
+  await tasksManager.invalidateTask(taskID);
 
   console.log("----------------------------------------------------");
-  console.log(`Task Deleted: ${taskID}`);
+  console.log(`Task invalidated!`);
   console.log("----------------------------------------------------");
 }
 
 async function makeRequest() {
   try {
-    await deleteTask();
+    await invalidateTask();
   } catch (error) {
     if (error._isProviderError && !error.reason && retries < maxRetries) {
       const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms

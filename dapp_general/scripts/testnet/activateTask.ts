@@ -1,31 +1,39 @@
-import { ethers, deployments } from "hardhat";
+import { ethers } from "hardhat";
 import { abi, address } from "../../deployments/sepolia/TasksManager.json";
 import { staller } from "../staller";
 
 const maxRetries = 5;
 let retries = 0;
+const taskID = process.env.TASK_ID;
 
-export async function invalidateTask() {
+export async function activateTask() {
+  const [deployer, client, provider] = await ethers.getSigners();
+  // const tasksManager = await ethers.getContract("TasksManager");
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-  // const tasksManager = await ethers.getContract("TasksManager");
 
-  const taskID =
-    "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff";
+  const wei = 1000000000000000000;
+  const price = 30;
+  const providerCollateral = price * 10;
 
-  await tasksManager.invalidateTask(taskID);
+  const value = ethers.utils.parseEther(
+    (providerCollateral / wei).toFixed(18).toString()
+  );
+  await tasksManager.activateTask(taskID, {
+    value: value,
+  });
 
   console.log("----------------------------------------------------");
-  console.log(`Task invalidated!`);
+  console.log(`Task activated!`);
   console.log("----------------------------------------------------");
 }
 
 async function makeRequest() {
   try {
-    await invalidateTask();
+    await activateTask();
   } catch (error) {
     if (error._isProviderError && !error.reason && retries < maxRetries) {
       const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
