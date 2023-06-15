@@ -8,11 +8,9 @@ import "solidity-coverage";
 import "hardhat-deploy";
 import { HardhatUserConfig } from "hardhat/config";
 
-const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || "";
-const SEPOLIA_RPC_URL =
-  process.env.SEPOLIA_RPC_URL ||
-  "https://eth-sepolia.g.alchemy.com/v2/7Nt2dAlQCjcqLR25xvoxZMdrGeNIbqP_";
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",

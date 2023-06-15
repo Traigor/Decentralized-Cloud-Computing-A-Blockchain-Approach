@@ -1,55 +1,39 @@
 import { ethers } from "hardhat";
-import { abi, address } from "../../deployments/sepolia/TasksManager.json";
-import { staller } from "../staller";
+import { abi, address } from "../TasksManager.json";
+import { splitFields } from "./splitFields";
+import { staller } from "./staller";
 
-const maxRetries = 5;
+const maxRetries = 10;
 let retries = 0;
 const taskID = process.env.TASK_ID;
 
-export async function createTask() {
+export async function completeTaskSuccessfully() {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-
-  const providerAddress = "0xB3b0E9E018bA957e29d6C883A84412972C6A7366";
-  const price = 10;
-  const deadline = 600;
-  const clientVerification =
-    "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da";
-  const wei = 1000000000000000000;
-  const clientCollateral = price * 2;
-  const value = ethers.utils.parseEther(
-    (clientCollateral / wei).toFixed(18).toString()
-  );
-  await tasksManager.createTask(
-    taskID,
-    providerAddress,
-    price,
-    deadline,
-    clientVerification,
-    "ipfsVer",
-    "ipfsComp",
-    { value: value }
-  );
-
+  const { verification, duration, time } = splitFields();
+  await tasksManager.completeTask(taskID, verification, duration, time);
   console.log("----------------------------------------------------");
-  console.log(`Task created!`);
+  console.log(`Task completed!`);
   console.log("----------------------------------------------------");
 }
 
 async function makeRequest() {
   try {
-    await createTask();
+    await completeTaskSuccessfully();
   } catch (error) {
-    if (error._isProviderError && !error.reason && retries < maxRetries) {
+    if (
+      (error._isProviderError || error.code === "NETWORK_ERROR") &&
+      retries < maxRetries
+    ) {
       const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
       retries++;
       console.log(
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
-      staller(retryAfter);
+      await staller(retryAfter);
       await makeRequest();
     } else if (error.reason) {
       console.log("----------------------------------------------------");

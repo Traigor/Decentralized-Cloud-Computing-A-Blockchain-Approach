@@ -6,34 +6,34 @@ const maxRetries = 5;
 let retries = 0;
 const taskID = process.env.TASK_ID;
 
-export async function completeTaskSuccessfully() {
+export async function receiveResults() {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
 
-  const verification = "Helloworld!";
-  const duration = 60;
-  const time = Math.floor(Date.now() / 1000);
-  await tasksManager.completeTask(taskID, verification, duration, time);
+  await tasksManager.receiveResults(taskID, "ipfsCID");
 
   console.log("----------------------------------------------------");
-  console.log(`Task completed!`);
+  console.log(`Received Results!`);
   console.log("----------------------------------------------------");
 }
 
 async function makeRequest() {
   try {
-    await completeTaskSuccessfully();
+    await receiveResults();
   } catch (error) {
-    if (error._isProviderError && !error.reason && retries < maxRetries) {
+    if (
+      (error._isProviderError || error.code === "NETWORK_ERROR") &&
+      retries < maxRetries
+    ) {
       const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
       retries++;
       console.log(
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
-      staller(retryAfter);
+      await staller(retryAfter);
       await makeRequest();
     } else if (error.reason) {
       console.log("----------------------------------------------------");
