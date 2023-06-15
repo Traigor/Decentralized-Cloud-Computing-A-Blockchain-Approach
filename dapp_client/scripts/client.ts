@@ -4,8 +4,8 @@ import {
   createTaskRequest,
   completePaymentRequest,
   getResultsRequest,
+  staller,
 } from "./sc_scripts";
-import { staller } from "./sc_scripts/staller";
 
 async function client() {
   const providerAddress = "0xB3b0E9E018bA957e29d6C883A84412972C6A7366";

@@ -4,7 +4,7 @@ import { completePaymentRequest } from "./completePayment";
 import { getPerformance } from "./getPerformance";
 import { getResultsRequest } from "./getResults";
 import { invalidateTaskRequest } from "./invalidateTask";
-
+import { staller } from "./staller";
 export {
   createTaskRequest,
   cancelTaskRequest,
@@ -12,4 +12,5 @@ export {
   getPerformance,
   getResultsRequest,
   invalidateTaskRequest,
+  staller,
 };
