@@ -4,7 +4,6 @@ import {
   createTaskRequest,
   completePaymentRequest,
   getResultsRequest,
-  staller,
 } from "./sc_scripts";
 
 async function client() {
@@ -70,8 +69,6 @@ async function client() {
     if (scTaskID.toString() === taskID) {
       console.log(`Results Received! Payment pending: ${payment}...`);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       await completePaymentRequest({ taskID, payment });
     }
   });
@@ -79,8 +76,6 @@ async function client() {
     if (scTaskID.toString() === taskID) {
       console.log(`Payment completed successfully!`);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       const results = await getResultsRequest({ taskID });
       if (results) {
         console.log(`Results: ${results}`); //add script to get from ipfs and save to file

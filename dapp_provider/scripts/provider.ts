@@ -4,7 +4,6 @@ import {
   getPerformanceRequest,
   activateTaskRequest,
   receiveResultsRequest,
-  staller,
 } from "./sc_scripts";
 import { computeTask } from "./computeTask";
 
@@ -28,8 +27,6 @@ async function provider() {
     if (scTaskID.toString() === taskID) {
       console.log(`Task created by client!`);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       await activateTaskRequest({ taskID, price });
     }
   });
@@ -50,8 +47,6 @@ async function provider() {
       console.log(`Task activated successfully!`);
       console.log("----------------------------------------------------");
       console.log(`Computing task...`);
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       await computeTask({ taskID });
       console.log("----------------------------------------------------");
     }
@@ -63,8 +58,6 @@ async function provider() {
       //add to ipfs and get cid
       //send results to smart contract
       const resultsCID = "testCID";
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       await receiveResultsRequest({ taskID, resultsCID });
     }
   });
@@ -83,22 +76,18 @@ async function provider() {
     }
   });
   tasksManager.on("ProviderUpvoted", async (provider, scTaskID) => {
-    if (scTaskID.toString() === taskID) {
+    if (scTaskID.toString() === taskID && provider === providerAddress) {
       console.log(`Congratulations! You've been upvoted!`);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       const performance = await getPerformanceRequest(provider);
       console.log(`Your performance is: ${performance}`);
       console.log("----------------------------------------------------");
     }
   });
   tasksManager.on("ProviderDownvoted", async (provider, scTaskID) => {
-    if (scTaskID.toString() === taskID) {
+    if (scTaskID.toString() === taskID && provider === providerAddress) {
       console.log(`Oops! You've been downvoted!`);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      await staller(retryAfter);
       const performance = await getPerformanceRequest(provider);
       console.log(`Your performance is: ${performance}`);
       console.log("----------------------------------------------------");
