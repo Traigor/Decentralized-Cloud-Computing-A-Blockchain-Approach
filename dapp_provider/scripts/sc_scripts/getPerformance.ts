@@ -31,7 +31,8 @@ async function makeRequest(provider: string) {
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
       await staller(retryAfter);
-      await makeRequest(provider);
+      const performance = await makeRequest(provider);
+      return performance;
     } else if (error.reason) {
       console.log("----------------------------------------------------");
       console.log(error.reason);

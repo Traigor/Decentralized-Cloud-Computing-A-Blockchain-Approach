@@ -35,7 +35,8 @@ async function makeRequest({ taskID }: TGetResults) {
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
       await staller(retryAfter);
-      await makeRequest({ taskID });
+      const results = await makeRequest({ taskID });
+      return results;
     } else if (error.reason) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
