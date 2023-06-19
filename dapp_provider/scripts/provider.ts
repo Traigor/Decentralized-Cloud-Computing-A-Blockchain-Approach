@@ -4,6 +4,7 @@ import {
   getPerformanceRequest,
   activateTaskRequest,
   receiveResultsRequest,
+  calculateScore,
 } from "./sc_scripts";
 import { computeTask } from "./computeTask";
 
@@ -82,6 +83,13 @@ async function provider() {
       const performance = await getPerformanceRequest(provider);
       console.log(`Your performance is: ${performance}`);
       console.log("----------------------------------------------------");
+      console.log("----------------------------------------------------");
+      const score = calculateScore(
+        performance.upVotes.toNumber(),
+        performance.downVotes.toNumber()
+      );
+      console.log(`Your score is: ${score}`);
+      console.log("----------------------------------------------------");
     }
   });
   tasksManager.on("ProviderDownvoted", async (provider, scTaskID) => {
@@ -90,6 +98,12 @@ async function provider() {
       console.log("----------------------------------------------------");
       const performance = await getPerformanceRequest(provider);
       console.log(`Your performance is: ${performance}`);
+      console.log("----------------------------------------------------");
+      const score = calculateScore(
+        performance.upVotes.toNumber(),
+        performance.downVotes.toNumber()
+      );
+      console.log(`Your score is: ${score}`);
       console.log("----------------------------------------------------");
     }
   });
