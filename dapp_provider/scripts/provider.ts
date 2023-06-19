@@ -83,7 +83,6 @@ async function provider() {
       const performance = await getPerformanceRequest(provider);
       console.log(`Your performance is: ${performance}`);
       console.log("----------------------------------------------------");
-      console.log("----------------------------------------------------");
       const score = calculateScore(
         performance.upVotes.toNumber(),
         performance.downVotes.toNumber()

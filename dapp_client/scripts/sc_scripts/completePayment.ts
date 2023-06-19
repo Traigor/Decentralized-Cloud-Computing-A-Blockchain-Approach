@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { abi, address } from "../../TasksManager.json";
 import { staller } from "./staller";
 
-const maxRetries = 10;
+const maxRetries = 5;
 let retries = 0;
 // const payment = 580;
 const payment = 40;
@@ -44,6 +44,11 @@ async function makeRequest({ payment, taskID }: TCompletePayment) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");
+      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
+      retries++;
+      console.log(`Retrying after ${retryAfter} ms...`);
+      await staller(retryAfter);
+      await makeRequest({ payment, taskID });
     } else {
       throw new Error(error);
     }
