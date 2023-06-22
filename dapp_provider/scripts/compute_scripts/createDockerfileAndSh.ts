@@ -1,13 +1,13 @@
 import * as fs from "fs";
 
-type TFillDockerfile = {
+type TCreateDockerfile = {
   taskID: string;
   privateKey: string;
 };
 export async function createDockerfileAndSh({
   taskID,
   privateKey,
-}: TFillDockerfile) {
+}: TCreateDockerfile) {
   //maybe download from ipfs
   const DOCKERFILE = `
   #Java

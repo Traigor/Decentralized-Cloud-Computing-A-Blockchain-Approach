@@ -4,16 +4,16 @@ type TRunSh = {
 };
 
 export async function runSh({ taskID }: TRunSh) {
-  const command = spawn(`./Task_${taskID}/computeTask.sh`);
-  command.stdout.on("data", (data) => {
+  const ipfsCommand = spawn(`./Task_${taskID}/Java/ipfs.sh`);
+  ipfsCommand.stdout.on("data", (data) => {
     // console.log(`stdout: ${data}`);
   });
 
-  command.stderr.on("data", (data) => {
+  ipfsCommand.stderr.on("data", (data) => {
     console.error(data.toString());
   });
 
-  command.on("close", (code) => {
+  ipfsCommand.on("close", (code) => {
     //   console.log(`child process exited with code ${code}`);
     if (code === 0) {
       console.log("----------------------------------------------------");
@@ -22,7 +22,30 @@ export async function runSh({ taskID }: TRunSh) {
     return;
   });
 
-  command.on("error", () => {
+  ipfsCommand.on("error", () => {
+    // console.log(`child process exited with code ${code}`);
+    return;
+  });
+
+  const computeCommand = spawn(`./Task_${taskID}/computeTask.sh`);
+  computeCommand.stdout.on("data", (data) => {
+    // console.log(`stdout: ${data}`);
+  });
+
+  computeCommand.stderr.on("data", (data) => {
+    console.error(data.toString());
+  });
+
+  computeCommand.on("close", (code) => {
+    //   console.log(`child process exited with code ${code}`);
+    if (code === 0) {
+      console.log("----------------------------------------------------");
+      return;
+    }
+    return;
+  });
+
+  computeCommand.on("error", () => {
     // console.log(`child process exited with code ${code}`);
     return;
   });

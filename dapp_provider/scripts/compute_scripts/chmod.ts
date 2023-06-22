@@ -1,19 +1,24 @@
 import { spawn } from "child_process";
+
 type TChmod = {
   taskID: string;
 };
 
 export async function chmod({ taskID }: TChmod) {
-  const command = spawn("chmod", ["-R", "777", `Task_${taskID}`]);
-  command.stdout.on("data", (data) => {
+  const ipfsCommand = spawn("chmod", [
+    "-R",
+    "777",
+    `Task_${taskID}/Java/ipfs.sh`,
+  ]);
+  ipfsCommand.stdout.on("data", (data) => {
     // console.log(`stdout: ${data}`);
   });
 
-  command.stderr.on("data", (data) => {
+  ipfsCommand.stderr.on("data", (data) => {
     console.error(data.toString());
   });
 
-  command.on("close", (code) => {
+  ipfsCommand.on("close", (code) => {
     //   console.log(`child process exited with code ${code}`);
     if (code === 0) {
       return;
@@ -21,7 +26,33 @@ export async function chmod({ taskID }: TChmod) {
     return;
   });
 
-  command.on("error", () => {
+  ipfsCommand.on("error", () => {
+    // console.log(`child process exited with code ${code}`);
+    return;
+  });
+
+  const computeCommand = spawn("chmod", [
+    "-R",
+    "777",
+    `Task_${taskID}/computeTask.sh`,
+  ]);
+  computeCommand.stdout.on("data", (data) => {
+    // console.log(`stdout: ${data}`);
+  });
+
+  computeCommand.stderr.on("data", (data) => {
+    console.error(data.toString());
+  });
+
+  computeCommand.on("close", (code) => {
+    //   console.log(`child process exited with code ${code}`);
+    if (code === 0) {
+      return;
+    }
+    return;
+  });
+
+  computeCommand.on("error", () => {
     // console.log(`child process exited with code ${code}`);
     return;
   });
