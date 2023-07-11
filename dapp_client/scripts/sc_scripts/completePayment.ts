@@ -40,7 +40,7 @@ async function makeRequest({ payment, taskID }: TCompletePayment) {
       );
       await staller(retryAfter);
       await makeRequest({ payment, taskID });
-    } else if (error.reason) {
+    } else if (error.reason && retries < maxRetries) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");

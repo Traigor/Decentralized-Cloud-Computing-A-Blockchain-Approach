@@ -33,7 +33,7 @@ async function makeRequest({ taskID, resultsCID }: TReceiveResults) {
       );
       await staller(retryAfter);
       await makeRequest({ taskID, resultsCID });
-    } else if (error.reason) {
+    } else if (error.reason && retries < maxRetries) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");

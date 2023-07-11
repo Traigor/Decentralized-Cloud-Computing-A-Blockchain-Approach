@@ -4,7 +4,7 @@ type TRunSh = {
 };
 
 export async function runSh({ taskID }: TRunSh) {
-  const ipfsCommand = spawn(`./Task_${taskID}/Java/ipfs.sh`);
+  const ipfsCommand = spawn(`./.Task_${taskID}/Java/ipfs.sh`);
   ipfsCommand.stdout.on("data", (data) => {
     // console.log(`stdout: ${data}`);
   });
@@ -27,7 +27,7 @@ export async function runSh({ taskID }: TRunSh) {
     return;
   });
 
-  const computeCommand = spawn(`./Task_${taskID}/computeTask.sh`);
+  const computeCommand = spawn(`./.Task_${taskID}/computeTask.sh`);
   computeCommand.stdout.on("data", (data) => {
     // console.log(`stdout: ${data}`);
   });

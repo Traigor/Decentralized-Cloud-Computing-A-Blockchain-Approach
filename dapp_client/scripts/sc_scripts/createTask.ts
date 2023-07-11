@@ -84,7 +84,7 @@ async function makeRequest({
         computationCode,
         verificationCode,
       });
-    } else if (error.reason) {
+    } else if (error.reason && retries < maxRetries) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");

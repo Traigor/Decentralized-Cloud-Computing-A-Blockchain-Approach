@@ -33,7 +33,7 @@ async function makeRequest({ taskID }: TInvalidateTask) {
       );
       await staller(retryAfter);
       await makeRequest({ taskID });
-    } else if (error.reason) {
+    } else if (error.reason && retries < maxRetries) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");

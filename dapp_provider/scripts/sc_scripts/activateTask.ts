@@ -42,7 +42,7 @@ async function makeRequest({ taskID, price }: TActivateTask) {
       );
       await staller(retryAfter);
       await makeRequest({ taskID, price });
-    } else if (error.reason) {
+    } else if (error.reason && retries < maxRetries) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");

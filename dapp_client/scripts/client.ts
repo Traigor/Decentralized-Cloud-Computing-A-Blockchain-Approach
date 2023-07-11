@@ -5,6 +5,7 @@ import {
   completePaymentRequest,
   getResultsRequest,
 } from "./sc_scripts";
+import { getResultsFromIpfs } from "./getResultsIpfs";
 
 async function client() {
   const providerAddress = "0xB3b0E9E018bA957e29d6C883A84412972C6A7366";
@@ -78,7 +79,9 @@ async function client() {
       console.log("----------------------------------------------------");
       const results = await getResultsRequest({ taskID });
       if (results) {
-        console.log(`Results: ${results}`); //add script to get from ipfs and save to file
+        console.log(`Results cid: ${results}`);
+        await getResultsFromIpfs({ taskID, cid: results });
+        console.log(`Results saved to file: ${taskID}.txt`);
         console.log("----------------------------------------------------");
       }
     }

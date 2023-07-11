@@ -15,7 +15,7 @@ FROM openjdk:18-ea-jdk as build1
 
 WORKDIR /app 
 # copy all the files to the container
-COPY Task_${taskID}/Java . 
+COPY .Task_${taskID}/Java . 
 
 RUN java Main > output.txt 
 
@@ -29,7 +29,7 @@ ENV TASK_ID=${taskID}
 
 COPY --from=build1 /app/output.txt . 
 COPY scripts/compute_scripts/dockerScripts scripts/.
-COPY Task_${taskID} Task_${taskID}/.
+COPY .Task_${taskID} .Task_${taskID}/.
 COPY hardhat.config.ts .
 COPY package.json .
 COPY yarn.lock .
@@ -43,16 +43,16 @@ RUN yarn &&\
 FROM alpine:latest
 COPY --from=build2 /app/computationResult.txt .
 
-CMD cp computationResult.txt /output/computationResult.txt`;
+CMD cp computationResult.txt /output/${taskID}.txt`;
 
   const COMPUTE_TASK_SH = `#!/bin/sh
-docker build --no-cache -t ${taskID} -f Task_${taskID}/Dockerfile .
-docker run --rm -v $(pwd)/Task_${taskID}/output:/output ${taskID}
-(cd $(pwd)/Task_${taskID}; rm -rf Java; rm Dockerfile; rm computeTask.sh;)`;
+docker build --no-cache -t ${taskID} -f .Task_${taskID}/Dockerfile .
+docker run --rm -v $(pwd)/.Task_${taskID}/output:/output ${taskID}
+(cd $(pwd)/.Task_${taskID}; rm -rf Java; rm Dockerfile; rm computeTask.sh;)`;
 
-  if (!fs.existsSync(`Task_${taskID}`)) {
-    fs.mkdirSync(`Task_${taskID}`);
+  if (!fs.existsSync(`.Task_${taskID}`)) {
+    fs.mkdirSync(`.Task_${taskID}`);
   }
-  fs.writeFileSync(`Task_${taskID}/Dockerfile`, DOCKERFILE);
-  fs.writeFileSync(`Task_${taskID}/computeTask.sh`, COMPUTE_TASK_SH);
+  fs.writeFileSync(`.Task_${taskID}/Dockerfile`, DOCKERFILE);
+  fs.writeFileSync(`.Task_${taskID}/computeTask.sh`, COMPUTE_TASK_SH);
 }

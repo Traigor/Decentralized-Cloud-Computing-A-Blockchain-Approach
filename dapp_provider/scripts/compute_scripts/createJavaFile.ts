@@ -17,14 +17,14 @@ export async function createJavaFile({ taskID }: TCreateJavaFile) {
 
   //TODO: change Java code and rename myFunction.class to Computation.class
   const IPFS_SH = `#!/bin/sh
-(cd Task_${taskID}/Java;
+(cd .Task_${taskID}/Java;
 ipfs cat ${computationCodeCID} > myFunction.class;
 ipfs cat ${verificationCodeCID} > Verification.class;
 ipfs cat ${mainCodeCID} > Main.class;
 ipfs cat ${timeCodeCID} > Time.class;)`;
 
-  if (!fs.existsSync(`Task_${taskID}/Java`)) {
-    fs.mkdirSync(`Task_${taskID}/Java`);
+  if (!fs.existsSync(`.Task_${taskID}/Java`)) {
+    fs.mkdirSync(`.Task_${taskID}/Java`);
   }
-  fs.writeFileSync(`Task_${taskID}/Java/ipfs.sh`, IPFS_SH);
+  fs.writeFileSync(`.Task_${taskID}/Java/ipfs.sh`, IPFS_SH);
 }

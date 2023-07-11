@@ -8,7 +8,7 @@ export async function chmod({ taskID }: TChmod) {
   const ipfsCommand = spawn("chmod", [
     "-R",
     "777",
-    `Task_${taskID}/Java/ipfs.sh`,
+    `.Task_${taskID}/Java/ipfs.sh`,
   ]);
   ipfsCommand.stdout.on("data", (data) => {
     // console.log(`stdout: ${data}`);
@@ -34,7 +34,7 @@ export async function chmod({ taskID }: TChmod) {
   const computeCommand = spawn("chmod", [
     "-R",
     "777",
-    `Task_${taskID}/computeTask.sh`,
+    `.Task_${taskID}/computeTask.sh`,
   ]);
   computeCommand.stdout.on("data", (data) => {
     // console.log(`stdout: ${data}`);

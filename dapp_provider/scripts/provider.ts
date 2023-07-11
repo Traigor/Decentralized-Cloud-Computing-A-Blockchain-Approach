@@ -6,6 +6,7 @@ import {
   receiveResultsRequest,
   calculateScore,
 } from "./sc_scripts";
+import { addResultsToIpfs } from "./compute_scripts";
 import { computeTask } from "./computeTask";
 
 async function provider() {
@@ -54,12 +55,13 @@ async function provider() {
   });
   tasksManager.on("TaskCompletedSuccessfully", async (scTaskID) => {
     if (scTaskID.toString() === taskID) {
-      console.log(`Task completed successfully! Waiting to receive results...`);
+      console.log(`Task completed successfully! Waiting to send results...`);
       console.log("----------------------------------------------------");
-      //add to ipfs and get cid
-      //send results to smart contract
-      const resultsCID = "testCID";
-      await receiveResultsRequest({ taskID, resultsCID });
+      const resultsCID = await addResultsToIpfs({ taskID });
+      if (resultsCID) {
+        console.log(`Results added to IPFS, with CID: ${resultsCID}`);
+        await receiveResultsRequest({ taskID, resultsCID });
+      }
     }
   });
 
