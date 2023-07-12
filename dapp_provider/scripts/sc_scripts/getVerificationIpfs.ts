@@ -14,8 +14,7 @@ async function getVerificationCode({ taskID }: TGetVerificationCode) {
     abi,
     ethers.provider.getSigner()
   );
-  // const verificationCode = await tasksManager.getVerificationCode(taskID);
-  const verificationCode = "QmeNSDzo6SJ4Hd7SYXzLThweobPVVfkfjnAenLj5fbNxUr"; //mock
+  const verificationCode = await tasksManager.getVerificationCode(taskID);
   return verificationCode;
 }
 

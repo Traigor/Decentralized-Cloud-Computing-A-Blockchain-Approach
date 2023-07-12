@@ -13,7 +13,8 @@ contract TasksManager {
         CompletedSuccessfully,
         CompletedUnsuccessfully,
         Invalid, 
-        ResultsReceived
+        ResultsReceivedSuccessfully,
+        ResultsReceivedUnsuccessfully
     }
 
     enum PaymentState {
@@ -38,6 +39,7 @@ contract TasksManager {
         string verificationCode;
         string results;
         bytes32 clientVerification;
+        uint lastUpdateTimestamp;
         TaskState taskState;
         PaymentState paymentState;
     }
@@ -48,6 +50,7 @@ contract TasksManager {
     }
 
     mapping (bytes32 => Task) private tasks;
+    bytes32[] public bytes32_tasks;
     mapping(address => providerRating) private performance;
 
     //Events
@@ -55,7 +58,8 @@ contract TasksManager {
     event TaskActivated(bytes32 taskID);
     event TaskCompletedSuccessfully(bytes32 taskID);
     event TaskCompletedUnsuccessfully(bytes32 taskID);
-    event TaskReceivedResults(bytes32 taskID);
+    event TaskReceivedResultsSuccessfully(bytes32 taskID);
+    event TaskReceivedResultsUnsuccessfully(bytes32 taskID);
     event TaskCancelled(bytes32 taskID);
     event TaskInvalidated(bytes32 taskID);
     event PaymentPending(bytes32 taskID, uint payment);
@@ -167,6 +171,8 @@ contract TasksManager {
         tasks[_taskID].computationCode = _computationCode;
         tasks[_taskID].taskState = TaskState.Created;
         tasks[_taskID].paymentState = PaymentState.Initialized;
+        tasks[_taskID].lastUpdateTimestamp = block.timestamp;
+        bytes32_tasks.push(_taskID);
         emit TaskCreated(_taskID);
     }
 
@@ -179,6 +185,7 @@ contract TasksManager {
     {
         tasks[_taskID].taskState = TaskState.Cancelled;
         tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral);
+        tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit TransferMadeToClient(tasks[_taskID].client,tasks[_taskID].clientCollateral);
         emit TaskCancelled(_taskID);
         // deleteTask(_taskID);
@@ -193,6 +200,7 @@ contract TasksManager {
         tasks[_taskID].taskState = TaskState.Invalid;
   
         tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
+        tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
         emit TaskInvalidated(_taskID);
         // deleteTask(_taskID);
@@ -208,6 +216,7 @@ contract TasksManager {
         tasks[_taskID].activationTime = block.timestamp;
         tasks[_taskID].providerCollateral = msg.value;
         tasks[_taskID].taskState = TaskState.Active;
+        tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit TaskActivated(_taskID);
     }
 
@@ -223,6 +232,7 @@ contract TasksManager {
         if (InTime(_taskID) && CorrectVerification(_taskID, ver)){
             tasks[_taskID].cost = tasks[_taskID].price * tasks[_taskID].duration;
             tasks[_taskID].taskState = TaskState.CompletedSuccessfully;
+            tasks[_taskID].lastUpdateTimestamp = block.timestamp;
             emit TaskCompletedSuccessfully(_taskID);
         }
         else {
@@ -231,14 +241,14 @@ contract TasksManager {
             performance[tasks[_taskID].provider].downVotes += 1;
             emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
             tasks[_taskID].taskState = TaskState.CompletedUnsuccessfully;
+            tasks[_taskID].lastUpdateTimestamp = block.timestamp;
             emit TaskCompletedUnsuccessfully(_taskID);
-            // deleteTask(_taskID);
         }
     }
 
 
     //called by provider
-    function receiveResults(bytes32 _taskID, string memory _results) public providerOnly(_taskID) inTaskState(_taskID,TaskState.CompletedSuccessfully) inPaymentState(_taskID,PaymentState.Initialized){
+    function sendResults(bytes32 _taskID, string memory _results) public providerOnly(_taskID) inTaskState(_taskID,TaskState.CompletedSuccessfully) inPaymentState(_taskID,PaymentState.Initialized){
         tasks[_taskID].timeResultReceived = block.timestamp;
         tasks[_taskID].results = _results;
         if (ProviderTime(_taskID)){
@@ -248,44 +258,74 @@ contract TasksManager {
                 tasks[_taskID].client.transfer(tasks[_taskID].cost - tasks[_taskID].clientCollateral);
                 emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].cost - tasks[_taskID].clientCollateral);
                 tasks[_taskID].paymentState = PaymentState.Completed;
+                tasks[_taskID].lastUpdateTimestamp = block.timestamp;
                 emit PaymentCompleted(_taskID);                
             }
             else {
                 tasks[_taskID].provider.transfer(tasks[_taskID].clientCollateral+tasks[_taskID].providerCollateral);
                 emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].clientCollateral+tasks[_taskID].providerCollateral);
                 tasks[_taskID].paymentState = PaymentState.Pending;
+                tasks[_taskID].lastUpdateTimestamp = block.timestamp;
                 emit PaymentPending(_taskID,tasks[_taskID].cost - tasks[_taskID].clientCollateral);
             }
+            tasks[_taskID].taskState = TaskState.ResultsReceivedSuccessfully;
+            tasks[_taskID].lastUpdateTimestamp = block.timestamp;
+            emit TaskReceivedResultsSuccessfully(_taskID);
             performance[tasks[_taskID].provider].upVotes += 1;
             emit ProviderUpvoted(tasks[_taskID].provider,_taskID);
         }
         else {
             tasks[_taskID].client.transfer(tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
             emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
+            tasks[_taskID].taskState = TaskState.ResultsReceivedUnsuccessfully;
+            tasks[_taskID].lastUpdateTimestamp = block.timestamp;
+            emit TaskReceivedResultsUnsuccessfully(_taskID);
             performance[tasks[_taskID].provider].downVotes += 1;
             emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
         }
-        tasks[_taskID].taskState = TaskState.ResultsReceived;
-        emit TaskReceivedResults(_taskID);
     }
 
 
-    function completePayment(bytes32 _taskID) public payable clientOnly(_taskID) inTaskState(_taskID,TaskState.ResultsReceived) inPaymentState(_taskID,PaymentState.Pending) requiresValue(tasks[_taskID].cost - tasks[_taskID].clientCollateral) {
+    function completePayment(bytes32 _taskID) public payable clientOnly(_taskID) inTaskState(_taskID,TaskState.ResultsReceivedSuccessfully) inPaymentState(_taskID,PaymentState.Pending) requiresValue(tasks[_taskID].cost - tasks[_taskID].clientCollateral) {
         require (tasks[_taskID].paymentState == PaymentState.Pending, "Payment not needed");
         tasks[_taskID].provider.transfer(msg.value);
         emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].cost - tasks[_taskID].clientCollateral);
         tasks[_taskID].paymentState = PaymentState.Completed;
+        tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit PaymentCompleted(_taskID);
     }
 
     //for now for specific taskID,
     //it could be for all tasks that can be deleted 
     //only by owner
-    function deleteTask(bytes32 _taskID) public ownerOnly registeredTaskOnly(_taskID) { 
+    function deleteTasks() public ownerOnly { 
+        for (uint i=0; i < bytes32_tasks.length; i++)
+        {
+            bytes32 _taskID = bytes32_tasks[i];
+            if ((tasks[_taskID].taskState == TaskState.ResultsReceivedSuccessfully && tasks[_taskID].paymentState == PaymentState.Completed 
+            || tasks[_taskID].taskState == TaskState.ResultsReceivedUnsuccessfully 
+            || tasks[_taskID].taskState == TaskState.CompletedUnsuccessfully 
+            || tasks[_taskID].taskState == TaskState.Cancelled 
+            || tasks[_taskID].taskState == TaskState.Invalid) 
+            && block.timestamp > tasks[_taskID].lastUpdateTimestamp + 60) 
+            //TO ADD time difference between lastUpdateTimestamp eg 24h instead of 1 min
+            {
+                delete(tasks[_taskID]);
+                bytes32_tasks[i] = bytes32_tasks[bytes32_tasks.length - 1];
+                bytes32_tasks.pop();
+                emit TaskDeleted(_taskID);
+            }
+        }
+    }
+    function deleteTask(bytes32 _taskID) public ownerOnly registeredTaskOnly(_taskID) {
         delete(tasks[_taskID]);
         emit TaskDeleted(_taskID);
     }
 
+    //to be deleted
+    function ActiveTasks() public view returns (uint256) {
+        return bytes32_tasks.length;
+    }
     //Functions -> Private/internal
     function InTime(bytes32 _taskID) private view returns (bool){
         return (tasks[_taskID].timeResultProvided <= tasks[_taskID].activationTime + tasks[_taskID].deadline) && (tasks[_taskID].duration <= tasks[_taskID].deadline);  
@@ -293,7 +333,7 @@ contract TasksManager {
 
     //TODO add time to send the results
     function ProviderTime(bytes32 _taskID) private view returns (bool) {
-        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 60) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].timeResultProvided) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].activationTime) && (tasks[_taskID].timeResultProvided >= tasks[_taskID].activationTime); //gives 60 sec to provider to send the results, time received must be greater than time provided
+        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 600) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].timeResultProvided) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].activationTime) && (tasks[_taskID].timeResultProvided >= tasks[_taskID].activationTime); //gives 600 sec to provider to send the results, time received must be greater than time provided
     }
 
     function CorrectVerification(bytes32 _taskID, string memory ver) private view returns (bool){
@@ -309,13 +349,26 @@ contract TasksManager {
         // tuple: upVotes, downVotes
     }
 
+    function getComputationCode(bytes32 _taskID) public view returns (string memory) {
+        return tasks[_taskID].computationCode;
+    }
+
+    function getVerificationCode(bytes32 _taskID) public view returns (string memory) {
+        return tasks[_taskID].verificationCode;
+    }
+
     //Getters - some to be deleted
     function getActivationTime(bytes32 _taskID) public view returns (uint)
     {
         return tasks[_taskID].activationTime;
     }
 
-    function getResults(bytes32 _taskID) public clientOnly(_taskID) inTaskState(_taskID,TaskState.ResultsReceived) inPaymentState(_taskID,PaymentState.Completed) view returns (string memory)  {
+    function getLastUpdateTimestamp(bytes32 _taskID) public view returns (uint)
+    {
+        return tasks[_taskID].lastUpdateTimestamp;
+    }
+
+    function getResults(bytes32 _taskID) public clientOnly(_taskID) inTaskState(_taskID,TaskState.ResultsReceivedSuccessfully) inPaymentState(_taskID,PaymentState.Completed) view returns (string memory)  {
         return tasks[_taskID].results;
     }
 
@@ -334,8 +387,10 @@ contract TasksManager {
             ret = "CompletedUnsuccessfully";  
         else if (tasks[_taskID].taskState == TaskState.Invalid)
             ret = "Invalid";  
-        else if (tasks[_taskID].taskState == TaskState.ResultsReceived)
-            ret = "ResultsReceived";
+        else if (tasks[_taskID].taskState == TaskState.ResultsReceivedSuccessfully)
+            ret = "ResultsReceivedSuccessfully";
+        else if (tasks[_taskID].taskState == TaskState.ResultsReceivedUnsuccessfully)
+            ret = "ResultsReceivedUnsuccessfully";
         else 
             ret = "Error";
         return ret; 

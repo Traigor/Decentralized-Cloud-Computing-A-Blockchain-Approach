@@ -6,6 +6,10 @@ import {
   getResultsRequest,
 } from "./sc_scripts";
 import { getResultsFromIpfs } from "./getResultsIpfs";
+import {
+  addComputationCodeToIpfs,
+  addVerificationCodeToIpfs,
+} from "./addToIpfs";
 
 async function client() {
   const providerAddress = "0xB3b0E9E018bA957e29d6C883A84412972C6A7366";
@@ -15,8 +19,6 @@ async function client() {
     "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da";
   const taskID =
     "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff"; //add script to take all parameters from auction contract with event
-  const computationCode = "QmUK5WdC1ama7sEksFvFrjyUzLFv5S8SLwSNHFXHxtMTtT"; //add script to add to ipfs and get cid
-  const verificationCode = "QmeNSDzo6SJ4Hd7SYXzLThweobPVVfkfjnAenLj5fbNxUr"; //add script to add to ipfs and get cid
 
   const tasksManager = new ethers.Contract(
     address,
@@ -25,6 +27,14 @@ async function client() {
   );
 
   console.log(`Running client's app...`);
+  console.log("----------------------------------------------------");
+
+  const computationCode = await addComputationCodeToIpfs();
+  console.log(`Computation code added to IPFS with CID: ${computationCode}`);
+
+  const verificationCode = await addVerificationCodeToIpfs();
+  console.log(`Verification code added to IPFS with CID: ${verificationCode}`);
+
   console.log("----------------------------------------------------");
 
   await createTaskRequest({

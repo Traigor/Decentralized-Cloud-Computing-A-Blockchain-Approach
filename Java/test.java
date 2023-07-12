@@ -1,21 +1,25 @@
+import java.util.Random;
+
 class Verification{
-  private String ver_string = "Hello world";
+  private String ver_string = "Helloworld!";
+
   public String getVerification()
   {
     return ver_string;
   }
 }
 
-class myFunction
+class Computation
 {
-  public long getFunction()
+  public long getComputation()
   {
     long k=0;
-    for (int i = 0; i < 10000; i++)
+    Random rand = new Random();
+    for (int i = 1; i < System.currentTimeMillis()/100000000; i++)
     {
-      for (int j = 0; j < 10000; j++)
+      for (int j = 1; j < System.currentTimeMillis()/100000000; j++)
       {
-        k = i + j;
+        k = rand.nextInt(i+j);
       }
     }
     return k;
@@ -50,9 +54,9 @@ class Main {
     Time T = new Time();
     T.start();
     Verification V = new Verification();
-    myFunction F = new myFunction();
+    Computation F = new Computation();
     String ver = V.getVerification();
-    String res = String.valueOf(F.getFunction());
+    String res = String.valueOf(F.getComputation());
     T.end();
     System.out.print(res+ " ----- " +ver + " ----- " + T.getExecutionTime() + " ----- " + T.getEndTime()+"\n");
   }

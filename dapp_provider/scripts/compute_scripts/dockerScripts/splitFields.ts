@@ -1,7 +1,6 @@
 import * as fs from "fs";
 const SEPERATOR = " ----- ";
 export const splitFields = (): {
-  // computation: string;
   verification: string;
   duration: number;
   time: number;

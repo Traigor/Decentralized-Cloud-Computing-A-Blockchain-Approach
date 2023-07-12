@@ -38,8 +38,11 @@ export default async function listen() {
   tasksManager.on("TaskCompletedUnsuccessfully", (taskID) => {
     console.log(`[TaskCompletedUnsuccessfully] Task ID: ${taskID}`);
   });
-  tasksManager.on("TaskReceivedResults", (taskID) => {
-    console.log(`[TaskReceivedResults] Task ID: ${taskID}`);
+  tasksManager.on("TaskReceivedResultsSuccessfully", (taskID) => {
+    console.log(`[TaskReceivedResultsSuccessfully] Task ID: ${taskID}`);
+  });
+  tasksManager.on("TaskReceivedResultsUnsuccessfully", (taskID) => {
+    console.log(`[TaskReceivedResultsUnsuccessfully] Task ID: ${taskID}`);
   });
   tasksManager.on("TaskDeleted", (taskID) => {
     console.log(`[TaskDeleted] Task ID: ${taskID}`);

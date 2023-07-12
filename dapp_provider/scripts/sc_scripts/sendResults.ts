@@ -4,23 +4,23 @@ import { staller } from "./staller";
 
 const maxRetries = 5;
 let retries = 0;
-type TReceiveResults = {
+type TSendResults = {
   taskID: string;
   resultsCID: string;
 };
-async function receiveResults({ taskID, resultsCID }: TReceiveResults) {
+async function sendResults({ taskID, resultsCID }: TSendResults) {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
 
-  await tasksManager.receiveResults(taskID, resultsCID);
+  await tasksManager.sendResults(taskID, resultsCID);
 }
 
-async function makeRequest({ taskID, resultsCID }: TReceiveResults) {
+async function makeRequest({ taskID, resultsCID }: TSendResults) {
   try {
-    await receiveResults({ taskID, resultsCID });
+    await sendResults({ taskID, resultsCID });
   } catch (error) {
     if (
       (error._isProviderError || error.code === "NETWORK_ERROR") &&
@@ -48,10 +48,7 @@ async function makeRequest({ taskID, resultsCID }: TReceiveResults) {
   }
 }
 
-export async function receiveResultsRequest({
-  taskID,
-  resultsCID,
-}: TReceiveResults) {
+export async function sendResultsRequest({ taskID, resultsCID }: TSendResults) {
   makeRequest({ taskID, resultsCID }).catch((error) => {
     if (!error._isProviderError) console.error(error);
   });

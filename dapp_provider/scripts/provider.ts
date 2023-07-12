@@ -3,7 +3,7 @@ import { abi, address } from "../TasksManager.json";
 import {
   getPerformanceRequest,
   activateTaskRequest,
-  receiveResultsRequest,
+  sendResultsRequest,
   calculateScore,
 } from "./sc_scripts";
 import { addResultsToIpfs } from "./compute_scripts";
@@ -60,7 +60,7 @@ async function provider() {
       const resultsCID = await addResultsToIpfs({ taskID });
       if (resultsCID) {
         console.log(`Results added to IPFS, with CID: ${resultsCID}`);
-        await receiveResultsRequest({ taskID, resultsCID });
+        await sendResultsRequest({ taskID, resultsCID });
       }
     }
   });
@@ -72,9 +72,15 @@ async function provider() {
     }
   });
 
-  tasksManager.on("TaskReceivedResults", (scTaskID) => {
+  tasksManager.on("TaskReceivedResultsSuccessfully", (scTaskID) => {
     if (scTaskID.toString() === taskID) {
       console.log(`Results received successfully!`);
+      console.log("----------------------------------------------------");
+    }
+  });
+  tasksManager.on("TaskReceivedResultsUnsuccessfully", (scTaskID) => {
+    if (scTaskID.toString() === taskID) {
+      console.log(`Results received unsuccessfully!`);
       console.log("----------------------------------------------------");
     }
   });

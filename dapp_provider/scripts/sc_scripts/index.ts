@@ -1,6 +1,6 @@
 import { getPerformanceRequest } from "./getPerformance";
 import { activateTaskRequest } from "./activateTask";
-import { receiveResultsRequest } from "./receiveResults";
+import { sendResultsRequest } from "./sendResults";
 import { staller } from "./staller";
 import { calculateScore } from "./calculateScore";
 import { getComputationCodeRequest } from "./getComputationIpfs";
@@ -8,7 +8,7 @@ import { getVerificationCodeRequest } from "./getVerificationIpfs";
 export {
   getPerformanceRequest,
   activateTaskRequest,
-  receiveResultsRequest,
+  sendResultsRequest,
   staller,
   calculateScore,
   getComputationCodeRequest,

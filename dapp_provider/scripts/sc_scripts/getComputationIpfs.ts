@@ -14,8 +14,7 @@ async function getComputationCode({ taskID }: TGetComputationCode) {
     abi,
     ethers.provider.getSigner()
   );
-  // const computationCode = await tasksManager.getComputationCode(taskID);
-  const computationCode = "QmUK5WdC1ama7sEksFvFrjyUzLFv5S8SLwSNHFXHxtMTtT"; //mock
+  const computationCode = await tasksManager.getComputationCode(taskID);
   return computationCode;
 }
 

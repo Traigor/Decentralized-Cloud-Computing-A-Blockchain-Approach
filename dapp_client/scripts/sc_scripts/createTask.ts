@@ -39,8 +39,8 @@ async function createTask({
     price,
     deadline,
     clientVerification,
-    computationCode,
     verificationCode,
+    computationCode,
     { value: value }
   );
 }
