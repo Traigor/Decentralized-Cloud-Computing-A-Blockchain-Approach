@@ -15,11 +15,13 @@ class Computation
   {
     long k=0;
     Random rand = new Random();
-    for (int i = 1; i < System.currentTimeMillis()/100000000; i++)
+    long n = rand.nextLong(System.currentTimeMillis()/1000000);
+    long m = rand.nextLong(System.currentTimeMillis()/1000000);
+    for (long i = 1; i < n; i++)
     {
-      for (int j = 1; j < System.currentTimeMillis()/100000000; j++)
+      for (int j = 1; j < m; j++)
       {
-        k = rand.nextInt(i+j);
+        k = n+m;
       }
     }
     return k;

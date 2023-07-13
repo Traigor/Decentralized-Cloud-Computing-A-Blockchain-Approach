@@ -1,3 +1,4 @@
+import { ethers } from "hardhat";
 import {
   createTask,
   completeTaskSuccessfully,
@@ -5,7 +6,7 @@ import {
   completePayment,
   getResults,
 } from "../index";
-import { receiveResults } from "../receiveResults";
+import { sendResults } from "../sendResults";
 
 //scenario of a completed successful task
 export async function completedSuccessfully() {
@@ -14,7 +15,7 @@ export async function completedSuccessfully() {
   const address = await createTask(taskID);
   await activateTask(address, taskID);
   const payment = await completeTaskSuccessfully(address, taskID);
-  await receiveResults(address, taskID);
+  await sendResults(address, taskID);
   await completePayment(address, payment, taskID);
   await getResults(address, taskID);
 }

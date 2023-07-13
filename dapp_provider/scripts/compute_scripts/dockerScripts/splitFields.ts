@@ -16,7 +16,6 @@ export const splitFields = (): {
 
   fs.writeFileSync("computationResult.txt", computation);
   return {
-    // computation,
     verification,
     duration,
     time,

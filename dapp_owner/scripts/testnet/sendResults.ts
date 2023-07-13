@@ -6,14 +6,14 @@ const maxRetries = 5;
 let retries = 0;
 const taskID = process.env.TASK_ID;
 
-export async function receiveResults() {
+export async function sendResults() {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
 
-  await tasksManager.receiveResults(taskID, "ipfsCID");
+  await tasksManager.sendResults(taskID, "ipfsCID");
 
   console.log("----------------------------------------------------");
   console.log(`Received Results!`);
@@ -22,7 +22,7 @@ export async function receiveResults() {
 
 async function makeRequest() {
   try {
-    await receiveResults();
+    await sendResults();
   } catch (error) {
     if (
       (error._isProviderError || error.code === "NETWORK_ERROR") &&

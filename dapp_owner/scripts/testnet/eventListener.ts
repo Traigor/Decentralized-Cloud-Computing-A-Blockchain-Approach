@@ -10,16 +10,16 @@ export default async function listen() {
   console.log(`Listening on events of TasksManager contract... ${address}`);
 
   tasksManager.on("TaskCreated", (taskID) => {
-    console.log(`[TaskCreated] Task ID: ${taskID}`);
+    console.log(`[TaskCreated] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskCancelled", (taskID) => {
-    console.log(`[TaskCancelled] Task ID: ${taskID}`);
+    console.log(`[TaskCancelled] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskActivated", (taskID) => {
-    console.log(`[TaskActivated] Task ID: ${taskID}`);
+    console.log(`[TaskActivated] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskInvalidated", (taskID) => {
-    console.log(`[TaskInvalidated] Task ID: ${taskID}`);
+    console.log(`[TaskInvalidated] TaskID: ${taskID}`);
   });
   tasksManager.on("TransferMadeToClient", (Address, Amount) => {
     console.log(`[TransferMadeToClient] Address: ${Address} Amount: ${Amount}`);
@@ -30,25 +30,25 @@ export default async function listen() {
     );
   });
   tasksManager.on("PaymentPending", (taskID, payment) => {
-    console.log(`[PaymentPending] Task ID: ${taskID} Payment: ${payment}`);
+    console.log(`[PaymentPending] TaskID: ${taskID} Payment: ${payment}`);
   });
   tasksManager.on("TaskCompletedSuccessfully", (taskID) => {
-    console.log(`[TaskCompletedSuccessfully] Task ID: ${taskID}`);
+    console.log(`[TaskCompletedSuccessfully] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskCompletedUnsuccessfully", (taskID) => {
-    console.log(`[TaskCompletedUnsuccessfully] Task ID: ${taskID}`);
+    console.log(`[TaskCompletedUnsuccessfully] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskReceivedResultsSuccessfully", (taskID) => {
-    console.log(`[TaskReceivedResultsSuccessfully] Task ID: ${taskID}`);
+    console.log(`[TaskReceivedResultsSuccessfully] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskReceivedResultsUnsuccessfully", (taskID) => {
-    console.log(`[TaskReceivedResultsUnsuccessfully] Task ID: ${taskID}`);
+    console.log(`[TaskReceivedResultsUnsuccessfully] TaskID: ${taskID}`);
   });
   tasksManager.on("TaskDeleted", (taskID) => {
-    console.log(`[TaskDeleted] Task ID: ${taskID}`);
+    console.log(`[TaskDeleted] TaskID: ${taskID}`);
   });
   tasksManager.on("PaymentCompleted", (taskID) => {
-    console.log(`[PaymentCompleted] Task ID: ${taskID}`);
+    console.log(`[PaymentCompleted] TaskID: ${taskID}`);
   });
   tasksManager.on("ProviderUpvoted", (provider, task) => {
     console.log(`[ProviderUpvoted] Provider: ${provider} TaskID: ${task}`);

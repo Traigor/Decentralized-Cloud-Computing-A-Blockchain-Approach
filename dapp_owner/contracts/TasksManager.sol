@@ -295,13 +295,11 @@ contract TasksManager {
         emit PaymentCompleted(_taskID);
     }
 
-    //for now for specific taskID,
-    //it could be for all tasks that can be deleted 
-    //only by owner
+    //add time difference between lastUpdateTimestamp and now
     function deleteTasks() public ownerOnly { 
-        for (uint i=0; i < bytes32_tasks.length; i++)
+        for (uint i = bytes32_tasks.length; i > 0; i--)
         {
-            bytes32 _taskID = bytes32_tasks[i];
+            bytes32 _taskID = bytes32_tasks[i-1];
             if ((tasks[_taskID].taskState == TaskState.ResultsReceivedSuccessfully && tasks[_taskID].paymentState == PaymentState.Completed 
             || tasks[_taskID].taskState == TaskState.ResultsReceivedUnsuccessfully 
             || tasks[_taskID].taskState == TaskState.CompletedUnsuccessfully 
@@ -311,19 +309,32 @@ contract TasksManager {
             //TO ADD time difference between lastUpdateTimestamp eg 24h instead of 1 min
             {
                 delete(tasks[_taskID]);
-                bytes32_tasks[i] = bytes32_tasks[bytes32_tasks.length - 1];
+                bytes32_tasks[i-1] = bytes32_tasks[bytes32_tasks.length - 1];
                 bytes32_tasks.pop();
                 emit TaskDeleted(_taskID);
             }
         }
     }
+
     function deleteTask(bytes32 _taskID) public ownerOnly registeredTaskOnly(_taskID) {
         delete(tasks[_taskID]);
+        for (uint i=0; i < bytes32_tasks.length; i++)
+        {
+            if (bytes32_tasks[i] == _taskID)
+            {
+                bytes32_tasks[i] = bytes32_tasks[bytes32_tasks.length - 1];
+                bytes32_tasks.pop();
+                break;
+            }
+        }
         emit TaskDeleted(_taskID);
     }
 
-    //to be deleted
-    function ActiveTasks() public view returns (uint256) {
+    function getTasks() public view ownerOnly returns (bytes32[] memory) {
+        return bytes32_tasks;
+    }
+
+    function getActiveTasks() ownerOnly public view returns (uint256) {
         return bytes32_tasks.length;
     }
     //Functions -> Private/internal
@@ -331,9 +342,8 @@ contract TasksManager {
         return (tasks[_taskID].timeResultProvided <= tasks[_taskID].activationTime + tasks[_taskID].deadline) && (tasks[_taskID].duration <= tasks[_taskID].deadline);  
     }
 
-    //TODO add time to send the results
     function ProviderTime(bytes32 _taskID) private view returns (bool) {
-        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 600) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].timeResultProvided) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].activationTime) && (tasks[_taskID].timeResultProvided >= tasks[_taskID].activationTime); //gives 600 sec to provider to send the results, time received must be greater than time provided
+        return (tasks[_taskID].timeResultReceived <= tasks[_taskID].timeResultProvided + 600) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].timeResultProvided) && (tasks[_taskID].timeResultReceived >= tasks[_taskID].activationTime + tasks[_taskID].duration) && (tasks[_taskID].timeResultProvided >= tasks[_taskID].activationTime + tasks[_taskID].duration); //gives 600 sec to provider to send the results, time received must be greater than time provided
     }
 
     function CorrectVerification(bytes32 _taskID, string memory ver) private view returns (bool){

@@ -7,10 +7,11 @@ import { cancelTask } from "./cancelTask";
 import { invalidateTask } from "./invalidateTask";
 import { getPerformance } from "./getPerformance";
 import { getTask } from "./getTask";
-import { receiveResults } from "./receiveResults";
+import { sendResults } from "./sendResults";
 import { deploy } from "./deploy";
 import { getResults } from "./getResults";
 import { staller } from "./staller";
+import { deleteTasks } from "./deleteTasks";
 export {
   createTask,
   cancelTask,
@@ -21,8 +22,9 @@ export {
   completePayment,
   getPerformance,
   getTask,
-  receiveResults,
+  sendResults,
   deploy,
   getResults,
   staller,
+  deleteTasks,
 };

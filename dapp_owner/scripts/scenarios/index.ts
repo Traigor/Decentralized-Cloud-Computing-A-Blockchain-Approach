@@ -2,7 +2,7 @@ import { completedSuccessfully } from "./01-scenario";
 import { completedUnsuccessfully } from "./02-scenario";
 import { cancel } from "./03-scenario";
 import { invalidate } from "./04-scenario";
-import { getPerformance, deploy } from "../index";
+import { getPerformance, deploy, deleteTasks } from "../index";
 
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xaddress";
 const PROVIDER_ADDRESS = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
@@ -25,6 +25,10 @@ export async function main() {
   await invalidate();
   console.log("----------------------------------------------------");
   await getPerformance(CONTRACT_ADDRESS, PROVIDER_ADDRESS);
+  console.log("----------------------------------------------------");
+  console.log("All scenarios completed successfully");
+  console.log("----------------------------------------------------");
+  await deleteTasks(CONTRACT_ADDRESS);
   return true;
 }
 
