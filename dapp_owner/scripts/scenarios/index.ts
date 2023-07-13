@@ -32,7 +32,8 @@ export async function main() {
   return true;
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+// commented out to avoid running the script when running tests for gas estimation
+// main().catch((error) => {
+//   console.error(error);
+//   process.exitCode = 1;
+// });

@@ -330,10 +330,6 @@ contract TasksManager {
         emit TaskDeleted(_taskID);
     }
 
-    function getTasks() public view ownerOnly returns (bytes32[] memory) {
-        return bytes32_tasks;
-    }
-
     function getActiveTasks() ownerOnly public view returns (uint256) {
         return bytes32_tasks.length;
     }
