@@ -1,11 +1,15 @@
-import { createDockerfileAndSh } from "./createDockerfileAndSh";
+import { createDockerfileAndShMumbai } from "./createDockerfileAndShMumbai";
+import { createDockerfileAndShSepolia } from "./createDockerfileAndShSepolia";
 import { chmod } from "./chmod";
 import { runSh } from "./runSh";
-import { createJavaFile } from "./createJavaFile";
+import { createJavaFileSepolia } from "./createJavaFileSepolia";
+import { createJavaFileMumbai } from "./createJavaFileMumbai";
 import { addResultsToIpfs } from "./addResultsToIPFS";
 export {
-  createDockerfileAndSh,
-  createJavaFile,
+  createDockerfileAndShMumbai,
+  createDockerfileAndShSepolia,
+  createJavaFileSepolia,
+  createJavaFileMumbai,
   chmod,
   runSh,
   addResultsToIpfs,

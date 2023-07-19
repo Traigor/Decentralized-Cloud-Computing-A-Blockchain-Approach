@@ -11,8 +11,14 @@ typechain
 cache
 artifacts
 gas-report.txt
+gas-report-all.txt
+gas-report-matic-scenarios.txt
+gas-report-matic-tests.txt
+gas-report-scenarios.txt
+gas-report-tests.txt
+gas-report-tests-gasTest.txt
+
 typechain-types
-gas-report.txt 
 
 #Task of provider
 .Task_0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff

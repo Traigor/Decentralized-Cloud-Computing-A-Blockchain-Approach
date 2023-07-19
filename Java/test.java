@@ -16,7 +16,7 @@ class Computation
     long k=0;
     Random rand = new Random();
     long n = rand.nextLong(System.currentTimeMillis()/1000000);
-    long m = rand.nextLong(System.currentTimeMillis()/1000000);
+    long m = rand.nextLong(System.currentTimeMillis()/10000000);
     for (long i = 1; i < n; i++)
     {
       for (int j = 1; j < m; j++)

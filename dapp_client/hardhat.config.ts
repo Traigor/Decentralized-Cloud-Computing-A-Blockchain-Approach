@@ -6,6 +6,7 @@ dotEnvConfig();
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "sepolia",
@@ -17,6 +18,11 @@ const config: HardhatUserConfig = {
       url: SEPOLIA_RPC_URL,
       accounts: [PRIVATE_KEY],
       chainId: 11155111,
+    },
+    mumbai: {
+      url: MUMBAI_RPC_URL,
+      accounts: [PRIVATE_KEY],
+      chainId: 80001,
     },
   },
   solidity: {
