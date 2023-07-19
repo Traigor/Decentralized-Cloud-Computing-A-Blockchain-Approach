@@ -9,7 +9,7 @@ import { addResultsToIpfs } from "./compute_scripts";
 import { computeTaskSepolia } from "./computeTaskSepolia";
 import { calculateScore } from "./calculateScore";
 
-async function provider() {
+export async function providerSepolia() {
   const taskID =
     "0xfaa50a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4ff"; //add script to take all parameters from auction contract with event
 
@@ -116,7 +116,7 @@ async function provider() {
   });
 }
 
-provider().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+// providerSepolia().catch((error) => {
+//   console.error(error);
+//   process.exitCode = 1;
+// });

@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { abi, address } from "../../../TasksManagerMumbai.json";
 import { staller } from "../staller";
 
-const maxRetries = 10;
+const maxRetries = 5;
 let retries = 0;
 
 type TGetComputationCode = {
@@ -27,7 +27,7 @@ async function makeRequest({ taskID }: TGetComputationCode) {
       (error._isProviderError || error.code === "NETWORK_ERROR") &&
       retries < maxRetries
     ) {
-      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 1000ms and 1250ms
+      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 2000ms and 2250ms
       retries++;
       console.log(
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
@@ -39,7 +39,7 @@ async function makeRequest({ taskID }: TGetComputationCode) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 1000ms and 1250ms
+      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 2000ms and 2250ms
       retries++;
       console.log(`Retrying after ${retryAfter} ms...`);
       await staller(retryAfter);

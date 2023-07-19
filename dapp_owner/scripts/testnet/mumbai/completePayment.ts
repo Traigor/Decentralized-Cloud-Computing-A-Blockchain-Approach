@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { abi, address } from "../../../deployments/mumbai/TasksManager.json";
 import { staller } from "../../staller";
 
-const maxRetries = 10;
+const maxRetries = 5;
 let retries = 0;
 // const payment = 580;
 const payment = 40;

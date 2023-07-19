@@ -44,11 +44,11 @@ async function makeRequest({ payment, taskID }: TCompletePayment) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
-      retries++;
-      console.log(`Retrying after ${retryAfter} ms...`);
-      await staller(retryAfter);
-      await makeRequest({ payment, taskID });
+      // const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
+      // retries++;
+      // console.log(`Retrying after ${retryAfter} ms...`);
+      // await staller(retryAfter);
+      // await makeRequest({ payment, taskID });
     } else {
       throw new Error(error);
     }

@@ -11,7 +11,7 @@ import {
   addVerificationCodeToIpfs,
 } from "./addToIpfs";
 
-async function client() {
+export async function clientSepolia() {
   const providerAddress = "0xB3b0E9E018bA957e29d6C883A84412972C6A7366";
   const price = 10;
   const deadline = 600;
@@ -98,7 +98,7 @@ async function client() {
   });
 }
 
-client().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+// clientSepolia().catch((error) => {
+//   console.error(error);
+//   process.exitCode = 1;
+// });
