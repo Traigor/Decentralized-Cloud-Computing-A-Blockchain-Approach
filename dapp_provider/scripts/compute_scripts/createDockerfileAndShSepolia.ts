@@ -48,8 +48,8 @@ CMD cp computationResult.txt /output/${taskID}.txt`;
 
   const COMPUTE_TASK_SH = `#!/bin/sh
 docker build --no-cache -t ${taskID} -f .Task_${taskID}/Dockerfile .
-docker run --rm -v $(pwd)/.Task_${taskID}/output:/output ${taskID}`;
-  // (cd $(pwd)/.Task_${taskID}; rm -rf Java; rm Dockerfile; rm computeTask.sh;)`;
+docker run --rm -v $(pwd)/.Task_${taskID}/output:/output ${taskID}
+(cd $(pwd)/.Task_${taskID}; rm -rf Java; rm Dockerfile; rm computeTask.sh;)`;
 
   if (!fs.existsSync(`.Task_${taskID}`)) {
     fs.mkdirSync(`.Task_${taskID}`);
