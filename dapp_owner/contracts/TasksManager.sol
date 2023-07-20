@@ -5,6 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 contract TasksManager {
 
     address private immutable owner; 
+    address private auctionAddress;
 
     enum TaskState {
         Created,
@@ -76,6 +77,14 @@ contract TasksManager {
         require(
             msg.sender == owner,
             "Method can be called only by owner."
+        );
+        _;
+    }
+
+    modifier auctionOnly() {
+        require(
+            msg.sender == auctionAddress,
+            "Method can be called only by auction."
         );
         _;
     }
@@ -157,7 +166,7 @@ contract TasksManager {
         bytes32 _clientVerification,
         string memory _verificationCode,
         string memory _computationCode
-    ) public payable notRegisteredTaskOnly(_taskID)
+    ) public payable notRegisteredTaskOnly(_taskID) auctionOnly
     {
         require (msg.value >= _price * 2, "Client collateral is not enough");
         tasks[_taskID].client = payable (msg.sender);
@@ -293,6 +302,10 @@ contract TasksManager {
         tasks[_taskID].paymentState = PaymentState.Completed;
         tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit PaymentCompleted(_taskID);
+    }
+
+    function setAuctionAddress(address _auctionAddress) public ownerOnly {
+        auctionAddress = _auctionAddress;
     }
 
     //add time difference between lastUpdateTimestamp and now
@@ -435,8 +448,8 @@ contract TasksManager {
         return owner;
     }
 
-    function getTask(bytes32 _taskID) public ownerOnly view returns (Task memory) {
-        return tasks[_taskID];
+    function getAuctionAddress() public view returns (address) {
+        return auctionAddress;
     }
 
     // Fallback Function
