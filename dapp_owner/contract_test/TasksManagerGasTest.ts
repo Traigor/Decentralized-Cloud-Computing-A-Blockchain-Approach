@@ -1,12 +1,12 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers, deployments, tasks } from "hardhat";
-import { TasksManager } from "../../typechain-types";
+import { TasksManagerGasTest } from "../typechain-types";
 import { BigNumber } from "ethers";
 
-describe("TasksManager Unit Tests", function () {
-  let tasksManager: TasksManager;
-  let tasksManagerContract: TasksManager;
+describe("TasksManagerGasTest Unit Tests", function () {
+  let tasksManager: TasksManagerGasTest;
+  let tasksManagerContract: TasksManagerGasTest;
   let deployer: SignerWithAddress;
   let provider: SignerWithAddress;
   let client: SignerWithAddress;
@@ -25,8 +25,8 @@ describe("TasksManager Unit Tests", function () {
 
   beforeEach(async function () {
     [deployer, client, provider, ...otherAccounts] = await ethers.getSigners();
-    await deployments.fixture(["tasksManager"]);
-    tasksManagerContract = await ethers.getContract("TasksManager");
+    await deployments.fixture(["tasksManagerGasTest"]);
+    tasksManagerContract = await ethers.getContract("TasksManagerGasTest");
     tasksManager = tasksManagerContract.connect(deployer);
 
     taskID =
@@ -116,7 +116,7 @@ describe("TasksManager Unit Tests", function () {
     });
     it("reverts if not called by the provider", async function () {
       await expect(tasksManager.activateTask(taskID)).to.be.revertedWith(
-        "Method can be called only by provider."
+        "Error__ProviderOnly"
       );
     });
 
@@ -138,7 +138,7 @@ describe("TasksManager Unit Tests", function () {
         tasksManager.activateTask(taskID, {
           value: providerCollateralValue,
         })
-      ).to.be.revertedWith("Invalid TaskState.");
+      ).to.be.revertedWith("Error__TaskState");
     });
 
     it("activateTask is successful", async function () {
@@ -183,13 +183,13 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the provider", async function () {
       await expect(
         tasksManager.sendResults(taskID, "ipfsCID")
-      ).to.be.revertedWith("Method can be called only by provider.");
+      ).to.be.revertedWith("Error__ProviderOnly");
     });
     it("reverts if task is not in state CompletedSuccessfully", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await expect(
         tasksManager.sendResults(taskID, "ipfsCID")
-      ).to.be.revertedWith("Invalid TaskState.");
+      ).to.be.revertedWith("Error__TaskState");
     });
     it("sendResults is successful, cost is lower than clientCollateral", async function () {
       //checks task state
@@ -374,7 +374,7 @@ describe("TasksManager Unit Tests", function () {
           10,
           Math.floor(Date.now() / 1000)
         )
-      ).to.be.revertedWith("Method can be called only by provider.");
+      ).to.be.revertedWith("Error__ProviderOnly");
     });
 
     it("reverts if task is not in state Active", async function () {
@@ -386,7 +386,7 @@ describe("TasksManager Unit Tests", function () {
           10,
           Math.floor(Date.now() / 1000)
         )
-      ).to.be.revertedWith("Invalid TaskState.");
+      ).to.be.revertedWith("Error__TaskState");
     });
 
     it("completeTask is successful", async function () {
@@ -518,13 +518,13 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await expect(tasksManager.completePayment(taskID)).to.be.revertedWith(
-        "Method can be called only by client."
+        "Error__ClientOnly"
       );
     });
     it("reverts if task is not in state ResultsReceivedSuccessfully", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.completePayment(taskID)).to.be.revertedWith(
-        "Invalid TaskState."
+        "Error__TaskState"
       );
     });
     it("reverts if value sent is not the expected", async function () {
@@ -549,7 +549,7 @@ describe("TasksManager Unit Tests", function () {
         tasksManager.completePayment(taskID, {
           value: ethers.utils.parseEther("0.0000000000000004"),
         })
-      ).to.be.revertedWith("Value sent is not the expected");
+      ).to.be.revertedWith("Error__WrongValue");
     });
     it("completePayment is successful", async function () {
       //checks payment state
@@ -611,13 +611,13 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await expect(tasksManager.getResults(taskID)).to.be.revertedWith(
-        "Method can be called only by client."
+        "Error__ClientOnly"
       );
     });
     it("reverts if task is not in state ResultsReceivedSuccessfully", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.getResults(taskID)).to.be.revertedWith(
-        "Invalid TaskState."
+        "Error__TaskState"
       );
     });
     it("reverts if payment is not in state Completed", async function () {
@@ -639,7 +639,7 @@ describe("TasksManager Unit Tests", function () {
       await tasksManager.sendResults(taskID, "ipfsCID");
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.getResults(taskID)).to.be.revertedWith(
-        "Invalid PaymentState."
+        "Error__PaymentState"
       );
     });
     it("getResults is successful", async function () {
@@ -691,14 +691,14 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(deployer);
       await expect(tasksManager.invalidateTask(taskID)).to.be.revertedWith(
-        "Method can be called only by client."
+        "Error__ClientOnly"
       );
     });
 
     it("reverts if task is not in state Active", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.invalidateTask(taskID)).to.be.revertedWith(
-        "Invalid TaskState."
+        "Error__TaskState"
       );
     });
 
@@ -760,7 +760,7 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(deployer);
       await expect(tasksManager.cancelTask(taskID)).to.be.revertedWith(
-        "Method can be called only by client."
+        "Error__ClientOnly"
       );
     });
     it("reverts if task is not in state Created", async function () {
@@ -770,7 +770,7 @@ describe("TasksManager Unit Tests", function () {
       });
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.cancelTask(taskID)).to.be.revertedWith(
-        "Invalid TaskState."
+        "Error__TaskState"
       );
     });
     it("cancelTask is successful", async function () {
@@ -791,7 +791,7 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the owner", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.deleteTask(taskID)).to.be.revertedWith(
-        "Method can be called only by owner."
+        "Error__OwnerOnly"
       );
     });
     it("deleteTask is successful", async function () {
@@ -847,7 +847,7 @@ describe("TasksManager Unit Tests", function () {
     it("reverts if not called by the owner", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.deleteTasks()).to.be.revertedWith(
-        "Method can be called only by owner."
+        "Error__OwnerOnly"
       );
     });
 

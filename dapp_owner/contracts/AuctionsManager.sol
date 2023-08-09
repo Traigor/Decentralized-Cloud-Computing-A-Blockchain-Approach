@@ -3,7 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./TasksManager.sol";
 
-contract AuctionManager {
+contract AuctionsManager {
      address private immutable owner; 
      TasksManager tasksManager;
 
@@ -24,6 +24,7 @@ contract AuctionManager {
         ProviderBid[] providerBids;
         WinnerBid winnerBid;
         AuctionState auctionState;   
+        uint lastUpdateTimestamp;
     }
 
     struct ProviderBid {
@@ -38,8 +39,8 @@ contract AuctionManager {
         uint bid;
     }
 
-    mapping (bytes32 => Auction) auctions;
-    bytes32[] bytes32_auctions;
+    mapping (bytes32 => Auction) private auctions;
+    bytes32[] private bytes32_auctions;
 
     event AuctionCreated(bytes32 auctionID);
     event AuctionCancelled(bytes32 auctionID);
@@ -55,7 +56,7 @@ contract AuctionManager {
         _;
     }
 
-     modifier clientOnly(bytes32 _auctionID) {
+    modifier clientOnly(bytes32 _auctionID) {
         require(
             msg.sender == auctions[_auctionID].client,
             "Method can be called only by client."
@@ -63,7 +64,7 @@ contract AuctionManager {
         _;
     }
 
-     modifier inAuctionState(bytes32 _auctionID,AuctionState _auctionState) {
+    modifier inAuctionState(bytes32 _auctionID,AuctionState _auctionState) {
         require(
             auctions[_auctionID].auctionState == _auctionState,
             "Invalid AuctionState."
@@ -94,10 +95,15 @@ contract AuctionManager {
         tasksManager = TasksManager(_tasksManager);
     }
 
-    function createAuction(bytes32 _auctionID, uint _auctionDeadline, uint _taskDeadline,bytes32 _clientVerification,
+    function createAuction(
+        bytes32 _auctionID, 
+        uint _auctionDeadline, 
+        uint _taskDeadline,
+        bytes32 _clientVerification,
         string memory _verificationCode,
         string memory _computationCode
-        ) public notExistingAuctionOnly(_auctionID){
+    ) public notExistingAuctionOnly(_auctionID)
+        {
         auctions[_auctionID].client = msg.sender;
         auctions[_auctionID].creationTime = block.timestamp;
         auctions[_auctionID].auctionDeadline = _auctionDeadline;
@@ -107,17 +113,19 @@ contract AuctionManager {
         auctions[_auctionID].computationCode = _computationCode;
 
         auctions[_auctionID].auctionState = AuctionState.Created;
+        auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
         bytes32_auctions.push(_auctionID);
         emit AuctionCreated(_auctionID);
     }
 
-     function cancelAuction(bytes32 _auctionID) public clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) {
+    function cancelAuction(bytes32 _auctionID) public clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) {
         auctions[_auctionID].auctionState = AuctionState.Cancelled;
+        auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
         emit AuctionCancelled(_auctionID);
      }
 
-     function bid(bytes32 _auctionID, uint _bid) public  inAuctionState(_auctionID, AuctionState.Created)  existingAuctionOnly(_auctionID) {
-        //  require(msg.sender != auctions[_auctionID].client, "Client can't bid to this auction"); //commented for testing
+    function bid(bytes32 _auctionID, uint _bid) public  inAuctionState(_auctionID, AuctionState.Created)  existingAuctionOnly(_auctionID) {
+        require(msg.sender != auctions[_auctionID].client, "Client can't bid to this auction"); 
         require(
             (block.timestamp <= auctions[_auctionID].creationTime + auctions[_auctionID].auctionDeadline),
             "Time has expired."
@@ -144,18 +152,21 @@ contract AuctionManager {
         currentBid.providerUpVotes = tasksManager.getPerformance(msg.sender).upVotes;
         currentBid.providerDownVotes = tasksManager.getPerformance(msg.sender).downVotes;
         auctions[_auctionID].providerBids.push(currentBid);
+        auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
         emit BidPlaced(_auctionID, msg.sender, _bid);
      }
 
-    function finalize(bytes32 _auctionID, address payable _provider) public payable clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) returns (bytes32) {
+    function finalize(bytes32 _auctionID, address _provider) public payable clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) returns (bytes32) {
         uint providerIndex = 0;
+        if (auctions[_auctionID].providerBids.length == 0)
+            revert("Auction has no bids.");
         while(auctions[_auctionID].providerBids[providerIndex].provider != _provider)
         {
             providerIndex++;
-            if(providerIndex > auctions[_auctionID].providerBids.length)
+            if(providerIndex >= auctions[_auctionID].providerBids.length)
                 break;
         }
-        if(providerIndex > auctions[_auctionID].providerBids.length)
+        if(providerIndex >= auctions[_auctionID].providerBids.length)
          revert("Wrong provider address");
         WinnerBid memory _winnerBid;
         _winnerBid.provider = _provider;
@@ -163,11 +174,13 @@ contract AuctionManager {
         require (msg.value >= _winnerBid.bid * 2, "Client collateral is not enough");
         auctions[_auctionID].winnerBid = _winnerBid;
         Auction storage currentAuction = auctions[_auctionID];
+        auctions[_auctionID].auctionState = AuctionState.Finalized;
+        auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
         emit AuctionFinalized(_auctionID, _provider);
         bytes32 taskID = keccak256(abi.encode(currentAuction.client, _winnerBid, block.timestamp));
         uint clientCollateral = getClientCollateral(_auctionID);
-        tasksManager.createTask{value: clientCollateral}(taskID, _provider,  _winnerBid.bid, currentAuction.taskDeadline, currentAuction.clientVerification,currentAuction.verificationCode, currentAuction.computationCode);
-        return taskID; //check for reutrn, else add event TaskCreated
+        tasksManager.createTask{value: clientCollateral}(taskID, currentAuction.client, _provider,  _winnerBid.bid, currentAuction.taskDeadline, currentAuction.clientVerification,currentAuction.verificationCode, currentAuction.computationCode);
+        return taskID; //check for return, else add event TaskCreated
     }
 
     function getClientCollateral(bytes32 _auctionID) private view returns (uint) {
@@ -182,8 +195,10 @@ contract AuctionManager {
         for (uint i = bytes32_auctions.length; i > 0; i--)
         {
             bytes32 _auctionID = bytes32_auctions[i-1];
-            if (auctions[_auctionID].auctionState == AuctionState.Finalized || auctions[_auctionID].auctionState == AuctionState.Cancelled) 
-                        {
+            if ((auctions[_auctionID].auctionState == AuctionState.Finalized 
+            || auctions[_auctionID].auctionState == AuctionState.Cancelled)
+            && block.timestamp > auctions[_auctionID].lastUpdateTimestamp + 60)
+            {
                 delete(auctions[_auctionID]);
                 bytes32_auctions[i-1] = bytes32_auctions[bytes32_auctions.length - 1];
                 bytes32_auctions.pop();
@@ -206,12 +221,36 @@ contract AuctionManager {
         emit AuctionDeleted(_auctionID);
     }
 
-     function getActiveAuctions() ownerOnly public view returns (uint256) {
+    function getActiveAuctions() ownerOnly public view returns (uint256) {
         return bytes32_auctions.length;
     }
 
     function getAuctionBids(bytes32 _auctionID) public view returns(ProviderBid[] memory) {
         return auctions[_auctionID].providerBids;
     }
+
+    function getWinnerBid(bytes32 _auctionID) public view returns(WinnerBid memory) {
+        return auctions[_auctionID].winnerBid;
+    }
+
+    function getAuctionState(bytes32 _auctionID) public view returns(string memory) {
+        string memory ret = "";
+        if (auctions[_auctionID].auctionState == AuctionState.Created) 
+            ret = "Created";
+        else if (auctions[_auctionID].auctionState == AuctionState.Cancelled) 
+            ret = "Cancelled";
+        else if (auctions[_auctionID].auctionState == AuctionState.Finalized) 
+            ret = "Finalized";
+        else 
+            ret = "Error";
+        return ret;
+    }
+
+    function getOwner() public view returns(address) {
+        return owner;
+    }
     
+    function getTasksManager() public view returns(address) {
+        return address(tasksManager);
+    }
 }

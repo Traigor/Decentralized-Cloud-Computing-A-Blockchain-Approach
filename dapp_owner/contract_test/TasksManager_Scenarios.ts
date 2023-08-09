@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { main } from "../../scripts/scenarios/index";
+import { main } from "../scripts/scenarios/index";
 
 //for localhost
 //test to calculate the gas cost of the scenarios

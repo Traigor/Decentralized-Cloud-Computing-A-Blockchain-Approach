@@ -4,11 +4,7 @@ coverage
 coverage.json
 typechain
 typechain-types
-gas-report.txt
-gas-report-tests.txt
-gas-report-scenarios.txt
-gas-report-all.txt
-
+gas-report-*.txt
 
 # Hardhat files
 cache

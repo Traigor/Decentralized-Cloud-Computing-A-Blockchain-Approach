@@ -1,19 +1,19 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers, deployments, tasks } from "hardhat";
-import { TasksManagerGasTest } from "../../typechain-types";
+import { TasksManager } from "../../typechain-types";
 import { BigNumber } from "ethers";
 
-describe("TasksManagerGasTest Unit Tests", function () {
-  let tasksManager: TasksManagerGasTest;
-  let tasksManagerContract: TasksManagerGasTest;
+describe("TasksManager Unit Tests", function () {
+  let tasksManager: TasksManager;
+  let tasksManagerContract: TasksManager;
   let deployer: SignerWithAddress;
   let provider: SignerWithAddress;
   let client: SignerWithAddress;
+  let auction: SignerWithAddress;
   let otherAccounts: SignerWithAddress[];
   let taskID: string;
   let price: number;
-  let wei: number;
   let providerCollateral: number;
   let clientCollateral: number;
   let deadline: number;
@@ -22,11 +22,13 @@ describe("TasksManagerGasTest Unit Tests", function () {
   let computationCode: string;
   let clientCollateralValue: BigNumber;
   let providerCollateralValue: BigNumber;
+  const wei: number = 1000000000000000000;
 
   beforeEach(async function () {
-    [deployer, client, provider, ...otherAccounts] = await ethers.getSigners();
-    await deployments.fixture(["tasksManagerGasTest"]);
-    tasksManagerContract = await ethers.getContract("TasksManagerGasTest");
+    [deployer, client, provider, auction, ...otherAccounts] =
+      await ethers.getSigners();
+    await deployments.fixture(["tasksManager"]);
+    tasksManagerContract = await ethers.getContract("TasksManager");
     tasksManager = tasksManagerContract.connect(deployer);
 
     taskID =
@@ -39,7 +41,6 @@ describe("TasksManagerGasTest Unit Tests", function () {
       "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da";
     verificationCode = "verificationIPFS";
     computationCode = "computationIPFS";
-    wei = 1000000000000000000;
     clientCollateralValue = ethers.utils.parseEther(
       (clientCollateral / wei).toFixed(18).toString()
     );
@@ -49,19 +50,30 @@ describe("TasksManagerGasTest Unit Tests", function () {
   });
 
   describe("constructor", function () {
-    it("initializes the registry and sets the owner", async function () {
+    it("initializes the tasksManager and sets the owner", async function () {
       const owner = await tasksManager.getOwner();
       expect(owner).to.equal(deployer.address);
+    });
+  });
+
+  describe("setAuctionAddress", function () {
+    it("sets the auction address", async function () {
+      await tasksManager.setAuctionAddress(auction.address);
+      const auctionAddress = await tasksManager.getAuctionAddress();
+      expect(auctionAddress).to.equal(auction.address);
     });
   });
 
   describe("createTask", function () {
     it("createTask is successful", async function () {
       //add comments about events etc
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       const createdTask = (
         await tasksManager.createTask(
           taskID,
+          client.address,
           provider.address,
           price,
           deadline,
@@ -96,13 +108,36 @@ describe("TasksManagerGasTest Unit Tests", function () {
       expect(events[0].event).to.equal("TaskCreated"); //it works
       expect(events[0].args.taskID).to.equal(taskID); //it works
     });
+    it("reverts if not called by the auction", async function () {
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(client);
+      expect(
+        tasksManager.createTask(
+          taskID,
+          client.address,
+          provider.address,
+          price,
+          deadline,
+          clientVerification,
+          verificationCode,
+          computationCode,
+          {
+            value: clientCollateralValue,
+          }
+        )
+      ).to.be.revertedWith("Method can be called only by auction.");
+    });
   });
 
   describe("activateTask", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -113,10 +148,11 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
     it("reverts if not called by the provider", async function () {
       await expect(tasksManager.activateTask(taskID)).to.be.revertedWith(
-        "Error__ProviderOnly"
+        "Method can be called only by provider."
       );
     });
 
@@ -138,13 +174,13 @@ describe("TasksManagerGasTest Unit Tests", function () {
         tasksManager.activateTask(taskID, {
           value: providerCollateralValue,
         })
-      ).to.be.revertedWith("Error__TaskState");
+      ).to.be.revertedWith("Invalid TaskState.");
     });
 
     it("activateTask is successful", async function () {
       //emits a TaskActivated event
-      tasksManager = tasksManagerContract.connect(provider);
       const currentDate = Math.floor(Date.now() / 1000);
+      tasksManager = tasksManagerContract.connect(provider);
       const activatedTask = (
         await tasksManager.activateTask(taskID, {
           value: providerCollateralValue,
@@ -158,7 +194,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
       expect(paymentState).to.equal("Initialized");
       expect(events[0].event).to.equal("TaskActivated");
       expect(events[0].args.taskID).to.equal(taskID);
-      expect(activationTime.toNumber()).to.be.closeTo(currentDate, 10);
+      expect(activationTime.toNumber()).to.be.closeTo(currentDate, 15);
       //Below i increase the time to check if the task is expired
       //if i have ran the test once, the node will need reset for the next test
     });
@@ -166,9 +202,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("sendResults", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -179,17 +218,18 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
     it("reverts if not called by the provider", async function () {
       await expect(
         tasksManager.sendResults(taskID, "ipfsCID")
-      ).to.be.revertedWith("Error__ProviderOnly");
+      ).to.be.revertedWith("Method can be called only by provider.");
     });
     it("reverts if task is not in state CompletedSuccessfully", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await expect(
         tasksManager.sendResults(taskID, "ipfsCID")
-      ).to.be.revertedWith("Error__TaskState");
+      ).to.be.revertedWith("Invalid TaskState.");
     });
     it("sendResults is successful, cost is lower than clientCollateral", async function () {
       //checks task state
@@ -351,9 +391,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("completeTask", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -364,6 +407,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
 
     it("reverts if not called by the provider", async function () {
@@ -374,7 +418,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
           10,
           Math.floor(Date.now() / 1000)
         )
-      ).to.be.revertedWith("Error__ProviderOnly");
+      ).to.be.revertedWith("Method can be called only by provider.");
     });
 
     it("reverts if task is not in state Active", async function () {
@@ -386,7 +430,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
           10,
           Math.floor(Date.now() / 1000)
         )
-      ).to.be.revertedWith("Error__TaskState");
+      ).to.be.revertedWith("Invalid TaskState.");
     });
 
     it("completeTask is successful", async function () {
@@ -501,9 +545,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("completePayment", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -514,17 +561,18 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await expect(tasksManager.completePayment(taskID)).to.be.revertedWith(
-        "Error__ClientOnly"
+        "Method can be called only by client."
       );
     });
     it("reverts if task is not in state ResultsReceivedSuccessfully", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.completePayment(taskID)).to.be.revertedWith(
-        "Error__TaskState"
+        "Invalid TaskState."
       );
     });
     it("reverts if value sent is not the expected", async function () {
@@ -549,7 +597,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
         tasksManager.completePayment(taskID, {
           value: ethers.utils.parseEther("0.0000000000000004"),
         })
-      ).to.be.revertedWith("Error__WrongValue");
+      ).to.be.revertedWith("Value sent is not the expected");
     });
     it("completePayment is successful", async function () {
       //checks payment state
@@ -594,9 +642,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("getResults", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -607,17 +658,18 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(provider);
       await expect(tasksManager.getResults(taskID)).to.be.revertedWith(
-        "Error__ClientOnly"
+        "Method can be called only by client."
       );
     });
     it("reverts if task is not in state ResultsReceivedSuccessfully", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.getResults(taskID)).to.be.revertedWith(
-        "Error__TaskState"
+        "Invalid TaskState."
       );
     });
     it("reverts if payment is not in state Completed", async function () {
@@ -639,7 +691,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
       await tasksManager.sendResults(taskID, "ipfsCID");
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.getResults(taskID)).to.be.revertedWith(
-        "Error__PaymentState"
+        "Invalid PaymentState."
       );
     });
     it("getResults is successful", async function () {
@@ -674,9 +726,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("invalidateTask", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -687,18 +742,19 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(deployer);
       await expect(tasksManager.invalidateTask(taskID)).to.be.revertedWith(
-        "Error__ClientOnly"
+        "Method can be called only by client."
       );
     });
 
     it("reverts if task is not in state Active", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.invalidateTask(taskID)).to.be.revertedWith(
-        "Error__TaskState"
+        "Invalid TaskState."
       );
     });
 
@@ -743,9 +799,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("cancelTask", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -756,11 +815,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
     it("reverts if not called by the client", async function () {
       tasksManager = tasksManagerContract.connect(deployer);
       await expect(tasksManager.cancelTask(taskID)).to.be.revertedWith(
-        "Error__ClientOnly"
+        "Method can be called only by client."
       );
     });
     it("reverts if task is not in state Created", async function () {
@@ -770,7 +830,7 @@ describe("TasksManagerGasTest Unit Tests", function () {
       });
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.cancelTask(taskID)).to.be.revertedWith(
-        "Error__TaskState"
+        "Invalid TaskState."
       );
     });
     it("cancelTask is successful", async function () {
@@ -791,15 +851,18 @@ describe("TasksManagerGasTest Unit Tests", function () {
     it("reverts if not called by the owner", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.deleteTask(taskID)).to.be.revertedWith(
-        "Error__OwnerOnly"
+        "Method can be called only by owner."
       );
     });
     it("deleteTask is successful", async function () {
       //deletes task
       //emits a TaskDeleted event
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -829,9 +892,12 @@ describe("TasksManagerGasTest Unit Tests", function () {
 
   describe("deleteTasks", function () {
     beforeEach(async function () {
-      tasksManager = tasksManagerContract.connect(client);
+      tasksManager = tasksManagerContract.connect(deployer);
+      await tasksManager.setAuctionAddress(auction.address);
+      tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
+        client.address,
         provider.address,
         price,
         deadline,
@@ -842,12 +908,13 @@ describe("TasksManagerGasTest Unit Tests", function () {
           value: clientCollateralValue,
         }
       );
+      tasksManager = tasksManagerContract.connect(client);
     });
 
     it("reverts if not called by the owner", async function () {
       tasksManager = tasksManagerContract.connect(client);
       await expect(tasksManager.deleteTasks()).to.be.revertedWith(
-        "Error__OwnerOnly"
+        "Method can be called only by owner."
       );
     });
 

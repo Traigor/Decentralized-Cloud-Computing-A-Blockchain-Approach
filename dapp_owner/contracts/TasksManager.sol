@@ -51,7 +51,7 @@ contract TasksManager {
     }
 
     mapping (bytes32 => Task) private tasks;
-    bytes32[] public bytes32_tasks;
+    bytes32[] private bytes32_tasks;
     mapping(address => providerRating) private performance;
 
     //Events
@@ -157,10 +157,10 @@ contract TasksManager {
         owner = msg.sender;
     }
 
-    //called by client, client = msg.sender
     function createTask(
         bytes32 _taskID, 
-        address payable _provider,
+        address _client,
+        address _provider,
         uint _price,
         uint _deadline,
         bytes32 _clientVerification,
@@ -169,9 +169,9 @@ contract TasksManager {
     ) public payable notRegisteredTaskOnly(_taskID) auctionOnly
     {
         require (msg.value >= _price * 2, "Client collateral is not enough");
-        tasks[_taskID].client = payable (msg.sender);
+        tasks[_taskID].client = payable (_client);
         tasks[_taskID].clientCollateral = msg.value;
-        tasks[_taskID].provider = _provider;
+        tasks[_taskID].provider = payable(_provider);
         tasks[_taskID].providerCollateral = _price * 10;
         tasks[_taskID].price = _price;
         tasks[_taskID].deadline = _deadline;
@@ -197,7 +197,6 @@ contract TasksManager {
         tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit TransferMadeToClient(tasks[_taskID].client,tasks[_taskID].clientCollateral);
         emit TaskCancelled(_taskID);
-        // deleteTask(_taskID);
     }
 
     function invalidateTask(bytes32 _taskID) public  clientOnly(_taskID) inTaskState(_taskID, TaskState.Active) 
@@ -212,7 +211,6 @@ contract TasksManager {
         tasks[_taskID].lastUpdateTimestamp = block.timestamp;
         emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].clientCollateral + tasks[_taskID].providerCollateral);
         emit TaskInvalidated(_taskID);
-        // deleteTask(_taskID);
     }
 
     // Activate
@@ -429,27 +427,16 @@ contract TasksManager {
         return ret; 
     }
 
-    function getCost(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (uint)
-    {
-        return tasks[_taskID].cost;
-    }
-
-    function getPayment(bytes32 _taskID) public clientOrProviderOnly(_taskID) view returns (uint) 
-    {
-        if (tasks[_taskID].cost > tasks[_taskID].clientCollateral) {
-            return (tasks[_taskID].cost - tasks[_taskID].clientCollateral);
-        }
-        else {
-            return 0;
-        }
-    }
-
     function getOwner() public view returns (address) {
         return owner;
     }
 
     function getAuctionAddress() public view returns (address) {
         return auctionAddress;
+    }
+
+    function getTask(bytes32 _taskID) public view returns (Task memory) {
+        return tasks[_taskID];
     }
 
     // Fallback Function
