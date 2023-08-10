@@ -1,8 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ethers } from "hardhat";
-import { address as tasksManagerAddress } from "../deployments/localhost/TasksManager.json";
-//needs to have already deployed TasksManager
+
 const deployTask: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
 ) {
@@ -14,7 +13,6 @@ const deployTask: DeployFunction = async function (
   const auction = await deploy("AuctionsManager", {
     from: deployer.address,
     log: true,
-    args: [tasksManagerAddress],
   });
 
   log("----------------------------------------------------");

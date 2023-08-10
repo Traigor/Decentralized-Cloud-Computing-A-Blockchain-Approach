@@ -1,13 +1,10 @@
 import { ethers } from "hardhat";
-
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xaddress";
+import { address } from "../deployments/localhost/TasksManager.json";
 
 export default async function listen() {
   const tasksManagerContract = await ethers.getContract("TasksManager");
-  const tasksManager = await tasksManagerContract.attach(CONTRACT_ADDRESS);
-  console.log(
-    `Listening on events of TasksManager contract... ${CONTRACT_ADDRESS}`
-  );
+  const tasksManager = await tasksManagerContract.attach(address);
+  console.log(`Listening on events of TasksManager contract... ${address}`);
 
   tasksManager.on("TaskCreated", (taskID) => {
     console.log(`[TaskCreated] Task ID: ${taskID}`);

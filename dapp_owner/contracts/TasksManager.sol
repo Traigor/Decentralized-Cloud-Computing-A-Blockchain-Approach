@@ -36,8 +36,7 @@ contract TasksManager {
         uint activationTime;
         uint timeResultProvided;
         uint timeResultReceived;
-        string computationCode;
-        string verificationCode;
+        string code;
         string results;
         bytes32 clientVerification;
         uint lastUpdateTimestamp;
@@ -164,8 +163,7 @@ contract TasksManager {
         uint _price,
         uint _deadline,
         bytes32 _clientVerification,
-        string memory _verificationCode,
-        string memory _computationCode
+        string memory _code
     ) public payable notRegisteredTaskOnly(_taskID) auctionOnly
     {
         require (msg.value >= _price * 2, "Client collateral is not enough");
@@ -176,8 +174,7 @@ contract TasksManager {
         tasks[_taskID].price = _price;
         tasks[_taskID].deadline = _deadline;
         tasks[_taskID].clientVerification = _clientVerification;
-        tasks[_taskID].verificationCode = _verificationCode;
-        tasks[_taskID].computationCode = _computationCode;
+        tasks[_taskID].code = _code;
         tasks[_taskID].taskState = TaskState.Created;
         tasks[_taskID].paymentState = PaymentState.Initialized;
         tasks[_taskID].lastUpdateTimestamp = block.timestamp;
@@ -302,7 +299,7 @@ contract TasksManager {
         emit PaymentCompleted(_taskID);
     }
 
-    function setAuctionAddress(address _auctionAddress) public ownerOnly {
+    function setAuctionsManager(address _auctionAddress) public ownerOnly {
         auctionAddress = _auctionAddress;
     }
 
@@ -366,14 +363,11 @@ contract TasksManager {
         // tuple: upVotes, downVotes
     }
 
-    function getComputationCode(bytes32 _taskID) public view returns (string memory) {
-        return tasks[_taskID].computationCode;
+    function getCode(bytes32 _taskID) public view returns (string memory) {
+        return tasks[_taskID].code;
     }
 
-    function getVerificationCode(bytes32 _taskID) public view returns (string memory) {
-        return tasks[_taskID].verificationCode;
-    }
-
+ 
     //Getters - some to be deleted
     function getActivationTime(bytes32 _taskID) public view returns (uint)
     {

@@ -1,11 +1,11 @@
 import { ethers } from "hardhat";
-
-export async function activateTask(address: string, taskID: string) {
+import {
+  abi as tasksAbi,
+  address as tasksAddress,
+} from "../deployments/localhost/TasksManager.json";
+export async function activateTask(taskID: string) {
   const [deployer, client, provider] = await ethers.getSigners();
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  // const address = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-  const tasksManager = await tasksManagerContract.attach(address);
-  const task = tasksManager.connect(provider);
+  const tasksManager = new ethers.Contract(tasksAddress, tasksAbi, provider);
   const price = 30;
   const providerCollateral = price * 10;
   const wei = 1000000000000000000;
@@ -13,9 +13,9 @@ export async function activateTask(address: string, taskID: string) {
   const value = ethers.utils.parseEther(
     (providerCollateral / wei).toFixed(18).toString()
   );
-  await task.activateTask(taskID, { value: value });
+  await tasksManager.activateTask(taskID, { value: value });
 
-  const taskState = await task.getTaskState(taskID);
+  const taskState = await tasksManager.getTaskState(taskID);
 
   console.log("----------------------------------------------------");
   console.log(`Task activated!\n Task ID: ${taskID}\n State: ${taskState}`);

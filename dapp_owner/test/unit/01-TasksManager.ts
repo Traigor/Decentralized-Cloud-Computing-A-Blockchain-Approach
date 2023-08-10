@@ -18,8 +18,7 @@ describe("TasksManager Unit Tests", function () {
   let clientCollateral: number;
   let deadline: number;
   let clientVerification: string;
-  let verificationCode: string;
-  let computationCode: string;
+  let code: string;
   let clientCollateralValue: BigNumber;
   let providerCollateralValue: BigNumber;
   const wei: number = 1000000000000000000;
@@ -39,8 +38,7 @@ describe("TasksManager Unit Tests", function () {
     deadline = 600;
     clientVerification =
       "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da";
-    verificationCode = "verificationIPFS";
-    computationCode = "computationIPFS";
+    code = "IPFS";
     clientCollateralValue = ethers.utils.parseEther(
       (clientCollateral / wei).toFixed(18).toString()
     );
@@ -56,9 +54,9 @@ describe("TasksManager Unit Tests", function () {
     });
   });
 
-  describe("setAuctionAddress", function () {
+  describe("setAuctionsManager", function () {
     it("sets the auction address", async function () {
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       const auctionAddress = await tasksManager.getAuctionAddress();
       expect(auctionAddress).to.equal(auction.address);
     });
@@ -68,7 +66,7 @@ describe("TasksManager Unit Tests", function () {
     it("createTask is successful", async function () {
       //add comments about events etc
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       const createdTask = (
         await tasksManager.createTask(
@@ -78,8 +76,7 @@ describe("TasksManager Unit Tests", function () {
           price,
           deadline,
           clientVerification,
-          verificationCode,
-          computationCode,
+          code,
           {
             value: clientCollateralValue,
           }
@@ -99,8 +96,7 @@ describe("TasksManager Unit Tests", function () {
       expect(taskCreated.activationTime).to.equal(0);
       expect(taskCreated.timeResultProvided).to.equal(0);
       expect(taskCreated.timeResultReceived).to.equal(0);
-      expect(taskCreated.verificationCode).to.equal(verificationCode);
-      expect(taskCreated.computationCode).to.equal(computationCode);
+      expect(taskCreated.code).to.equal(code);
       expect(taskCreated.results).to.equal("");
       expect(taskCreated.clientVerification).to.equal(clientVerification);
       expect(taskCreated.taskState).to.equal(0);
@@ -110,7 +106,7 @@ describe("TasksManager Unit Tests", function () {
     });
     it("reverts if not called by the auction", async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(client);
       expect(
         tasksManager.createTask(
@@ -120,8 +116,7 @@ describe("TasksManager Unit Tests", function () {
           price,
           deadline,
           clientVerification,
-          verificationCode,
-          computationCode,
+          code,
           {
             value: clientCollateralValue,
           }
@@ -133,7 +128,7 @@ describe("TasksManager Unit Tests", function () {
   describe("activateTask", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -142,8 +137,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -203,7 +197,7 @@ describe("TasksManager Unit Tests", function () {
   describe("sendResults", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -212,8 +206,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -392,7 +385,7 @@ describe("TasksManager Unit Tests", function () {
   describe("completeTask", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -401,8 +394,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -546,7 +538,7 @@ describe("TasksManager Unit Tests", function () {
   describe("completePayment", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -555,8 +547,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -643,7 +634,7 @@ describe("TasksManager Unit Tests", function () {
   describe("getResults", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -652,8 +643,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -727,7 +717,7 @@ describe("TasksManager Unit Tests", function () {
   describe("invalidateTask", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -736,8 +726,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -800,7 +789,7 @@ describe("TasksManager Unit Tests", function () {
   describe("cancelTask", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -809,8 +798,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -858,7 +846,7 @@ describe("TasksManager Unit Tests", function () {
       //deletes task
       //emits a TaskDeleted event
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -867,8 +855,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }
@@ -893,7 +880,7 @@ describe("TasksManager Unit Tests", function () {
   describe("deleteTasks", function () {
     beforeEach(async function () {
       tasksManager = tasksManagerContract.connect(deployer);
-      await tasksManager.setAuctionAddress(auction.address);
+      await tasksManager.setAuctionsManager(auction.address);
       tasksManager = tasksManagerContract.connect(auction);
       await tasksManager.createTask(
         taskID,
@@ -902,8 +889,7 @@ describe("TasksManager Unit Tests", function () {
         price,
         deadline,
         clientVerification,
-        verificationCode,
-        computationCode,
+        code,
         {
           value: clientCollateralValue,
         }

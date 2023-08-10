@@ -1,9 +1,11 @@
 import { ethers } from "hardhat";
-
+import {
+  abi as tasksAbi,
+  address as tasksAddress,
+} from "../deployments/localhost/TasksManager.json";
 export async function createTask(taskID: string) {
   const [deployer, client, provider] = await ethers.getSigners();
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  const tasksManager = tasksManagerContract.connect(client);
+  const tasksManager = new ethers.Contract(tasksAddress, tasksAbi, client);
 
   const price = 30;
   const providerCollateral = price * 10;
@@ -24,7 +26,6 @@ export async function createTask(taskID: string) {
     price,
     deadline,
     clientVerification,
-    ipfs,
     ipfs,
     { value: value }
   );

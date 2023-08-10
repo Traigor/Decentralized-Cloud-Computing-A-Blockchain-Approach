@@ -1,13 +1,16 @@
 import { ethers } from "hardhat";
-
-export async function getPerformance(address: string, provider: string) {
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  const tasksManager = await tasksManagerContract.attach(address);
-  const performance = await tasksManager.getPerformance(provider);
+import {
+  abi as tasksAbi,
+  address as tasksAddress,
+} from "../deployments/localhost/TasksManager.json";
+export async function getPerformance() {
+  const [deployer, client, provider] = await ethers.getSigners();
+  const tasksManager = new ethers.Contract(tasksAddress, tasksAbi, client);
+  const performance = await tasksManager.getPerformance(provider.address);
 
   console.log("----------------------------------------------------");
   console.log(
-    `Provider performance:\n Provider: ${provider}\n Performance: ${performance}`
+    `Provider performance:\n Provider: ${provider.address}\n Performance: ${performance}`
   );
   console.log("----------------------------------------------------");
 }

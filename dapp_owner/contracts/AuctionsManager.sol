@@ -19,8 +19,7 @@ contract AuctionsManager {
         uint auctionDeadline;
         uint taskDeadline;
         bytes32 clientVerification;
-        string computationCode;
-        string verificationCode;
+        string code;
         ProviderBid[] providerBids;
         WinnerBid winnerBid;
         AuctionState auctionState;   
@@ -47,6 +46,7 @@ contract AuctionsManager {
     event AuctionFinalized(bytes32 auctionID, address provider);
     event AuctionDeleted(bytes32 auctionID);
     event BidPlaced(bytes32 auctionID, address provider, uint bid);
+    event TaskIDCreated(bytes32 auctionID, bytes32 taskID);
 
     modifier ownerOnly() {
         require(
@@ -90,8 +90,11 @@ contract AuctionsManager {
     }
 
 
-    constructor(address payable _tasksManager)  {
+    constructor()  {
         owner = msg.sender;
+    }
+
+    function setTasksManager(address payable _tasksManager) public ownerOnly() {
         tasksManager = TasksManager(_tasksManager);
     }
 
@@ -100,8 +103,7 @@ contract AuctionsManager {
         uint _auctionDeadline, 
         uint _taskDeadline,
         bytes32 _clientVerification,
-        string memory _verificationCode,
-        string memory _computationCode
+        string memory _code
     ) public notExistingAuctionOnly(_auctionID)
         {
         auctions[_auctionID].client = msg.sender;
@@ -109,8 +111,7 @@ contract AuctionsManager {
         auctions[_auctionID].auctionDeadline = _auctionDeadline;
         auctions[_auctionID].taskDeadline = _taskDeadline;
         auctions[_auctionID].clientVerification = _clientVerification;
-        auctions[_auctionID].verificationCode = _verificationCode;
-        auctions[_auctionID].computationCode = _computationCode;
+        auctions[_auctionID].code = _code;
 
         auctions[_auctionID].auctionState = AuctionState.Created;
         auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
@@ -156,7 +157,7 @@ contract AuctionsManager {
         emit BidPlaced(_auctionID, msg.sender, _bid);
      }
 
-    function finalize(bytes32 _auctionID, address _provider) public payable clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) returns (bytes32) {
+    function finalize(bytes32 _auctionID, address _provider) public payable clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) {
         uint providerIndex = 0;
         if (auctions[_auctionID].providerBids.length == 0)
             revert("Auction has no bids.");
@@ -179,8 +180,8 @@ contract AuctionsManager {
         emit AuctionFinalized(_auctionID, _provider);
         bytes32 taskID = keccak256(abi.encode(currentAuction.client, _winnerBid, block.timestamp));
         uint clientCollateral = getClientCollateral(_auctionID);
-        tasksManager.createTask{value: clientCollateral}(taskID, currentAuction.client, _provider,  _winnerBid.bid, currentAuction.taskDeadline, currentAuction.clientVerification,currentAuction.verificationCode, currentAuction.computationCode);
-        return taskID; //check for return, else add event TaskCreated
+        tasksManager.createTask{value: clientCollateral}(taskID, currentAuction.client, _provider,  _winnerBid.bid, currentAuction.taskDeadline, currentAuction.clientVerification,currentAuction.code);
+        emit TaskIDCreated(_auctionID, taskID);
     }
 
     function getClientCollateral(bytes32 _auctionID) private view returns (uint) {

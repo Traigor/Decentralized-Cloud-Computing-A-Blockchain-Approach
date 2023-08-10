@@ -7,7 +7,6 @@ import {
   address as TasksManagerAddress,
   abi as TasksManagerAbi,
 } from "../../deployments/localhost/TasksManager.json";
-import { address as AuctionsManagerAddress } from "../../deployments/localhost/AuctionsManager.json";
 
 describe("Auctions Manager", function () {
   let auctionsManager: AuctionsManager;
@@ -20,8 +19,7 @@ describe("Auctions Manager", function () {
   let auctionDeadline: number;
   let taskDeadline: number;
   let clientVerification: string;
-  let verificationCode: string;
-  let computationCode: string;
+  let code: string;
   let _bid: number;
   const wei: number = 1000000000000000000;
 
@@ -37,17 +35,28 @@ describe("Auctions Manager", function () {
     taskDeadline = 600;
     clientVerification =
       "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da";
-    verificationCode = "verificationIPFS";
-    computationCode = "computationIPFS";
+    code = "IPFS";
     _bid = 10;
   });
 
   describe("constructor", function () {
     it("initializes the auctionsManager and sets the owner", async function () {
       const owner = await auctionsManager.getOwner();
-      const tasksManager = await auctionsManager.getTasksManager();
       expect(owner).to.equal(deployer.address);
-      expect(tasksManager).to.equal(TasksManagerAddress);
+    });
+  });
+
+  describe("setTasksManager", function () {
+    it("setTasksManager is successful", async function () {
+      const tasksManager = new ethers.Contract(
+        TasksManagerAddress,
+        TasksManagerAbi,
+        ethers.provider.getSigner()
+      );
+      tasksManager.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
+      const tasksManagerAddress = await auctionsManager.getTasksManager();
+      expect(tasksManagerAddress).to.equal(TasksManagerAddress);
     });
   });
 
@@ -60,8 +69,7 @@ describe("Auctions Manager", function () {
           auctionDeadline,
           taskDeadline,
           clientVerification,
-          verificationCode,
-          computationCode
+          code
         )
       ).wait();
       const events = (await createdAuction).events as unknown as Event[];
@@ -78,8 +86,7 @@ describe("Auctions Manager", function () {
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       await expect(
         auctionsManager.createAuction(
@@ -87,8 +94,7 @@ describe("Auctions Manager", function () {
           auctionDeadline,
           taskDeadline,
           clientVerification,
-          verificationCode,
-          computationCode
+          code
         )
       ).to.be.revertedWith("Auction already exists");
     });
@@ -102,8 +108,7 @@ describe("Auctions Manager", function () {
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       const cancelledAuction = (
         await auctionsManager.cancelAuction(auctionID)
@@ -121,8 +126,7 @@ describe("Auctions Manager", function () {
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       await expect(auctionsManager.cancelAuction(auctionID)).to.be.revertedWith(
@@ -137,8 +141,7 @@ describe("Auctions Manager", function () {
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       await expect(auctionsManager.cancelAuction(auctionID));
       await expect(auctionsManager.cancelAuction(auctionID)).to.be.revertedWith(
@@ -149,14 +152,15 @@ describe("Auctions Manager", function () {
 
   describe("bid", function () {
     it("bid is successful", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       const bid = (await auctionsManager.bid(auctionID, _bid)).wait();
@@ -173,14 +177,15 @@ describe("Auctions Manager", function () {
       expect(currentBid[0].providerUpVotes).to.equal(0);
     });
     it("reverts if auction is not in created state", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       await auctionsManager.cancelAuction(auctionID);
       auctionsManager = auctionsManagerContract.connect(provider);
@@ -189,28 +194,30 @@ describe("Auctions Manager", function () {
       );
     });
     it("reverts if called by client", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       await expect(auctionsManager.bid(auctionID, _bid)).to.be.revertedWith(
         "Client can't bid to this auction"
       );
     });
     it("reverts if time has expired", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       await ethers.provider.send("evm_increaseTime", [auctionDeadline + 1]);
       auctionsManager = auctionsManagerContract.connect(provider);
@@ -219,14 +226,15 @@ describe("Auctions Manager", function () {
       );
     });
     it("reverts if provider's bid is not lower than the previous one", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
@@ -243,16 +251,17 @@ describe("Auctions Manager", function () {
         TasksManagerAbi,
         ethers.provider.getSigner()
       );
-      await tasksManager.setAuctionAddress(auctionsManager.address);
+      await tasksManager.setAuctionsManager(auctionsManager.address);
 
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
@@ -277,16 +286,19 @@ describe("Auctions Manager", function () {
       expect(events[0].event).to.equal("AuctionFinalized");
       expect(events[0].args?.auctionID).to.equal(auctionID);
       expect(events[0].args?.provider).to.equal(provider.address);
+      expect(events[2].event).to.equal("TaskIDCreated");
+      expect(events[2].args?.auctionID).to.equal(auctionID);
     });
     it("reverts if not called by client", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
@@ -295,14 +307,15 @@ describe("Auctions Manager", function () {
       ).to.be.revertedWith("Method can be called only by client.");
     });
     it("reverts if not in status created", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       await auctionsManager.cancelAuction(auctionID);
       await expect(
@@ -310,14 +323,15 @@ describe("Auctions Manager", function () {
       ).to.be.revertedWith("Invalid AuctionState.");
     });
     it("reverts if auction has no bids", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
 
       await expect(
@@ -325,14 +339,15 @@ describe("Auctions Manager", function () {
       ).to.be.revertedWith("Auction has no bids.");
     });
     it("reverts if wrong provider address is passed", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
@@ -342,14 +357,15 @@ describe("Auctions Manager", function () {
       ).to.be.revertedWith("Wrong provider address");
     });
     it("reverts if client collateral is not enough", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
@@ -367,29 +383,34 @@ describe("Auctions Manager", function () {
 
   describe("deleteAuctions", function () {
     beforeEach(async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.createAuction(
         auctionID,
         auctionDeadline,
         taskDeadline,
         clientVerification,
-        verificationCode,
-        computationCode
+        code
       );
     });
     it("reverts if not called by the owner", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await expect(auctionsManager.deleteAuctions()).to.be.revertedWith(
         "Method can be called only by owner."
       );
     });
     it("deleteAuctions is successful, auction in state Finalized", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       const tasksManager = new ethers.Contract(
         TasksManagerAddress,
         TasksManagerAbi,
         ethers.provider.getSigner()
       );
-      await tasksManager.setAuctionAddress(auctionsManager.address);
+      await tasksManager.setAuctionsManager(auctionsManager.address);
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
       auctionsManager = auctionsManagerContract.connect(client);
@@ -404,6 +425,8 @@ describe("Auctions Manager", function () {
       await auctionsManager.deleteAuctions();
     });
     it("deleteAuctions is successful, auction in state Cancelled", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       auctionsManager = auctionsManagerContract.connect(client);
       await auctionsManager.cancelAuction(auctionID);
       auctionsManager = auctionsManagerContract.connect(deployer);
@@ -411,12 +434,14 @@ describe("Auctions Manager", function () {
       await auctionsManager.deleteAuctions();
     });
     it("deleteAuctions is unsuccessful, time has not passed", async function () {
+      auctionsManager = auctionsManagerContract.connect(deployer);
+      await auctionsManager.setTasksManager(TasksManagerAddress);
       const tasksManager = new ethers.Contract(
         TasksManagerAddress,
         TasksManagerAbi,
         ethers.provider.getSigner()
       );
-      await tasksManager.setAuctionAddress(auctionsManager.address);
+      await tasksManager.setAuctionsManager(auctionsManager.address);
       auctionsManager = auctionsManagerContract.connect(provider);
       await auctionsManager.bid(auctionID, _bid);
       auctionsManager = auctionsManagerContract.connect(client);

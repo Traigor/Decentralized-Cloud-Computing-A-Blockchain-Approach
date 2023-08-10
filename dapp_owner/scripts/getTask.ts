@@ -1,8 +1,11 @@
 import { ethers } from "hardhat";
-
-export async function getTask(address: string, taskID: string) {
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  const tasksManager = await tasksManagerContract.attach(address);
+import {
+  abi as tasksAbi,
+  address as tasksAddress,
+} from "../deployments/localhost/TasksManager.json";
+export async function getTask(taskID: string) {
+  const [deployer, client, provider] = await ethers.getSigners();
+  const tasksManager = new ethers.Contract(tasksAddress, tasksAbi, deployer);
   const task = await tasksManager.getTask(taskID);
   console.log(task);
   console.log("----------------------------------------------------");

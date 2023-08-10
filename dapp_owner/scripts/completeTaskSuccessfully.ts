@@ -1,22 +1,19 @@
 import { ethers } from "hardhat";
-
-export async function completeTaskSuccessfully(
-  address: string,
-  taskID: string
-) {
+import {
+  abi as tasksAbi,
+  address as tasksAddress,
+} from "../deployments/localhost/TasksManager.json";
+export async function completeTaskSuccessfully(taskID: string) {
   const [deployer, client, provider] = await ethers.getSigners();
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  //   const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-  const tasksManager = await tasksManagerContract.attach(address);
-  const task = tasksManager.connect(provider);
-
+  const tasksManager = new ethers.Contract(tasksAddress, tasksAbi, provider);
+  const price = 30;
   const verification = "Helloworld!";
-  const time = (await task.getActivationTime(taskID)).toNumber() + 10;
+  const time = (await tasksManager.getActivationTime(taskID)).toNumber() + 10;
   await ethers.provider.send("evm_increaseTime", [10]);
-  await task.completeTask(taskID, verification, 10, time);
-  const taskState = await task.getTaskState(taskID);
-  const paymentState = await task.getPaymentState(taskID);
-  const payment = await task.getPayment(taskID);
+  await tasksManager.completeTask(taskID, verification, 10, time);
+  const taskState = await tasksManager.getTaskState(taskID);
+  const paymentState = await tasksManager.getPaymentState(taskID);
+  const payment = price * 10 - price * 2;
   console.log("----------------------------------------------------");
   console.log(
     `Task completed!\n Task ID: ${taskID}\n State: ${taskState}\n PaymentState: ${paymentState}`

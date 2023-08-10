@@ -1,15 +1,15 @@
 import { ethers } from "hardhat";
-
-export async function sendResults(address: string, taskID: string) {
+import {
+  abi as tasksAbi,
+  address as tasksAddress,
+} from "../deployments/localhost/TasksManager.json";
+export async function sendResults(taskID: string) {
   const [deployer, client, provider] = await ethers.getSigners();
-  const tasksManagerContract = await ethers.getContract("TasksManager");
-  //   const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-  const tasksManager = await tasksManagerContract.attach(address);
-  const task = tasksManager.connect(provider);
+  const tasksManager = new ethers.Contract(tasksAddress, tasksAbi, provider);
 
-  await task.sendResults(taskID, "ipfsCID");
-  const taskState = await task.getTaskState(taskID);
-  const paymentState = await task.getPaymentState(taskID);
+  await tasksManager.sendResults(taskID, "ipfsCID");
+  const taskState = await tasksManager.getTaskState(taskID);
+  const paymentState = await tasksManager.getPaymentState(taskID);
   console.log("----------------------------------------------------");
   console.log(
     `Received Results!\n Task ID: ${taskID}\n State: ${taskState}\n PaymentState: ${paymentState}`

@@ -24,11 +24,11 @@ export async function main() {
   console.log("Running scenario 4: Task invalidated");
   await invalidate();
   console.log("----------------------------------------------------");
-  await getPerformance(CONTRACT_ADDRESS, PROVIDER_ADDRESS);
+  await getPerformance();
   console.log("----------------------------------------------------");
   console.log("All scenarios completed successfully");
   console.log("----------------------------------------------------");
-  await deleteTasks(CONTRACT_ADDRESS);
+  await deleteTasks();
   return true;
 }
 

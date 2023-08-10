@@ -6,7 +6,13 @@ export async function deploy() {
 
   await tasksManager.deployed();
   console.log("TasksManager deployed to:", tasksManager.address);
-  return tasksManager.address;
+
+  const AuctionsManager = await ethers.getContractFactory("AuctionsManager");
+  const auctionsManager = await AuctionsManager.deploy();
+
+  await auctionsManager.deployed();
+  console.log("AuctionsManager deployed to:", auctionsManager.address);
+  return auctionsManager.address;
 }
 
 // We recommend this pattern to be able to use async/await everywhere

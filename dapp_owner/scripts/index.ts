@@ -12,6 +12,11 @@ import { deploy } from "./deploy";
 import { getResults } from "./getResults";
 import { staller } from "./staller";
 import { deleteTasks } from "./deleteTasks";
+import { createAuction } from "./createAuction";
+import { bid } from "./bid";
+import { finalize } from "./finalize";
+import { setAuctionsManagerAddress } from "./setAuctionsManagerAddress";
+import { setTasksManagerAddress } from "./setTasksManagerAddress";
 export {
   createTask,
   cancelTask,
@@ -27,4 +32,9 @@ export {
   getResults,
   staller,
   deleteTasks,
+  createAuction,
+  bid,
+  finalize,
+  setAuctionsManagerAddress,
+  setTasksManagerAddress,
 };
