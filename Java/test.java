@@ -1,16 +1,13 @@
 import java.util.Random;
 
-class Verification{
+class Code {
   private String ver_string = "Helloworld!";
 
   public String getVerification()
   {
     return ver_string;
   }
-}
 
-class Computation
-{
   public long getComputation()
   {
     long k=0;
@@ -34,11 +31,11 @@ class Time
   private long endTime;
   public void start()
   {
-    startTime = System.currentTimeMillis();
+    startTime = System.currentTimeMillis()/1000;
   }
   public void end()
   {
-    endTime = System.currentTimeMillis();
+    endTime = System.currentTimeMillis()/1000;
   }
   public String getExecutionTime()
   {
@@ -55,10 +52,9 @@ class Main {
   public static void main(String[] args) {
     Time T = new Time();
     T.start();
-    Verification V = new Verification();
-    Computation F = new Computation();
-    String ver = V.getVerification();
-    String res = String.valueOf(F.getComputation());
+    Code C = new Code();
+    String ver = C.getVerification();
+    String res = String.valueOf(C.getComputation());
     T.end();
     System.out.print(res+ " ----- " +ver + " ----- " + T.getExecutionTime() + " ----- " + T.getEndTime()+"\n");
   }

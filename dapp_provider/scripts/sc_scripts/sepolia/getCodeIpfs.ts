@@ -5,23 +5,23 @@ import { staller } from "../staller";
 const maxRetries = 5;
 let retries = 0;
 
-type TGetVerificationCode = {
+type TGetCode = {
   taskID: string;
 };
-async function getVerificationCode({ taskID }: TGetVerificationCode) {
+async function getCode({ taskID }: TGetCode) {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-  const verificationCode = await tasksManager.getVerificationCode(taskID);
-  return verificationCode;
+  const code = await tasksManager.getCode(taskID);
+  return code;
 }
 
-async function makeRequest({ taskID }: TGetVerificationCode) {
+async function makeRequest({ taskID }: TGetCode) {
   try {
-    const verificationCode = await getVerificationCode({ taskID });
-    return verificationCode;
+    const code = await getCode({ taskID });
+    return code;
   } catch (error) {
     if (
       (error._isProviderError || error.code === "NETWORK_ERROR") &&
@@ -33,8 +33,8 @@ async function makeRequest({ taskID }: TGetVerificationCode) {
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
       await staller(retryAfter);
-      const verificationCode = await makeRequest({ taskID });
-      return verificationCode;
+      const code = await makeRequest({ taskID });
+      return code;
     } else if (error.reason) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
@@ -43,19 +43,17 @@ async function makeRequest({ taskID }: TGetVerificationCode) {
       retries++;
       console.log(`Retrying after ${retryAfter} ms...`);
       await staller(retryAfter);
-      const verificationCode = await makeRequest({ taskID });
-      return verificationCode;
+      const code = await makeRequest({ taskID });
+      return code;
     } else {
       throw new Error(error);
     }
   }
 }
 
-export async function getVerificationCodeRequest({
-  taskID,
-}: TGetVerificationCode) {
-  const verificationCode = makeRequest({ taskID }).catch((error) => {
+export async function getCodeRequest({ taskID }: TGetCode) {
+  const code = makeRequest({ taskID }).catch((error) => {
     if (!error._isProviderError) console.error(error);
   });
-  return verificationCode;
+  return code;
 }

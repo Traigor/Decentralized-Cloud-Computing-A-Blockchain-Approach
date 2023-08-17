@@ -2,7 +2,12 @@ import { completedSuccessfully } from "./01-scenario";
 import { completedUnsuccessfully } from "./02-scenario";
 import { cancel } from "./03-scenario";
 import { invalidate } from "./04-scenario";
-import { getPerformance, deploy, deleteTasks } from "../index";
+import {
+  getPerformance,
+  deployTasksManager,
+  deployAuctionsManager,
+  deleteTasks,
+} from "../index";
 
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xaddress";
 const PROVIDER_ADDRESS = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
@@ -10,7 +15,8 @@ const PROVIDER_ADDRESS = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
 export async function main() {
   console.log("----------------------------------------------------");
   console.log("Deploying smart contract");
-  await deploy();
+  await deployTasksManager();
+  await deployAuctionsManager();
   console.log("----------------------------------------------------");
   console.log("Running scenario 1: Task completed successfully");
   await completedSuccessfully();
@@ -33,7 +39,7 @@ export async function main() {
 }
 
 // commented out to avoid running the script when running tests for gas estimation
-// main().catch((error) => {
-//   console.error(error);
-//   process.exitCode = 1;
-// });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

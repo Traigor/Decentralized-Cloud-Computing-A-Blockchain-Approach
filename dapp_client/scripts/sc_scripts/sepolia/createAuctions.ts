@@ -1,61 +1,50 @@
 import { ethers } from "hardhat";
-import { abi, address } from "../../../TasksManagerSepolia.json";
+import { abi, address } from "../../../AuctionsManagerSepolia.json";
 import { staller } from "../staller";
 
 const maxRetries = 5;
 let retries = 0;
-type TCreateTask = {
-  taskID: string;
-  providerAddress: string;
-  price: number;
-  deadline: number;
+type TCreateAuction = {
+  auctionID: string;
+  auctionDeadline: number;
+  taskDeadline: number;
   clientVerification: string;
   code: string;
 };
-async function createTask({
-  taskID,
-  providerAddress,
-  price,
-  deadline,
+async function createAuction({
+  auctionID,
+  auctionDeadline,
+  taskDeadline,
   clientVerification,
   code,
-}: TCreateTask) {
-  const tasksManager = new ethers.Contract(
+}: TCreateAuction) {
+  const auctionsManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
 
-  const wei = 1000000000000000000;
-  const clientCollateral = price * 2;
-  const value = ethers.utils.parseEther(
-    (clientCollateral / wei).toFixed(18).toString()
-  );
-  await tasksManager.createTask(
-    taskID,
-    providerAddress,
-    price,
-    deadline,
+  await auctionsManager.createAuction(
+    auctionID,
+    auctionDeadline,
+    taskDeadline,
     clientVerification,
-    code,
-    { value: value }
+    code
   );
 }
 
 async function makeRequest({
-  taskID,
-  providerAddress,
-  price,
-  deadline,
+  auctionID,
+  auctionDeadline,
+  taskDeadline,
   clientVerification,
   code,
-}: TCreateTask) {
+}: TCreateAuction) {
   try {
-    await createTask({
-      taskID,
-      providerAddress,
-      price,
-      deadline,
+    await createAuction({
+      auctionID,
+      auctionDeadline,
+      taskDeadline,
       clientVerification,
       code,
     });
@@ -71,10 +60,9 @@ async function makeRequest({
       );
       await staller(retryAfter);
       await makeRequest({
-        taskID,
-        providerAddress,
-        price,
-        deadline,
+        auctionID,
+        auctionDeadline,
+        taskDeadline,
         clientVerification,
         code,
       });
@@ -101,19 +89,17 @@ async function makeRequest({
   }
 }
 
-export async function createTaskRequest({
-  taskID,
-  providerAddress,
-  price,
-  deadline,
+export async function createAuctionRequest({
+  auctionID,
+  auctionDeadline,
+  taskDeadline,
   clientVerification,
   code,
-}: TCreateTask) {
+}: TCreateAuction) {
   makeRequest({
-    taskID,
-    providerAddress,
-    price,
-    deadline,
+    auctionID,
+    auctionDeadline,
+    taskDeadline,
     clientVerification,
     code,
   }).catch((error) => {

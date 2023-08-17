@@ -1,52 +1,37 @@
 import { ethers } from "hardhat";
-import { abi, address } from "../../../deployments/mumbai/TasksManager.json";
+import {
+  abi,
+  address,
+} from "../../../deployments/sepolia/AuctionsManager.json";
 import { staller } from "../../staller";
 
 const maxRetries = 5;
 let retries = 0;
-const taskID = process.env.TASK_ID;
+const auctionID = process.env.AUCTION_ID;
 
-export async function createTask() {
-  const tasksManager = new ethers.Contract(
+export async function deleteAuctions() {
+  const auctionsManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
 
-  const providerAddress = "0xB3b0E9E018bA957e29d6C883A84412972C6A7366";
-  const price = 10;
-  const deadline = 600;
-  const clientVerification =
-    "0xf2350a27c0f701987ca97fd3f4d930ee0ab2c93fcf107f356f26f9f83fc6f4da";
-  const wei = 1000000000000000000;
-  const clientCollateral = price * 2;
-  const value = ethers.utils.parseEther(
-    (clientCollateral / wei).toFixed(18).toString()
-  );
-  await tasksManager.createTask(
-    taskID,
-    providerAddress,
-    price,
-    deadline,
-    clientVerification,
-    "ipfs",
-    { value: value }
-  );
+  await auctionsManager.deleteTasks();
 
   console.log("----------------------------------------------------");
-  console.log(`Task created!`);
+  console.log(`Auctions Deleted`);
   console.log("----------------------------------------------------");
 }
 
 async function makeRequest() {
   try {
-    await createTask();
+    await deleteAuctions();
   } catch (error) {
     if (
       (error._isProviderError || error.code === "NETWORK_ERROR") &&
       retries < maxRetries
     ) {
-      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 1000ms and 1250ms
+      const retryAfter = Math.floor(Math.random() * 251) + 1000; // Generate a random wait time between 1000ms and 1250ms
       retries++;
       console.log(
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`

@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import {
   abi as auctionsAbi,
   address as auctionsAddress,
-} from "../deployments/localhost/AuctionsManager.json";
+} from "../../../deployments/sepolia/AuctionsManager.json";
 
 export async function bid(auctionID: string) {
   const [deployer, client, provider] = await ethers.getSigners();

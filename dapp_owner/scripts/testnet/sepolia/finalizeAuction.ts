@@ -2,7 +2,8 @@ import { ethers } from "hardhat";
 import {
   abi as auctionsAbi,
   address as auctionsAddress,
-} from "../deployments/localhost/AuctionsManager.json";
+} from "../../../deployments/sepolia/AuctionsManager.json";
+import { calculateScore } from "../calculateScore";
 export async function finalize(auctionID: string) {
   const [deployer, client, provider] = await ethers.getSigners();
   const auctionsManager = new ethers.Contract(
@@ -11,7 +12,21 @@ export async function finalize(auctionID: string) {
     client
   );
   const wei = 1000000000000000000;
-  const price = 30;
+  const bids = await auctionsManager.getAuctionBids(auctionID);
+  let score = 0;
+  let winnerBid;
+  for (const bid of bids) {
+    const bidScore = calculateScore(
+      bid.providerUpVotes.toNumber(),
+      bid.providerDownVotes.toNumber()
+    );
+    //choose based on best score only
+    if (bidScore >= score) {
+      score = bidScore;
+      winnerBid = bid;
+    }
+  }
+  const price = winnerBid.bid.toNumber();
   const clientCollateral = price * 2;
   const value = ethers.utils.parseEther(
     (clientCollateral / wei).toFixed(18).toString()

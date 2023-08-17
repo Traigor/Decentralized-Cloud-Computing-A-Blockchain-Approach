@@ -29,8 +29,7 @@ export async function createTask() {
     price,
     deadline,
     clientVerification,
-    "ipfsVer",
-    "ipfsComp",
+    "ipfs",
     { value: value }
   );
 

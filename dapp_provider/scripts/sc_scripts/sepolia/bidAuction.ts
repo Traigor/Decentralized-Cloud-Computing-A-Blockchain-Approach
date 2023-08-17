@@ -1,27 +1,27 @@
 import { ethers } from "hardhat";
-import { abi, address } from "../../../TasksManagerSepolia.json";
+import { abi, address } from "../../../AuctionsManagerSepolia.json";
 import { staller } from "../staller";
 
 const maxRetries = 5;
 let retries = 0;
 
-type TGetComputationCode = {
-  taskID: string;
+type TBidAuction = {
+  auctionID: string;
+  price: number;
 };
-async function getComputationCode({ taskID }: TGetComputationCode) {
-  const tasksManager = new ethers.Contract(
+async function bidAuction({ auctionID, price }: TBidAuction) {
+  const auctionsManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-  const computationCode = await tasksManager.getComputationCode(taskID);
-  return computationCode;
+
+  await auctionsManager.bid(auctionID, price);
 }
 
-async function makeRequest({ taskID }: TGetComputationCode) {
+async function makeRequest({ auctionID, price }: TBidAuction) {
   try {
-    const computationCode = await getComputationCode({ taskID });
-    return computationCode;
+    await bidAuction({ auctionID, price });
   } catch (error) {
     if (
       (error._isProviderError || error.code === "NETWORK_ERROR") &&
@@ -33,9 +33,8 @@ async function makeRequest({ taskID }: TGetComputationCode) {
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
       await staller(retryAfter);
-      const computationCode = await makeRequest({ taskID });
-      return computationCode;
-    } else if (error.reason) {
+      await makeRequest({ auctionID, price });
+    } else if (error.reason && retries < maxRetries) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");
@@ -43,19 +42,15 @@ async function makeRequest({ taskID }: TGetComputationCode) {
       retries++;
       console.log(`Retrying after ${retryAfter} ms...`);
       await staller(retryAfter);
-      const computationCode = await makeRequest({ taskID });
-      return computationCode;
+      await makeRequest({ auctionID, price });
     } else {
       throw new Error(error);
     }
   }
 }
 
-export async function getComputationCodeRequest({
-  taskID,
-}: TGetComputationCode) {
-  const computationCode = makeRequest({ taskID }).catch((error) => {
+export async function bidAuctionRequest({ auctionID, price }: TBidAuction) {
+  makeRequest({ auctionID, price }).catch((error) => {
     if (!error._isProviderError) console.error(error);
   });
-  return computationCode;
 }

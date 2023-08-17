@@ -9,10 +9,8 @@ export const splitFields = (): {
   const javaFields = fields.split(SEPERATOR);
   const computation = javaFields[0];
   const verification = javaFields[1];
-  const durationMS = parseInt(javaFields[2]);
-  const timeMS = parseInt(javaFields[3]);
-  const duration = Math.floor(durationMS / 1000);
-  const time = Math.floor(timeMS / 1000);
+  const duration = parseInt(javaFields[2]);
+  const time = parseInt(javaFields[3]);
 
   fs.writeFileSync("computationResult.txt", computation);
   return {
