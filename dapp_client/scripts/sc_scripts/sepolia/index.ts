@@ -5,7 +5,7 @@ import { getPerformance } from "./getPerformance";
 import { getResultsRequest } from "./getResults";
 import { invalidateTaskRequest } from "./invalidateTask";
 import { createAuctionRequest } from "./createAuctions";
-import { finalizeAuction } from "./finalizeAuction";
+import { finalizeAuctionRequest } from "./finalizeAuction";
 export {
   createTaskRequest,
   cancelTaskRequest,
@@ -14,5 +14,5 @@ export {
   getResultsRequest,
   invalidateTaskRequest,
   createAuctionRequest,
-  finalizeAuction,
+  finalizeAuctionRequest,
 };

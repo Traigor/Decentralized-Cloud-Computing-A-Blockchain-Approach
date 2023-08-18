@@ -2,60 +2,58 @@ import { ethers } from "hardhat";
 import { abi, address } from "../../../TasksManagerMumbai.json";
 import { staller } from "../staller";
 
-const maxRetries = 5;
+const maxRetries = 10;
 let retries = 0;
 
-type TGetComputationCode = {
+type TGetCode = {
   taskID: string;
 };
-async function getComputationCode({ taskID }: TGetComputationCode) {
+async function getCode({ taskID }: TGetCode) {
   const tasksManager = new ethers.Contract(
     address,
     abi,
     ethers.provider.getSigner()
   );
-  const computationCode = await tasksManager.getComputationCode(taskID);
-  return computationCode;
+  const code = await tasksManager.getCode(taskID);
+  return code;
 }
 
-async function makeRequest({ taskID }: TGetComputationCode) {
+async function makeRequest({ taskID }: TGetCode) {
   try {
-    const computationCode = await getComputationCode({ taskID });
-    return computationCode;
+    const code = await getCode({ taskID });
+    return code;
   } catch (error) {
     if (
       (error._isProviderError || error.code === "NETWORK_ERROR") &&
       retries < maxRetries
     ) {
-      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 2000ms and 2250ms
+      const retryAfter = Math.floor(Math.random() * 251) + 9000; // Generate a random wait time between 9000ms and 9250ms
       retries++;
       console.log(
         `Exceeded alchemy's compute units per second capacity: Retrying after ${retryAfter} ms...`
       );
       await staller(retryAfter);
-      const computationCode = await makeRequest({ taskID });
-      return computationCode;
+      const code = await makeRequest({ taskID });
+      return code;
     } else if (error.reason) {
       console.log("----------------------------------------------------");
       console.log(error.reason);
       console.log("----------------------------------------------------");
-      const retryAfter = Math.floor(Math.random() * 251) + 2000; // Generate a random wait time between 2000ms and 2250ms
+      const retryAfter = Math.floor(Math.random() * 251) + 9000; // Generate a random wait time between 9000ms and 9250ms
       retries++;
       console.log(`Retrying after ${retryAfter} ms...`);
       await staller(retryAfter);
-      const computationCode = await makeRequest({ taskID });
-      return computationCode;
+      const code = await makeRequest({ taskID });
+      return code;
     } else {
       throw new Error(error);
     }
   }
 }
 
-export async function getComputationCodeRequest({
-  taskID,
-}: TGetComputationCode) {
-  const computationCode = makeRequest({ taskID }).catch((error) => {
+export async function getCodeRequest({ taskID }: TGetCode) {
+  const code = makeRequest({ taskID }).catch((error) => {
     if (!error._isProviderError) console.error(error);
   });
-  return computationCode;
+  return code;
 }

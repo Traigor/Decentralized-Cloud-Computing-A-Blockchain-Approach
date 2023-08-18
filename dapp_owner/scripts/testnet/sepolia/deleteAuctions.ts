@@ -16,7 +16,7 @@ export async function deleteAuctions() {
     ethers.provider.getSigner()
   );
 
-  await auctionsManager.deleteTasks();
+  await auctionsManager.deleteAuctions();
 
   console.log("----------------------------------------------------");
   console.log(`Auctions Deleted`);

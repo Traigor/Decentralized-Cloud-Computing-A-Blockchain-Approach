@@ -11,10 +11,10 @@ import {
   completePaymentRequest,
   getResultsRequest,
   createAuctionRequest,
+  finalizeAuctionRequest,
 } from "./sc_scripts/sepolia";
 import { getResultsFromIpfs } from "./getResultsIpfs";
 import { addCodeToIpfs } from "./addToIpfs";
-import { finalizeAuctionRequest } from "./sc_scripts/sepolia/finalizeAuction";
 
 export async function clientSepolia() {
   const auctionDeadline = 600;
@@ -63,13 +63,6 @@ export async function clientSepolia() {
   auctionsManager.on("AuctionCancelled", (scAuctionID) => {
     if (scAuctionID.toString() === auctionID) {
       console.log(`[AuctionsManager] Auction cancelled successfully!`);
-      console.log("----------------------------------------------------");
-    }
-  });
-
-  auctionsManager.on("AuctionDeleted", (scAuctionID) => {
-    if (scAuctionID.toString() === auctionID) {
-      console.log(`[AuctionsManager] Auction deleted successfully!`);
       console.log("----------------------------------------------------");
     }
   });

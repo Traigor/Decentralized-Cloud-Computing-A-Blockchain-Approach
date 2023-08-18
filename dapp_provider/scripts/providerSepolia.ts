@@ -49,12 +49,6 @@ export async function providerSepolia() {
     console.log("----------------------------------------------------");
   });
 
-  auctionsManager.on("AuctionDeleted", (scAuctionID) => {
-    //add check for my auctions
-    console.log(`[AuctionsManager] Auction deleted successfully!`);
-    console.log("----------------------------------------------------");
-  });
-
   auctionsManager.on("BidPlaced", async (scAuctionID, _, scPrice) => {
     console.log(
       `[AuctionsManager] BidPlaced successfully! AuctionID: ${scAuctionID}, Price: ${scPrice}`
