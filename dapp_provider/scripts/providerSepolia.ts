@@ -37,23 +37,29 @@ export async function providerSepolia() {
   console.log(`Running provider's app: sepolia testnet...`);
   console.log("----------------------------------------------------");
 
-  auctionsManager.on("AuctionCreated", async (scAuctionID) => {
-    console.log(`[AuctionsManager] Auction created by client!`);
-    console.log("----------------------------------------------------");
-    await bidAuctionRequest({ auctionID: scAuctionID, price });
-  });
-
-  auctionsManager.on("AuctionCancelled", (scAuctionID) => {
-    //add check for my auctions
-    console.log(`[AuctionsManager] Auction cancelled by client!`);
-    console.log("----------------------------------------------------");
-  });
-
-  auctionsManager.on("BidPlaced", async (scAuctionID, _, scPrice) => {
+  auctionsManager.on("AuctionCreated", async (scAuctionID, client) => {
     console.log(
-      `[AuctionsManager] BidPlaced successfully! AuctionID: ${scAuctionID}, Price: ${scPrice}`
+      `[AuctionsManager] Auction created by client!\n AuctionID: ${scAuctionID}\n Client: ${client}`
     );
     console.log("----------------------------------------------------");
+    // await bidAuctionRequest({ auctionID: scAuctionID, price });
+  });
+
+  auctionsManager.on("AuctionCancelled", (scAuctionID, client) => {
+    //add check for my auctions
+    console.log(
+      `[AuctionsManager] Auction cancelled by client!\n AuctionID: ${scAuctionID}\n Client: ${client}`
+    );
+    console.log("----------------------------------------------------");
+  });
+
+  auctionsManager.on("BidPlaced", async (scAuctionID, provider, scPrice) => {
+    if (provider === providerAddress) {
+      console.log(
+        `[AuctionsManager] BidPlaced successfully!\n AuctionID: ${scAuctionID}\n Price: ${scPrice}`
+      );
+      console.log("----------------------------------------------------");
+    }
   });
 
   auctionsManager.on("AuctionFinalized", (scAuctionID, provider) => {
@@ -66,78 +72,111 @@ export async function providerSepolia() {
     }
   });
 
-  auctionsManager.on("TaskIDCreated", (scAuctionID, scTaskID) => {
-    //add check for my auctions
-    taskID = scTaskID.toString();
-    console.log(`[AuctionsManager] TaskID Created! TaskID: ${scTaskID}`);
-    console.log("----------------------------------------------------");
-  });
-
-  tasksManager.on("TaskCreated", async (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Task created by auction!`);
-      console.log("----------------------------------------------------");
-      await activateTaskRequest({ taskID, price });
-    }
-  });
-  tasksManager.on("TaskCancelled", (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Task cancelled by client!`);
-      console.log("----------------------------------------------------");
-    }
-  });
-  tasksManager.on("TaskInvalidated", (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Task invalidated by client!`);
-      console.log("----------------------------------------------------");
-    }
-  });
-  tasksManager.on("TaskActivated", async (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Task activated successfully!`);
-      console.log("----------------------------------------------------");
-      console.log(`[TasksManager] Computing task...`);
-      await computeTaskSepolia({ taskID });
-      console.log("----------------------------------------------------");
-    }
-  });
-  tasksManager.on("TaskCompletedSuccessfully", async (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(
-        `[TasksManager] Task completed successfully! Waiting to send results...`
-      );
-      console.log("----------------------------------------------------");
-      const resultsCID = await addResultsToIpfs({ taskID });
-      if (resultsCID) {
+  auctionsManager.on(
+    "TaskIDCreated",
+    (scAuctionID, scTaskID, client, provider) => {
+      if (provider === providerAddress) {
+        //add check for my auctions
+        taskID = scTaskID.toString();
         console.log(
-          `[TasksManager] Results added to IPFS, with CID: ${resultsCID}`
+          `[AuctionsManager] TaskID Created!\n AuctionID: ${scAuctionID}\n TaskID: ${scTaskID}\n Client: ${client}`
         );
-        await sendResultsRequest({ taskID, resultsCID });
+        console.log("----------------------------------------------------");
       }
     }
-  });
+  );
 
-  tasksManager.on("TaskCompletedUnsuccessfully", (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Task completed unsuccessfully!`);
+  tasksManager.on("TaskCreated", async (scTaskID, client, provider) => {
+    if (provider === providerAddress) {
+      console.log(
+        `[TasksManager] Task created by auction!\n TaskID: ${scTaskID}\n Client: ${client}`
+      );
+      console.log("----------------------------------------------------");
+      // await activateTaskRequest({ taskID, price });
+    }
+  });
+  tasksManager.on("TaskCancelled", (scTaskID, client, provider) => {
+    if (provider === providerAddress) {
+      console.log(
+        `[TasksManager] Task cancelled by client!\n TaskID: ${scTaskID}\n Client: ${client}`
+      );
       console.log("----------------------------------------------------");
     }
   });
+  tasksManager.on("TaskInvalidated", (scTaskID, client, provider) => {
+    if (provider === providerAddress) {
+      console.log(
+        `[TasksManager] Task invalidated by client!\n TaskID: ${scTaskID}\n Client: ${client}`
+      );
+      console.log("----------------------------------------------------");
+    }
+  });
+  tasksManager.on("TaskActivated", async (scTaskID, client, provider) => {
+    if (provider === providerAddress) {
+      console.log(
+        `[TasksManager] Task activated successfully!\n TaskID: ${scTaskID}\n Client: ${client}`
+      );
+      console.log("----------------------------------------------------");
+      console.log(`[TasksManager] Computing task...`);
+      await computeTaskSepolia({ taskID: scTaskID });
+      console.log("----------------------------------------------------");
+    }
+  });
+  tasksManager.on(
+    "TaskCompletedSuccessfully",
+    async (scTaskID, client, provider) => {
+      if (provider === providerAddress) {
+        console.log(
+          `[TasksManager] Task completed successfully! Waiting to send results...\n TaskID: ${scTaskID}\n Client: ${client}`
+        );
+        console.log("----------------------------------------------------");
+        const resultsCID = await addResultsToIpfs({ taskID: scTaskID });
+        if (resultsCID) {
+          console.log(
+            `[TasksManager] Results added to IPFS, with CID: ${resultsCID}`
+          );
+          await sendResultsRequest({ taskID: scTaskID, resultsCID });
+        }
+      }
+    }
+  );
 
-  tasksManager.on("TaskReceivedResultsSuccessfully", (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Results received successfully!`);
-      console.log("----------------------------------------------------");
+  tasksManager.on(
+    "TaskCompletedUnsuccessfully",
+    (scTaskID, client, provider) => {
+      if (provider === providerAddress) {
+        console.log(
+          `[TasksManager] Task completed unsuccessfully!\n TaskID: ${scTaskID}\n Client: ${client}`
+        );
+        console.log("----------------------------------------------------");
+      }
     }
-  });
-  tasksManager.on("TaskReceivedResultsUnsuccessfully", (scTaskID) => {
-    if (scTaskID.toString() === taskID) {
-      console.log(`[TasksManager] Results received unsuccessfully!`);
-      console.log("----------------------------------------------------");
+  );
+
+  tasksManager.on(
+    "TaskReceivedResultsSuccessfully",
+    (scTaskID, client, provider) => {
+      if (provider === providerAddress) {
+        console.log(
+          `[TasksManager] Results received successfully!\n TaskID: ${scTaskID}\n Client: ${client}`
+        );
+        console.log("----------------------------------------------------");
+      }
     }
-  });
+  );
+  tasksManager.on(
+    "TaskReceivedResultsUnsuccessfully",
+    (scTaskID, client, provider) => {
+      if (provider === providerAddress) {
+        console.log(
+          `[TasksManager] Results received unsuccessfully!\n TaskID: ${scTaskID}\n Client: ${client}`
+        );
+        console.log("----------------------------------------------------");
+      }
+    }
+  );
   tasksManager.on("ProviderUpvoted", async (provider, scTaskID) => {
-    if (scTaskID.toString() === taskID && provider === providerAddress) {
+    if (provider === providerAddress) {
       console.log(`[TasksManager] Congratulations! You've been upvoted!`);
       console.log("----------------------------------------------------");
       const performance = await getPerformanceRequest(provider);
@@ -152,7 +191,7 @@ export async function providerSepolia() {
     }
   });
   tasksManager.on("ProviderDownvoted", async (provider, scTaskID) => {
-    if (scTaskID.toString() === taskID && provider === providerAddress) {
+    if (provider === providerAddress) {
       console.log(`[TasksManager] Oops! You've been downvoted!`);
       console.log("----------------------------------------------------");
       const performance = await getPerformanceRequest(provider);

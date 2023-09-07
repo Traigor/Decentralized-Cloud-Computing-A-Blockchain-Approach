@@ -21,6 +21,7 @@ async function getCode({ taskID }: TGetCode) {
 async function makeRequest({ taskID }: TGetCode) {
   try {
     const code = await getCode({ taskID });
+    console.log("Code CID:", code);
     return code;
   } catch (error) {
     if (

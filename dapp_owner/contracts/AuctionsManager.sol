@@ -14,6 +14,7 @@ contract AuctionsManager {
     }
 
     struct Auction {
+        bytes32 auctionID;
         address client;
         uint creationTime;
         uint auctionDeadline;
@@ -41,12 +42,12 @@ contract AuctionsManager {
     mapping (bytes32 => Auction) private auctions;
     bytes32[] private bytes32_auctions;
 
-    event AuctionCreated(bytes32 auctionID);
-    event AuctionCancelled(bytes32 auctionID);
-    event AuctionFinalized(bytes32 auctionID, address provider);
+    event AuctionCreated(bytes32 auctionID, address client);
+    event AuctionCancelled(bytes32 auctionID, address client);
+    event AuctionFinalized(bytes32 auctionID, address client, address provider);
     event AuctionDeleted(bytes32 auctionID);
     event BidPlaced(bytes32 auctionID, address provider, uint bid);
-    event TaskIDCreated(bytes32 auctionID, bytes32 taskID);
+    event TaskIDCreated(bytes32 auctionID, bytes32 taskID, address client, address provider);
 
     modifier ownerOnly() {
         require(
@@ -99,13 +100,14 @@ contract AuctionsManager {
     }
 
     function createAuction(
-        bytes32 _auctionID, 
         uint _auctionDeadline, 
         uint _taskDeadline,
         bytes32 _clientVerification,
         string memory _code
-    ) public notExistingAuctionOnly(_auctionID)
-        {
+    ) public 
+    {
+        bytes32 _auctionID = keccak256(abi.encode(block.timestamp, msg.sender, _auctionDeadline, _taskDeadline, _clientVerification, _code));
+        auctions[_auctionID].auctionID = _auctionID;
         auctions[_auctionID].client = msg.sender;
         auctions[_auctionID].creationTime = block.timestamp;
         auctions[_auctionID].auctionDeadline = _auctionDeadline;
@@ -116,22 +118,23 @@ contract AuctionsManager {
         auctions[_auctionID].auctionState = AuctionState.Created;
         auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
         bytes32_auctions.push(_auctionID);
-        emit AuctionCreated(_auctionID);
+        emit AuctionCreated( _auctionID, msg.sender);
     }
 
     function cancelAuction(bytes32 _auctionID) public clientOnly(_auctionID) inAuctionState(_auctionID, AuctionState.Created) existingAuctionOnly(_auctionID) {
         auctions[_auctionID].auctionState = AuctionState.Cancelled;
         auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
-        emit AuctionCancelled(_auctionID);
+        emit AuctionCancelled(_auctionID, auctions[_auctionID].client);
      }
 
-    function bid(bytes32 _auctionID, uint _bid) public  inAuctionState(_auctionID, AuctionState.Created)  existingAuctionOnly(_auctionID) {
+    function bid(bytes32 _auctionID, uint _bid) public inAuctionState(_auctionID, AuctionState.Created)  existingAuctionOnly(_auctionID) {
         require(msg.sender != auctions[_auctionID].client, "Client can't bid to this auction"); 
         require(
             (block.timestamp <= auctions[_auctionID].creationTime + auctions[_auctionID].auctionDeadline),
             "Time has expired."
         );
         uint providerIndex = 0;
+        bool providerExists = false;
         if(auctions[_auctionID].providerBids.length != 0)
         {    while(auctions[_auctionID].providerBids[providerIndex].provider != msg.sender)
             {
@@ -145,14 +148,24 @@ contract AuctionsManager {
                 _bid < auctions[_auctionID].providerBids[providerIndex].bid,
                 "Bid is not lower than than the previous one."
                 );
+                providerExists = true;
             }
         }
-        ProviderBid memory currentBid;
-        currentBid.provider = msg.sender;
-        currentBid.bid = _bid;
-        currentBid.providerUpVotes = tasksManager.getPerformance(msg.sender).upVotes;
-        currentBid.providerDownVotes = tasksManager.getPerformance(msg.sender).downVotes;
-        auctions[_auctionID].providerBids.push(currentBid);
+        if(providerExists == true)
+        {
+            auctions[_auctionID].providerBids[providerIndex].bid = _bid;
+            auctions[_auctionID].providerBids[providerIndex].providerUpVotes = tasksManager.getPerformance(msg.sender).upVotes;
+            auctions[_auctionID].providerBids[providerIndex].providerDownVotes = tasksManager.getPerformance(msg.sender).downVotes;
+        }
+        else 
+        {
+            ProviderBid memory currentBid;
+            currentBid.provider = msg.sender;
+            currentBid.bid = _bid;
+            currentBid.providerUpVotes = tasksManager.getPerformance(msg.sender).upVotes;
+            currentBid.providerDownVotes = tasksManager.getPerformance(msg.sender).downVotes;
+            auctions[_auctionID].providerBids.push(currentBid);
+        }
         auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
         emit BidPlaced(_auctionID, msg.sender, _bid);
      }
@@ -177,11 +190,11 @@ contract AuctionsManager {
         Auction storage currentAuction = auctions[_auctionID];
         auctions[_auctionID].auctionState = AuctionState.Finalized;
         auctions[_auctionID].lastUpdateTimestamp = block.timestamp;
-        emit AuctionFinalized(_auctionID, _provider);
+        emit AuctionFinalized(_auctionID, auctions[_auctionID].client,  _provider);
         bytes32 taskID = keccak256(abi.encode(currentAuction.client, _winnerBid, block.timestamp));
         uint clientCollateral = getClientCollateral(_auctionID);
         tasksManager.createTask{value: clientCollateral}(taskID, currentAuction.client, _provider,  _winnerBid.bid, currentAuction.taskDeadline, currentAuction.clientVerification,currentAuction.code);
-        emit TaskIDCreated(_auctionID, taskID);
+        emit TaskIDCreated(_auctionID, taskID, auctions[_auctionID].client , _provider);
     }
 
     function getClientCollateral(bytes32 _auctionID) private view returns (uint) {
@@ -222,9 +235,30 @@ contract AuctionsManager {
         emit AuctionDeleted(_auctionID);
     }
 
-    function getActiveAuctions() ownerOnly public view returns (uint256) {
+    function getActiveAuctionsLength() ownerOnly public view returns (uint256) {
         return bytes32_auctions.length;
     }
+
+    function getActiveAuctions() public view returns (Auction[] memory) {
+        Auction[] memory activeAuctions = new Auction[](bytes32_auctions.length);
+        uint auctionsLength = 0;
+        for (uint i = 0; i < bytes32_auctions.length; i++)
+        {
+            if (auctions[bytes32_auctions[i]].auctionState == AuctionState.Created && block.timestamp <= auctions[bytes32_auctions[i]].creationTime + auctions[bytes32_auctions[i]].auctionDeadline && auctions[bytes32_auctions[i]].client != msg.sender)
+            {
+                activeAuctions[auctionsLength] = auctions[bytes32_auctions[i]];
+                auctionsLength++;
+            }
+        }
+         Auction[] memory result = new Auction[](auctionsLength);
+        for (uint i = 0; i < auctionsLength; i++) 
+        {
+            result[i] = activeAuctions[i];
+        }
+        return result;
+    }
+
+
 
     function getAuctionBids(bytes32 _auctionID) public view returns(ProviderBid[] memory) {
         return auctions[_auctionID].providerBids;
@@ -245,6 +279,26 @@ contract AuctionsManager {
         else 
             ret = "Error";
         return ret;
+    }
+
+    function getAuctionsByClient(address _client) public view returns(Auction[] memory)
+    {
+        Auction[] memory auctionsByClient = new Auction[](bytes32_auctions.length);
+        uint auctionsLength = 0;
+        for (uint i = 0; i < bytes32_auctions.length; i++)
+        {
+            if (auctions[bytes32_auctions[i]].client == _client)
+            {
+                auctionsByClient[auctionsLength] = auctions[bytes32_auctions[i]];
+                auctionsLength++;
+            }
+        }
+        Auction[] memory result = new Auction[](auctionsLength);
+        for (uint i = 0; i < auctionsLength; i++) 
+        {
+            result[i] = auctionsByClient[i];
+        }
+        return result;
     }
 
     function getOwner() public view returns(address) {
