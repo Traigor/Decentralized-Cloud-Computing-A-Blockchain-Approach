@@ -9,7 +9,7 @@ import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 
-function GetBids() {
+function ActiveTasks() {
   const [taskContract, setTaskContract] = useState(null)
   const [taskID, setTaskID] = useState(null)
   const [tasks, setTasks] = useState(null)
@@ -21,6 +21,7 @@ function GetBids() {
   const [loading, setLoading] = useState(false)
   const [visiblePending, setVisiblePending] = useState(false)
   const [visibleCompleted, setVisibleCompleted] = useState(false)
+  const [visibleTasks, setVisibleTasks] = useState(false)
 
   useEffect(() => {
     const contractData = async () => {
@@ -39,6 +40,7 @@ function GetBids() {
   }, [])
 
   const getTasksBtnhandler = async () => {
+    setVisibleTasks(!visibleTasks)
     if (window.ethereum.selectedAddress) {
       const tasks = await taskContract.getTasksByClient(window.ethereum.selectedAddress)
       setTasks(tasks)
@@ -136,7 +138,7 @@ function GetBids() {
       _props: { scope: 'col' },
     },
     {
-      key: 'timeActivated',
+      key: 'activationTime',
       label: 'Activation',
       _props: { scope: 'col' },
     },
@@ -180,7 +182,7 @@ function GetBids() {
                     ).toLocaleString('en-GB')
                   : '-',
               price: task.price.toNumber(),
-              timeActivated:
+              activationTime:
                 task.activationTime.toNumber() !== 0
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
                   : '-',
@@ -214,7 +216,7 @@ function GetBids() {
                     ).toLocaleString('en-GB')
                   : '-',
               price: task.price.toNumber(),
-              timeActivated:
+              activationTime:
                 task.activationTime.toNumber() !== 0
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
                   : '-',
@@ -233,14 +235,14 @@ function GetBids() {
 
       //sort tasks by activationDate in descending order
       const sortedTasks = mappedTasks.sort((a, b) => {
-        if (a.timeActivated === '-' && b.timeActivated === '-') {
+        if (a.activationTime === '-' && b.activationTime === '-') {
           return 0
-        } else if (a.timeActivated === '-') {
+        } else if (a.activationTime === '-') {
           return -1
-        } else if (b.timeActivated === '-') {
+        } else if (b.activationTime === '-') {
           return 1
         } else {
-          return new Date(b.timeActivated) - new Date(a.timeActivated)
+          return new Date(b.activationTime).getTime() - new Date(a.activationTime).getTime()
         }
       })
       return sortedTasks
@@ -257,7 +259,7 @@ function GetBids() {
         </CButton>
       </Card>
       <Card className="text-center">
-        {tasks ? <CTable columns={tasksColumns} items={mapTasks(tasks)} /> : null}
+        {visibleTasks && tasks ? <CTable columns={tasksColumns} items={mapTasks(tasks)} /> : null}
       </Card>
       {taskID && taskState === 6 && paymentState === 1 ? (
         <Card className="text-center">
@@ -293,4 +295,4 @@ function GetBids() {
   )
 }
 
-export default GetBids
+export default ActiveTasks
