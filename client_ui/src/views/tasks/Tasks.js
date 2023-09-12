@@ -41,11 +41,8 @@ function ActiveTasks() {
 
   const getTasksBtnhandler = async () => {
     setVisibleTasks(!visibleTasks)
-    if (window.ethereum.selectedAddress) {
-      const tasks = await taskContract.getTasksByClient(window.ethereum.selectedAddress)
-      setTasks(tasks)
-      console.log('tasks', tasks)
-    }
+    const tasks = await taskContract.getTasksByClient()
+    setTasks(tasks)
   }
 
   const taskRadioHandler = (taskID, taskState, paymentState) => {
@@ -61,7 +58,6 @@ function ActiveTasks() {
     if (taskContract) {
       const paymentPendingHandler = (taskID, client, payment) => {
         if (compareAddresses(client, window.ethereum.selectedAddress)) {
-          setPayment(payment.toNumber())
           setTaskID(taskID)
           setLoading(false)
           setVisiblePending(true)
@@ -96,7 +92,7 @@ function ActiveTasks() {
   const payHandler = async () => {
     setLoading(true)
     const task = tasks.find((task) => task.taskID === taskID)
-    const payment = task.cost.toNumber() - task.clientCollateral.toNumber()
+    const payment = task.cost.toNumber() - task.price.toNumber() * 2
     setPayment(payment)
     const wei = 1000000000000000000
     if (payment) {
@@ -191,7 +187,7 @@ function ActiveTasks() {
                 if (task.paymentState === 0) {
                   return 'Initialized'
                 } else if (task.paymentState === 1) {
-                  return `Pending[${task.cost.toNumber() - task.clientCollateral.toNumber()}]`
+                  return `Pending[${task.cost.toNumber() - task.price.toNumber() * 2}]`
                 } else if (task.paymentState === 2) {
                   return `Completed[${task.cost}]`
                 }
@@ -225,7 +221,7 @@ function ActiveTasks() {
                 if (task.paymentState === 0) {
                   return 'Initialized'
                 } else if (task.paymentState === 1) {
-                  return `Pending[${task.cost.toNumber() - task.clientCollateral.toNumber()}]`
+                  return `Pending[${task.cost.toNumber() - task.price.toNumber() * 2}]`
                 } else if (task.paymentState === 2) {
                   return `Completed[${task.cost}]`
                 }

@@ -57,17 +57,17 @@ function GetBids() {
 
   const getAuctionsBtnHandler = async () => {
     setAuctionsSelected(!auctionsSelected)
-    if (window.ethereum.selectedAddress) {
-      const auctions = await auctionContract.getAuctionsByClient(window.ethereum.selectedAddress)
-      setAuctions(auctions)
-    }
+    const auctions = await auctionContract.getAuctionsByClient()
+    setAuctions(auctions)
   }
 
   const finalizeBtnhandler = async () => {
     setLoading(true)
     const wei = 1000000000000000000
     const clientCollateral = bid * 2
+    console.log(clientCollateral)
     const valueEth = ethers.utils.parseEther((clientCollateral / wei).toFixed(18).toString())
+    console.log(valueEth)
     await auctionContract.finalize(auctionID, selectedProvider, { value: valueEth })
   }
 

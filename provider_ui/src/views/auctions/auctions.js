@@ -122,8 +122,10 @@ function GetBids() {
 
   const makeBidHandler = async () => {
     setLoading(true)
-    await auctionContract.bid(auctionID, bid)
+    console.log(auctions)
+    console.log('auctionID', auctionID)
     console.log('bid', bid)
+    await auctionContract.bid(auctionID, bid)
   }
 
   const auctionsColumns = [

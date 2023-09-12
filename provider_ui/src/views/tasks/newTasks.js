@@ -58,11 +58,8 @@ function GetBids() {
 
   const getTasksBtnhandler = async () => {
     setTasksSelected(!tasksSelected)
-    if (window.ethereum.selectedAddress) {
-      const tasks = await taskContract.getTasksByProvider(window.ethereum.selectedAddress)
-      setTasks(tasks)
-      console.log('tasks', tasks)
-    }
+    const tasks = await taskContract.getTasksByProvider()
+    setTasks(tasks)
   }
 
   const taskRadioHandler = (taskID, taskState, paymentState) => {
