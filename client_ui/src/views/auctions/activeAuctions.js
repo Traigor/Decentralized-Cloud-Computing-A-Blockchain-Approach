@@ -1,5 +1,5 @@
 import React from 'react'
-import { CButton, CTable, CFormCheck, CSpinner, CAlert } from '@coreui/react'
+import { CButton, CTable, CFormCheck, CSpinner, CAlert, CTooltip } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCheckCircle } from '@coreui/icons'
 import { useState, useEffect } from 'react'
@@ -10,13 +10,13 @@ import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
 import { Web3Provider } from '@ethersproject/providers'
 import calculateScore from '../../utils/score'
 import compareAddresses from 'src/utils/compareAddresses'
+import getClientCollateral from 'src/utils/getClientCollateral'
 
 function GetBids() {
   const [auctionContract, setAuctionContract] = useState(null)
   const [taskContract, setTaskContract] = useState(null)
   const [bids, setBids] = useState(null)
   const [selectedProvider, setSelectedProvider] = useState(null)
-  const [bid, setBid] = useState(0)
   const [auctions, setAuctions] = useState(null)
   const [auctionID, setAuctionID] = useState(null)
   const [selectedAuctionRadio, setSelectedAuctionRadio] = useState(null)
@@ -26,6 +26,7 @@ function GetBids() {
   const [taskID, setTaskID] = useState(null)
   const [auctionsSelected, setAuctionsSelected] = useState(false)
   const [bidsSelected, setBidsSelected] = useState(false)
+  const [clientCollateral, setClientCollateral] = useState(null)
 
   useEffect(() => {
     const contractData = async () => {
@@ -61,13 +62,10 @@ function GetBids() {
     setAuctions(auctions)
   }
 
-  const finalizeBtnhandler = async () => {
+  const finalizeBtnHandler = async () => {
     setLoading(true)
     const wei = 1000000000000000000
-    const clientCollateral = bid * 2
-    console.log(clientCollateral)
     const valueEth = ethers.utils.parseEther((clientCollateral / wei).toFixed(18).toString())
-    console.log(valueEth)
     await auctionContract.finalize(auctionID, selectedProvider, { value: valueEth })
   }
 
@@ -95,7 +93,7 @@ function GetBids() {
 
   const bidRadioHandler = (provider, bid) => {
     setSelectedProvider(provider)
-    setBid(bid)
+    setClientCollateral(getClientCollateral(bid))
     setSelectedBidRadio(provider)
   }
 
@@ -174,7 +172,6 @@ function GetBids() {
           score: (
             calculateScore(bid.providerUpVotes.toNumber(), bid.providerDownVotes.toNumber()) * 100
           ).toFixed(2),
-          _cellProps: { id: { scope: 'row' } },
         }
       })
       //sort auctions by bid date in ascending order
@@ -216,19 +213,20 @@ function GetBids() {
                 (auction.creationTime.toNumber() + auction.auctionDeadline.toNumber()) * 1000,
               ).toLocaleString('en-GB'),
               auctionState: AuctionState[auction.auctionState],
+              deadlineEpoch: auction.creationTime.toNumber() + auction.auctionDeadline.toNumber(),
             }
           : {}
       })
-      //sort auctions by deadline date in descending order
+      //sort auctions by deadline time in ascending order
       const sortedAuctions = mappedAuctions.sort((a, b) => {
-        if (a.auctionDeadline === '-' && b.auctionDeadline === '-') {
+        if (a.deadlineEpoch === 0 && b.deadlineEpoch === 0) {
           return 0
-        } else if (a.auctionDeadline === '-') {
+        } else if (b.deadlineEpoch === 0) {
           return -1
-        } else if (b.auctionDeadline === '-') {
+        } else if (a.deadlineEpoch === 0) {
           return 1
         } else {
-          return new Date(b.auctionDeadline).getTime() - new Date(a.auctionDeadline).getTime()
+          return a.deadlineEpoch - b.deadlineEpoch
         }
       })
       return sortedAuctions
@@ -260,10 +258,17 @@ function GetBids() {
         {bidsSelected && bids ? <CTable columns={bidsColumns} items={mapBids(bids)} /> : null}
       </Card>
       <Card className="text-center">
-        <CButton color="success" onClick={finalizeBtnhandler}>
-          {loading ? <CSpinner size="sm" aria-hidden="true" /> : null}
-          {''} Finalize Auction and Create Task
-        </CButton>
+        {bidsSelected && bids ? (
+          <CTooltip
+            content={`You will be charged ${clientCollateral} wei as collateral`}
+            placement="bottom"
+          >
+            <CButton color="success" onClick={finalizeBtnHandler}>
+              {loading ? <CSpinner size="sm" aria-hidden="true" /> : null}
+              {''} Finalize Auction and Create Task
+            </CButton>
+          </CTooltip>
+        ) : null}
       </Card>
       {visibleTask ? (
         <CAlert color="success" className="d-flex align-items-center" dismissible>

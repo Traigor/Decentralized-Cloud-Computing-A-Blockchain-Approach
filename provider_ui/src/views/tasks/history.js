@@ -10,8 +10,9 @@ import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 import calculateScore from '../../utils/Score'
+import calculatePayment from 'src/utils/calculatePayment'
 
-function GetBids() {
+function TasksHistory() {
   const [taskContract, setTaskContract] = useState(null)
   const [tasks, setTasks] = useState(null)
   const [visiblePayment, setVisiblePayment] = useState(false)
@@ -75,11 +76,8 @@ function GetBids() {
 
   const getTasksBtnhandler = async () => {
     setTasksSelected(!tasksSelected)
-    if (window.ethereum.selectedAddress) {
-      const tasks = await taskContract.getTasksByProvider(window.ethereum.selectedAddress)
-      setTasks(tasks)
-      console.log('tasks', tasks)
-    }
+    const tasks = await taskContract.getTasksByProvider()
+    setTasks(tasks)
   }
 
   const TaskState = {
@@ -105,7 +103,7 @@ function GetBids() {
       _props: { scope: 'col' },
     },
     {
-      key: 'timeActivated',
+      key: 'activationTime',
       label: 'Activation',
       _props: { scope: 'col' },
     },
@@ -128,9 +126,9 @@ function GetBids() {
 
   const mapTasks = (tasks) => {
     if (tasks) {
-      console.log('TASK', tasks)
       const mappedTasks = tasks.map((task) => {
-        return task.taskState !== 0 || task.crea
+        return task.taskState !== 0 ||
+          task.activationTime.toNumber() + task.deadline.toNumber() > Math.floor(Date.now() / 1000)
           ? {
               taskID: task.taskID.slice(0, 6) + '...' + task.taskID.slice(-4),
               deadline:
@@ -140,7 +138,7 @@ function GetBids() {
                     ).toLocaleString('en-GB')
                   : '-',
               price: task.price.toNumber(),
-              timeActivated:
+              activationTime:
                 task.activationTime.toNumber() !== 0
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
                   : '-',
@@ -149,24 +147,29 @@ function GetBids() {
                 if (task.paymentState === 0) {
                   return 'Initialized'
                 } else if (task.paymentState === 1) {
-                  return `Pending[${task.cost.toNumber() - task.clientCollateral.toNumber()}]`
+                  return `Pending[${
+                    calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending
+                  }]`
                 } else if (task.paymentState === 2) {
-                  return `Completed[${task.cost}]`
+                  return `Completed[${
+                    calculatePayment(task.price.toNumber(), task.duration.toNumber()).completed
+                  }]`
                 }
               })(),
+              activationEpoch: task.activationTime.toNumber(),
             }
           : {}
       })
-      //sort tasks by activationDate in descending order
+      //sort tasks by activation time in descending order
       const sortedTasks = mappedTasks.sort((a, b) => {
-        if (a.timeActivated === '-' && b.timeActivated === '-') {
+        if (a.activationEpoch === 0 && b.activationEpoch === 0) {
           return 0
-        } else if (a.timeActivated === '-') {
+        } else if (a.activationEpoch === 0) {
           return -1
-        } else if (b.timeActivated === '-') {
+        } else if (b.activationEpoch === 0) {
           return 1
         } else {
-          return new Date(b.timeActivated) - new Date(a.timeActivated)
+          return b.activationEpoch - a.activationEpoch
         }
       })
       return sortedTasks
@@ -235,4 +238,4 @@ function GetBids() {
   )
 }
 
-export default GetBids
+export default TasksHistory

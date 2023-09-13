@@ -30,7 +30,7 @@ function History() {
 
   const getAuctionsBtnHandler = async () => {
     setVisibleAuctions(!visibleAuctions)
-    const auctions = await auctionContract.getAuctionsByClient()
+    const auctions = await auctionContract.getAuctionWinnersByProvider()
     setAuctions(auctions)
   }
 
@@ -71,10 +71,7 @@ function History() {
   const mapAuctions = (auctions) => {
     if (auctions) {
       const mappedAuctions = auctions.map((auction) => {
-        // eslint-disable-next-line
-        return auction.auctionState !== 0 ||
-          auction.creationTime.toNumber() + auction.auctionDeadline.toNumber() <
-            Math.floor(Date.now() / 1000)
+        return auction.auctionState !== 0
           ? {
               auctionID: auction.auctionID.slice(0, 6) + '...' + auction.auctionID.slice(-4),
               creationTime: new Date(auction.creationTime.toNumber() * 1000).toLocaleString(

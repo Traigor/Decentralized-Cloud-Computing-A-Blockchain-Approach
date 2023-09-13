@@ -6,8 +6,9 @@ import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import AuctionsManagerSepolia from '../../constants/AuctionsManagerSepolia.json'
 import { Web3Provider } from '@ethersproject/providers'
+import compareAddresses from 'src/utils/compareAddresses'
 
-function History() {
+function ActiveBids() {
   const [auctionContract, setAuctionContract] = useState(null)
   const [auctions, setAuctions] = useState(null)
   const [visibleAuctions, setVisibleAuctions] = useState(false)
@@ -30,7 +31,7 @@ function History() {
 
   const getAuctionsBtnHandler = async () => {
     setVisibleAuctions(!visibleAuctions)
-    const auctions = await auctionContract.getAuctionsByClient()
+    const auctions = await auctionContract.getAuctionActiveBidsByProvider()
     setAuctions(auctions)
   }
 
@@ -38,6 +39,11 @@ function History() {
     {
       key: 'auctionID',
       label: 'AuctionID',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'bid',
+      label: 'Bid',
       _props: { scope: 'col' },
     },
     {
@@ -50,59 +56,33 @@ function History() {
       label: 'Deadline',
       _props: { scope: 'col' },
     },
-    {
-      key: 'auctionState',
-      label: 'State',
-      _props: { scope: 'col' },
-    },
-    {
-      key: 'taskID',
-      label: 'TaskID',
-      _props: { scope: 'col' },
-    },
   ]
-
-  const AuctionState = {
-    0: 'Created',
-    1: 'Cancelled',
-    2: 'Finalized',
-  }
 
   const mapAuctions = (auctions) => {
     if (auctions) {
       const mappedAuctions = auctions.map((auction) => {
-        // eslint-disable-next-line
-        return auction.auctionState !== 0 ||
-          auction.creationTime.toNumber() + auction.auctionDeadline.toNumber() <
-            Math.floor(Date.now() / 1000)
-          ? {
-              auctionID: auction.auctionID.slice(0, 6) + '...' + auction.auctionID.slice(-4),
-              creationTime: new Date(auction.creationTime.toNumber() * 1000).toLocaleString(
-                'en-GB',
-              ),
-              auctionDeadline: new Date(
-                (auction.creationTime.toNumber() + auction.auctionDeadline.toNumber()) * 1000,
-              ).toLocaleString('en-GB'),
-              auctionState: AuctionState[auction.auctionState],
-              taskID:
-                // eslint-disable-next-line
-                auction.taskID != 0
-                  ? auction.taskID.slice(0, 6) + '...' + auction.taskID.slice(-4)
-                  : '-',
-              creationEpoch: auction.creationTime.toNumber(),
-            }
-          : {}
+        return {
+          auctionID: auction.auctionID.slice(0, 6) + '...' + auction.auctionID.slice(-4),
+          bid: auction.providerBids
+            .find((bid) => compareAddresses(bid.provider, window.ethereum.selectedAddress))
+            .bid.toNumber(),
+          creationTime: new Date(auction.creationTime.toNumber() * 1000).toLocaleString('en-GB'),
+          auctionDeadline: new Date(
+            (auction.creationTime.toNumber() + auction.auctionDeadline.toNumber()) * 1000,
+          ).toLocaleString('en-GB'),
+          deadlineEpoch: auction.creationTime.toNumber() + auction.auctionDeadline.toNumber(),
+        }
       })
-      //sort auctions by creation time in descending order
+      //sort auctions by deadline time in ascending order
       const sortedAuctions = mappedAuctions.sort((a, b) => {
-        if (a.creationEpoch === 0 && b.creationEpoch === 0) {
+        if (a.deadlineEpoch === 0 && b.deadlineEpoch === 0) {
           return 0
-        } else if (a.creationEpoch === 0) {
-          return -1
-        } else if (b.creationEpoch === 0) {
+        } else if (a.deadlineEpoch === 0) {
           return 1
+        } else if (b.deadlineEpoch === 0) {
+          return -1
         } else {
-          return b.creationEpoch - a.creationEpoch
+          return a.deadlineEpoch - b.deadlineEpoch
         }
       })
       return sortedAuctions
@@ -113,7 +93,7 @@ function History() {
     <div className="App">
       <Card className="text-center">
         <CButton color="info" onClick={getAuctionsBtnHandler}>
-          My Completed Auctions
+          My Active Bids
         </CButton>
       </Card>
       <Card className="text-center">
@@ -125,4 +105,4 @@ function History() {
   )
 }
 
-export default History
+export default ActiveBids

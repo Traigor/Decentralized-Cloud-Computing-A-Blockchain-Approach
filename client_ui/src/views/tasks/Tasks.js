@@ -8,6 +8,7 @@ import { Card } from 'react-bootstrap'
 import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
+import calculatePayment from 'src/utils/calculatePayment'
 
 function ActiveTasks() {
   const [taskContract, setTaskContract] = useState(null)
@@ -56,8 +57,9 @@ function ActiveTasks() {
 
   useEffect(() => {
     if (taskContract) {
-      const paymentPendingHandler = (taskID, client, payment) => {
+      const paymentPendingHandler = (taskID, client, provider, payment) => {
         if (compareAddresses(client, window.ethereum.selectedAddress)) {
+          setPayment(payment.toNumber())
           setTaskID(taskID)
           setLoading(false)
           setVisiblePending(true)
@@ -92,7 +94,7 @@ function ActiveTasks() {
   const payHandler = async () => {
     setLoading(true)
     const task = tasks.find((task) => task.taskID === taskID)
-    const payment = task.cost.toNumber() - task.price.toNumber() * 2
+    const payment = calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending
     setPayment(payment)
     const wei = 1000000000000000000
     if (payment) {
@@ -155,6 +157,18 @@ function ActiveTasks() {
     },
   ]
 
+  const paymentStateFunction = (task) => {
+    if (task.paymentState === 0) {
+      return 'Initialized'
+    } else if (task.paymentState === 1) {
+      return `Pending[${calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending}]`
+    } else if (task.paymentState === 2) {
+      return `Completed[${
+        calculatePayment(task.price.toNumber(), task.duration.toNumber()).completed
+      }]`
+    }
+  }
+
   const mapTasks = (tasks) => {
     if (tasks) {
       const mappedTasks = tasks.map((task) => {
@@ -183,15 +197,8 @@ function ActiveTasks() {
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
                   : '-',
               taskState: TaskState[task.taskState],
-              paymentState: (() => {
-                if (task.paymentState === 0) {
-                  return 'Initialized'
-                } else if (task.paymentState === 1) {
-                  return `Pending[${task.cost.toNumber() - task.price.toNumber() * 2}]`
-                } else if (task.paymentState === 2) {
-                  return `Completed[${task.cost}]`
-                }
-              })(),
+              paymentState: paymentStateFunction(task),
+              activationEpoch: task.activationTime.toNumber(),
             }
           : {
               button: (
@@ -217,28 +224,21 @@ function ActiveTasks() {
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
                   : '-',
               taskState: TaskState[task.taskState],
-              paymentState: (() => {
-                if (task.paymentState === 0) {
-                  return 'Initialized'
-                } else if (task.paymentState === 1) {
-                  return `Pending[${task.cost.toNumber() - task.price.toNumber() * 2}]`
-                } else if (task.paymentState === 2) {
-                  return `Completed[${task.cost}]`
-                }
-              })(),
+              paymentState: paymentStateFunction(task),
+              activationEpoch: task.activationTime.toNumber(),
             }
       })
 
       //sort tasks by activationDate in descending order
       const sortedTasks = mappedTasks.sort((a, b) => {
-        if (a.activationTime === '-' && b.activationTime === '-') {
+        if (a.activationEpoch === 0 && b.activationEpoch === 0) {
           return 0
-        } else if (a.activationTime === '-') {
+        } else if (a.activationEpoch === 0) {
           return -1
-        } else if (b.activationTime === '-') {
+        } else if (b.activationEpoch === 0) {
           return 1
         } else {
-          return new Date(b.activationTime).getTime() - new Date(a.activationTime).getTime()
+          return b.activationEpoch - a.activationEpoch
         }
       })
       return sortedTasks
@@ -273,7 +273,7 @@ function ActiveTasks() {
           {results}
         </Card>
       ) : null}
-      {visiblePending ? (
+      {visiblePending && payment ? (
         <CAlert color="warning" className="d-flex align-items-center" dismissible>
           <CIcon icon={cilCheckCircle} className="flex-shrink-0 me-2" width={24} height={24} />
           <div>

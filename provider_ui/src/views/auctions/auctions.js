@@ -24,11 +24,11 @@ import { Web3Provider } from '@ethersproject/providers'
 import calculateScore from '../../utils/Score'
 import compareAddresses from 'src/utils/compareAddresses'
 
-function GetBids() {
+function GetAuctions() {
   const [auctionContract, setAuctionContract] = useState(null)
   const [taskContract, setTaskContract] = useState(null)
 
-  const [bid, setBid] = useState(0)
+  const [bid, setBid] = useState(5)
   const [auctions, setAuctions] = useState(null)
   const [auctionID, setAuctionID] = useState(null)
   const [selectedRadio, setSelectedRadio] = useState(null)
@@ -113,7 +113,6 @@ function GetBids() {
 
   const handleBidChange = (event) => {
     setBid(event.target.value)
-    console.log(bid)
   }
 
   const bidHandler = () => {
@@ -122,9 +121,6 @@ function GetBids() {
 
   const makeBidHandler = async () => {
     setLoading(true)
-    console.log(auctions)
-    console.log('auctionID', auctionID)
-    console.log('bid', bid)
     await auctionContract.bid(auctionID, bid)
   }
 
@@ -176,18 +172,19 @@ function GetBids() {
             (auction.creationTime.toNumber() + auction.auctionDeadline.toNumber()) * 1000,
           ).toLocaleString('en-GB'),
           taskDeadline: auction.taskDeadline.toNumber(),
+          deadlineEpoch: auction.creationTime.toNumber() + auction.auctionDeadline.toNumber(),
         }
       })
-      //sort auctions by deadline date in ascending order
+      //sort auctions by deadline time in ascending order
       const sortedAuctions = mappedAuctions.sort((a, b) => {
-        if (a.auctionDeadline === '-' && b.auctionDeadline === '-') {
+        if (a.deadlineEpoch === 0 && b.deadlineEpoch === 0) {
           return 0
-        } else if (a.auctionDeadline === '-') {
+        } else if (a.deadlineEpoch === 0) {
           return 1
-        } else if (b.auctionDeadline === '-') {
+        } else if (b.deadlineEpoch === 0) {
           return -1
         } else {
-          return new Date(a.auctionDeadline) - new Date(b.auctionDeadline)
+          return a.deadlineEpoch - b.deadlineEpoch
         }
       })
       return sortedAuctions
@@ -269,6 +266,7 @@ function GetBids() {
                     value={bid}
                     onChange={handleBidChange}
                     step={10}
+                    min={5}
                   />
                 </div>
               </CForm>
@@ -290,4 +288,4 @@ function GetBids() {
   )
 }
 
-export default GetBids
+export default GetAuctions

@@ -101,7 +101,7 @@ function Auction() {
             value={auctionDeadline}
             onChange={handleAuctionDeadlineChange}
             step={10}
-            min={10}
+            min={60}
           />
         </div>
         <div className="mb-3">
@@ -112,7 +112,7 @@ function Auction() {
             value={taskDeadline}
             onChange={handleTaskDeadlineChange}
             step={10}
-            min={10}
+            min={60}
           />
         </div>
         <div className="mb-3">

@@ -55,6 +55,7 @@ contract AuctionsManager {
     error NotCalledByClient();
     error AuctionDoesNotExist();
     error AuctionNotInState(AuctionState auctionState);
+    error TasksManagerNotSet();
 
     constructor()  {
         owner = msg.sender;
@@ -103,6 +104,9 @@ contract AuctionsManager {
      }
 
     function bid(bytes32 _auctionID, uint _bid) public {
+        //tasks manager set
+        if (address(tasksManager) == address(0))
+            revert TasksManagerNotSet();
         //existing auction
         if (auctions[_auctionID].auctionID == bytes32(0))
             revert AuctionDoesNotExist();

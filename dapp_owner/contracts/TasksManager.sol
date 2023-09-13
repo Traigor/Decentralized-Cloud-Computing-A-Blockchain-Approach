@@ -32,7 +32,6 @@ contract TasksManager {
         uint deadline;
         uint price;
         uint duration;
-        uint cost;       
         uint activationTime;
         uint completionTime;
         string code;
@@ -78,6 +77,7 @@ contract TasksManager {
     error PaymentNotInState(PaymentState paymentState);
     error TaskDoesNotExist();
     error TaskAlreadyExists();
+    error AuctionsManagerNotSet();
 
     constructor() {
         owner = msg.sender;
@@ -100,6 +100,9 @@ contract TasksManager {
         string memory _code
     ) public payable 
     {
+        //auctions manager set
+        if (auctionAddress == address(0)) 
+            revert AuctionsManagerNotSet();
         //auction only
         if (msg.sender != auctionAddress) 
             revert NotCalledByAuction();
@@ -214,7 +217,6 @@ contract TasksManager {
             && (tasks[_taskID].duration <= tasks[_taskID].deadline) 
             && (tasks[_taskID].clientVerification == keccak256(abi.encodePacked(ver))))
         {
-            tasks[_taskID].cost = tasks[_taskID].price * tasks[_taskID].duration;
             tasks[_taskID].taskState = TaskState.CompletedSuccessfully;
             emit TaskCompletedSuccessfully(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
         }
@@ -252,11 +254,11 @@ contract TasksManager {
         && (receiptTime >= tasks[_taskID].activationTime + tasks[_taskID].duration) 
         && (tasks[_taskID].completionTime >= tasks[_taskID].activationTime + tasks[_taskID].duration)) 
         {
-            if (tasks[_taskID].cost <= tasks[_taskID].price * 2) {
-                tasks[_taskID].provider.transfer(tasks[_taskID].cost + tasks[_taskID].price * 10);
-                emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].cost + tasks[_taskID].price * 10);
-                tasks[_taskID].client.transfer(tasks[_taskID].cost - tasks[_taskID].price * 2);
-                emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].cost - tasks[_taskID].price * 2);
+            if (tasks[_taskID].price * tasks[_taskID].duration <= tasks[_taskID].price * 2) {
+                tasks[_taskID].provider.transfer(tasks[_taskID].price * tasks[_taskID].duration + tasks[_taskID].price * 10);
+                emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].price * tasks[_taskID].duration + tasks[_taskID].price * 10);
+                tasks[_taskID].client.transfer(tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2);
+                emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2);
                 tasks[_taskID].paymentState = PaymentState.Completed;
                 emit PaymentCompleted(_taskID, tasks[_taskID].client, tasks[_taskID].provider);                
             }
@@ -264,7 +266,7 @@ contract TasksManager {
                 tasks[_taskID].provider.transfer(tasks[_taskID].price * 12); //clientCollateral + providerCollateral
                 emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].price * 12);
                 tasks[_taskID].paymentState = PaymentState.Pending;
-                emit PaymentPending(_taskID, tasks[_taskID].client, tasks[_taskID].provider, tasks[_taskID].cost - tasks[_taskID].price * 2);
+                emit PaymentPending(_taskID, tasks[_taskID].client, tasks[_taskID].provider, tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2);
             }
             tasks[_taskID].taskState = TaskState.ResultsReceivedSuccessfully;
             emit TaskReceivedResultsSuccessfully(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
@@ -291,8 +293,8 @@ contract TasksManager {
         if (msg.sender != tasks[_taskID].client) 
             revert NotCalledByClient();
         //correct payment value
-        if (msg.value != tasks[_taskID].cost - tasks[_taskID].price * 2)
-            revert NotCorrectValue(tasks[_taskID].cost - tasks[_taskID].price * 2, msg.value);
+        if (msg.value != tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2)
+            revert NotCorrectValue(tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2, msg.value);
         //in task state ResultsReceivedSuccessfully
         if (tasks[_taskID].taskState != TaskState.ResultsReceivedSuccessfully) 
             revert TaskNotInState(TaskState.ResultsReceivedSuccessfully);
@@ -300,7 +302,7 @@ contract TasksManager {
         if (tasks[_taskID].paymentState != PaymentState.Pending) 
             revert PaymentNotInState(PaymentState.Pending);
         tasks[_taskID].provider.transfer(msg.value);
-        emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].cost - tasks[_taskID].price * 2);
+        emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2);
         tasks[_taskID].paymentState = PaymentState.Completed;
         emit PaymentCompleted(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
     }

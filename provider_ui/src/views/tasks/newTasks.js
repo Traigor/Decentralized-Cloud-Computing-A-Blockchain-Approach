@@ -1,5 +1,5 @@
 import React from 'react'
-import { CButton, CFormCheck, CTable, CSpinner, CAlert } from '@coreui/react'
+import { CButton, CFormCheck, CTable, CSpinner, CAlert, CTooltip } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCheckCircle } from '@coreui/icons'
 import { useState, useEffect } from 'react'
@@ -9,7 +9,7 @@ import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 
-function GetBids() {
+function ActivateTask() {
   const [taskContract, setTaskContract] = useState(null)
   const [taskID, setTaskID] = useState(null)
   const [tasks, setTasks] = useState(null)
@@ -18,6 +18,7 @@ function GetBids() {
   const [loading, setLoading] = useState(false)
   const [visibleActivate, setVisibleActivate] = useState(false)
   const [tasksSelected, setTasksSelected] = useState(false)
+  const [providerCollateral, setProviderCollateral] = useState(null)
 
   useEffect(() => {
     const contractData = async () => {
@@ -62,20 +63,18 @@ function GetBids() {
     setTasks(tasks)
   }
 
-  const taskRadioHandler = (taskID, taskState, paymentState) => {
+  const taskRadioHandler = async (taskID, taskState, paymentState) => {
     setTaskID(taskID)
     setSelectedTaskRadio(taskID)
-
+    const collateral = (await taskContract.getProviderCollateral(taskID)).toNumber()
+    setProviderCollateral(collateral)
     setTaskState(taskState)
   }
 
   const activateHandler = async () => {
     setLoading(true)
-    console.log('TASKID', taskID)
-    const collateral = (await taskContract.getProviderCollateral(taskID)).toNumber()
-    console.log('COLLATERAL', collateral)
     const wei = 1000000000000000000
-    const valueEth = ethers.utils.parseEther((collateral / wei).toFixed(18).toString())
+    const valueEth = ethers.utils.parseEther((providerCollateral / wei).toFixed(18).toString())
     await taskContract.activateTask(taskID, { value: valueEth })
   }
 
@@ -107,13 +106,8 @@ function GetBids() {
       _props: { scope: 'col' },
     },
     {
-      key: 'timeActivated',
-      label: 'Activation',
-      _props: { scope: 'col' },
-    },
-    {
       key: 'deadline',
-      label: 'Deadline',
+      label: 'Deadline(sec)',
       _props: { scope: 'col' },
     },
     {
@@ -139,31 +133,22 @@ function GetBids() {
                 />
               ),
               taskID: task.taskID.slice(0, 6) + '...' + task.taskID.slice(-4),
-              deadline:
-                task.activationTime.toNumber() !== 0
-                  ? new Date(
-                      (task.activationTime.toNumber() + task.deadline.toNumber()) * 1000,
-                    ).toLocaleString('en-GB')
-                  : '-',
+              deadline: task.deadline.toNumber(),
               price: task.price.toNumber(),
-              timeActivated:
-                task.activationTime.toNumber() !== 0
-                  ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
-                  : '-',
               taskState: TaskState[task.taskState],
             }
           : {}
       })
-      //sort tasks by activationDate in descending order
+      //sort tasks by deadline in ascending order
       const sortedTasks = mappedTasks.sort((a, b) => {
-        if (a.timeActivated === '-' && b.timeActivated === '-') {
+        if (a.deadline === 0 && b.deadline === 0) {
           return 0
-        } else if (a.timeActivated === '-') {
-          return -1
-        } else if (b.timeActivated === '-') {
+        } else if (a.deadline === 0) {
           return 1
+        } else if (b.deadline === 0) {
+          return -1
         } else {
-          return new Date(b.timeActivated) - new Date(a.timeActivated)
+          return a.deadline - b.deadline
         }
       })
       return sortedTasks
@@ -182,10 +167,15 @@ function GetBids() {
       </Card>
       {taskID && taskState === 0 ? (
         <Card className="text-center">
-          <CButton color="success" onClick={activateHandler}>
-            {loading ? <CSpinner size="sm" aria-hidden="true" /> : null}
-            {''} Activate
-          </CButton>
+          <CTooltip
+            content={`You will be charged ${providerCollateral} wei as collateral`}
+            placement="bottom"
+          >
+            <CButton color="success" onClick={activateHandler}>
+              {loading ? <CSpinner size="sm" aria-hidden="true" /> : null}
+              {''} Activate
+            </CButton>
+          </CTooltip>
         </Card>
       ) : null}
       {visibleActivate ? (
@@ -198,4 +188,4 @@ function GetBids() {
   )
 }
 
-export default GetBids
+export default ActivateTask

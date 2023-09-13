@@ -5,10 +5,27 @@ import { CNavItem, CNavGroup } from '@coreui/react'
 
 const _nav = [
   {
-    component: CNavItem,
+    component: CNavGroup,
     name: 'Auctions',
     to: '/auctions',
     icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Active Auctions',
+        to: '/auctions/activeAuctions',
+      },
+      {
+        component: CNavItem,
+        name: 'Bids',
+        to: '/auctions/bids',
+      },
+      {
+        component: CNavItem,
+        name: 'History',
+        to: '/auctions/history',
+      },
+    ],
   },
   {
     component: CNavGroup,
