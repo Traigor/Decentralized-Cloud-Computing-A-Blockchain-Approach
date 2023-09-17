@@ -74,6 +74,7 @@ function ActiveTasks() {
         if (compareAddresses(client, window.ethereum.selectedAddress)) {
           setVisibleCompleted(true)
           setLoading(false)
+          setPaymentState(2)
 
           setTimeout(() => {
             setVisibleCompleted(false) // Hide the CAlert component after a delay of 60 seconds.
