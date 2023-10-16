@@ -1,0 +1,58 @@
+\begin{thebibliography}{10}
+
+\bibitem{goossens93}
+{{\latintext M.{ }Goossens, F.{ }Mittelbach \textgreek{kai} A.{ }Samarin}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em The LaTeX Companion}}}}.
+\newblock {{\latintext Addison-Wesley}}, {{\latintext Reading, Massachusetts}}, 9\textgreek{h} \textgreek{'ekdosh}, 1993.
+
+\bibitem{greekbook}
+{{\latintext { }\textgreek{Ι. Κάβουρας}}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em \textgreek{Συστήματα Υπολογιστών}}}}}.
+\newblock {{\latintext \textgreek{Κλειδάριθμος}}}, {{\latintext \textgreek{Αθήνα}}}, 3\textgreek{h} \textgreek{'ekdosh}, 1991.
+
+\bibitem{LiArTs13}
+{{\latintext J.{ }Liaperdos, A.{ }Arapoyanni \textgreek{kai} Y.{ }Tsiatouhas}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Adjustable {RF} Mixers' Alternate Test Efficiency Optimization by the Reduction of Test Observables}}}}.
+\newblock {{\latintext {\em {IEEE} Transactions on Computer-Aided Design of Integrated Circuits and Systems}}}, 32(9):1383--1394,   2013.
+
+\bibitem{dcis2011}
+{{\latintext I.{ }Liaperdos, L.{ }Dermentzoglou, A.{ }Arapoyanni \textgreek{kai} Y.{ }Tsiatouhas}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em Fault Detection in {RF} Mixers Combining Defect-Oriented and Alternate Test Strategies}}}}.
+\newblock {{\latintext  {\em 26th Conference on Design of Circuits and Integrated Systems (DCIS)}}}, {{\latintext San Sebastian, Spain}},   2011.
+
+\bibitem{LaTeXProject}
+{{\latintext {\color{\colouredtextcolor} {\em {LaTeX} Project}}}}.
+\newblock {{\latintext \url{http://www.latex-project.org}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 13-11-2014.
+
+\bibitem{zoi04}
+{{\latintext { }\textgreek{Ζ. Καούδη}}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Πρότυπο Σύστημα Αποθήκευσης και Διαχείρισης Σχημάτων \en{RDFS}}}}}}.
+\newblock {{\latintext \textgreek{Diplwmatik'h ergas'ia}}}, {{\latintext \textgreek{Εθνικό Μετσόβιο Πολυτεχνείο}}},   2004.
+
+\bibitem{elli05}
+{{\latintext { }\textgreek{Ε. Ανδρουλάκη}}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Υλοποίηση Ενεργού Μηχανισμού σε Σύστημα Ομότιμων Βάσεων}}}}}.
+\newblock {{\latintext \textgreek{Ptuqiak'h ergas'ia}}}, {{\latintext KDBS Lab, \textgreek{Εθνικό Μετσόβιο Πολυτεχνείο}}},   2005.
+
+\bibitem{master04}
+{{\latintext { }\textgreek{Ζ. Λάσκαρη}}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Κοινωνική Ανάλυση των Ταινιών της \en{Finos Films}}}}}}.
+\newblock {{\latintext \textgreek{Metaptuqiak'h diplwmatik'h ergas'ia}}}, {{\latintext \textgreek{Εθνικό Μετσόβιο Πολυτεχνείο}}},   2012.
+
+\bibitem{phd045}
+{{\latintext { }\textgreek{Ζ. Κουρούκλη}}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Κατανεμημένα Συστήματα}}}}}.
+\newblock {{\latintext \textgreek{Didaktorik'h Diatrib'h}}}, {{\latintext \textgreek{ΤΕΙ Πελοποννήσου}}},   2013.
+
+\bibitem{viswanathan2014convenient}
+{{\latintext P.{ }Viswanathan, G.{ }Winner \textgreek{kai} P.{ }Vyas}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em Convenient Provisioning of Embedded Devices with WiFi Capability}}}}.
+\newblock \textgreek{D'iplwma Euresiteqn'iac } \textlatin{US Patent 8,665,744}, 2014.
+
+\bibitem{MSU-CSE-05-29}
+{{\latintext H. Cheng{ }J.~Gao \textgreek{kai} P. N.{ }Tan}}.
+\newblock {\color{\colouredtextcolor} {{\latintext {\em A Framework for Incorporating Labeled Examples into Anomaly Detection}}}}.
+\newblock \textgreek{Teqnik'h Anafor'a me arijm'o} \textlatin{MSU-CSE-05-29}, {{\latintext Department of Computer Science, Michigan State University}}, {{\latintext East Lansing, Michigan}}, 2005.
+
+\end{thebibliography}

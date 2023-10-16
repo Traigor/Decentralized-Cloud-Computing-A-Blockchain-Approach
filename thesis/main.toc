@@ -1,0 +1,147 @@
+\babel@toc {greek}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{Περίληψη}{1}{chapter*.1}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\foreignlanguage {english}{Abstract}}{3}{chapter*.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\addvspace {1em}
+\contentsline {chapter}{Ευχαριστίες}{7}{chapter*.3}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {1}Εισαγωγή}{17}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Αντικείμενο της διπλωματικής}{17}{section.1.1}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {1.2}Οργάνωση του τόμου}{18}{section.1.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {part}{\EnsureStandardFontEncoding {I}\hspace {1em}Θεωρητικό Μέρος}{19}{section*.8}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {2}Θεωρητικό υπόβαθρο}{21}{chapter.2}%
+\contentsline {section}{\numberline {2.1}\foreignlanguage {english}{Cloud Computing}}{21}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Εξέλιξη \foreignlanguage {english}{Cloud Computing}}{21}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Υφιστάμενα συγκεντρωτικά μοντέλα και οι περιορισμού τους}{21}{subsection.2.1.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {2.2}\foreignlanguage {english}{Blockchain}}{22}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Εισαγωγή στην τεχνολογία \foreignlanguage {english}{Blockchain}}{22}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}\foreignlanguage {english}{Ethereum}}{22}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Εξυπνά συμβόλαια και Aποκεντρωμένες εφαρμογές}{22}{subsection.2.2.3}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {subsection}{\numberline {2.2.4}\foreignlanguage {english}{Ether} και \foreignlanguage {english}{Gas Fees}}{23}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.5}\foreignlanguage {english}{Ethereum} 2.0}{23}{subsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.2.6}(}{23}{subsection.2.2.6}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {2.3}Προηγούμενες εργασίες σχετικά με το αποκεντρωμένο \foreignlanguage {english}{cloud computing} και τις \foreignlanguage {english}{dApps}}{24}{section.2.3}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {part}{\EnsureStandardFontEncoding {II}\hspace {1em}Πρακτικό Μέρος}{25}{section*.9}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {3}Σχεδιασμός και αρχιτεκτονική του συστήματος}{27}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Επισκόπηση της προτεινόμενης \foreignlanguage {english}{dApp}}{27}{section.3.1}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {3.2}Περιγραφή των συμμετεχόντων}{28}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Αρχιτεκτονική του συστήματος}{28}{section.3.3}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {3.4}Ροές εργασιών του συστήματος}{30}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Επιτυχής ολοκλήρωση εργασίας }{30}{subsection.3.4.1}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {subsection}{\numberline {3.4.2}Εναλλακτικές ροές εργασιών}{31}{subsection.3.4.2}%
+\contentsline {subsubsection}{Ανεπιτυχής ολοκλήρωση της εργασίας λόγω ασυμφωνίας επαλήθευσης \\ή καθυστερημένης εκτέλεσης}{31}{subsection.3.4.2}%
+\contentsline {subsubsection}{Καθυστέρηση του παρόχου στην υποβολή των αποτελεσμάτων}{31}{subsection.3.4.2}%
+\contentsline {subsubsection}{Δικαίωμα ακύρωσης του πελάτη πριν από την ενεργοποίηση της \\εργασίας}{31}{subsection.3.4.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {subsubsection}{Δικαίωμα ακύρωσης του πελάτη για καθυστερημένη ολοκλήρωση}{32}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Μέτρα ασφαλείας για τη διασφάλιση της αξιοπιστίας}{32}{section.3.5}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {4}Μηχανισμός δημοπρασίας}{35}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Επισκόπηση της διαδικασίας δημοπρασίας}{35}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Μηχανισμός βαθμολόγησης}{35}{section.4.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {4.3}Κριτήρια που καθοδηγούν τον πελάτη στην \\επιλογή παρόχου}{36}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Παράγοντες που διαμορφώνουν τη στρατηγική προσφορών του παρόχου}{36}{section.4.4}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {5}Εκτέλεση εργασίας και επαλήθευση}{39}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Εκτέλεση εργασιών}{39}{section.5.1}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {5.2}Μηχανισμός επαλήθευσης}{40}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Διαδικασία πληρωμής}{40}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Ασφάλεια κατά την εκτέλεση και την πληρωμή}{40}{section.5.4}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {6}Υλοποίηση του συστήματος}{43}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Τεχνικές ιδιαιτερότητες της \foreignlanguage {english}{dApp}}{43}{section.6.1}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {6.2}Εργαλεία, γλώσσες προγραμματισμού και πλατφόρμες ανάπτυξης}{44}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Προκλήσεις και λύσεις}{44}{section.6.3}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {part}{\EnsureStandardFontEncoding {III}\hspace {1em}Επίλογος}{47}{section*.10}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {7}Επίλογος}{49}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Συμπεράσματα}{49}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Μελλοντικές Επεκτάσεις}{49}{section.7.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {subparagraph}{}{51}{section.7.2}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
