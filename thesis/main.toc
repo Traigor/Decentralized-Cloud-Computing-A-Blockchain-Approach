@@ -49,11 +49,11 @@
 \babel@toc {greek}{}\relax 
 \contentsline {subsection}{\numberline {2.2.4}\foreignlanguage {english}{Ether} και \foreignlanguage {english}{Gas Fees}}{23}{subsection.2.2.4}%
 \contentsline {subsection}{\numberline {2.2.5}\foreignlanguage {english}{Ethereum} 2.0}{23}{subsection.2.2.5}%
-\contentsline {subsection}{\numberline {2.2.6}(}{23}{subsection.2.2.6}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
+\contentsline {subsection}{\numberline {2.2.6}\foreignlanguage {english}{Layer 2}}{24}{subsection.2.2.6}%
 \contentsline {section}{\numberline {2.3}Προηγούμενες εργασίες σχετικά με το αποκεντρωμένο \foreignlanguage {english}{cloud computing} και τις \foreignlanguage {english}{dApps}}{24}{section.2.3}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
@@ -99,7 +99,7 @@
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
-\contentsline {section}{\numberline {4.3}Κριτήρια που καθοδηγούν τον πελάτη στην \\επιλογή παρόχου}{36}{section.4.3}%
+\contentsline {section}{\numberline {4.3}Κριτήρια που καθοδηγούν τον πελάτη στην επιλογή \\παρόχου}{36}{section.4.3}%
 \contentsline {section}{\numberline {4.4}Παράγοντες που διαμορφώνουν τη στρατηγική προσφορών του παρόχου}{36}{section.4.4}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 

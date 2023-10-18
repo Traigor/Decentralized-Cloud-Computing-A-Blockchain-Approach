@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.15)  16 OCT 2023 05:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.15)  18 OCT 2023 02:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1546,8 +1546,11 @@ Overfull \hbox (23.00787pt too wide) in paragraph at lines 2--6
 [21
 
 
-] [22] [23{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/kmath.enc}]
-Overfull \hbox (6.84512pt too wide) in paragraph at lines 81--81
+] [22]
+Underfull \vbox (badness 2393) has occurred while \output is active []
+
+ [23{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/kmath.enc}]
+Overfull \hbox (6.84512pt too wide) in paragraph at lines 82--82
 |[]\LGR/mak/b/n/14.4 Prohgo‘menec er-ga-s–ec sqe-ti-kà me to a-po-ke-ntrw-mËno []\T1/mak/b/n/14.4 cloud
  []
 
@@ -1569,21 +1572,16 @@ LaTeX Font Info:    Font shape `T1/mak/m/it' will be
 [27
 
 
-]
-Missing character: There is no v in font gk7t!
-[28]
-Missing character: There is no v in font gk7t!
-[29] [30] [31]
-Underfull \hbox (badness 10000) in paragraph at lines 114--115
+] [28] [29] [30] [31]
+Underfull \hbox (badness 10000) in paragraph at lines 112--113
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 117--118
+Underfull \hbox (badness 10000) in paragraph at lines 115--116
 
  []
 
-Missing character: There is no v in font gk7t!
 [32]) [33]
 \openout2 = `body_matter/chap4.aux'.
 
@@ -1675,9 +1673,9 @@ Here is how much of TeX's memory you used:
  51642 multiletter control sequences out of 15000+600000
  610565 words of font info for 143 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 99i,12n,107p,1563b,954s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,12n,107p,1495b,954s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Bold.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Italic.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-SmallCaps.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxr.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/txsy.pfb>
-Output written on main.pdf (57 pages, 233709 bytes).
+Output written on main.pdf (57 pages, 233840 bytes).
 PDF statistics:
  615 PDF objects out of 1000 (max. 8388607)
  531 compressed objects within 6 object streams
