@@ -1,7 +1,14 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {illustration}{\numberline {2.1}{\ignorespaces Γραφική απεικόνιση του \foreignlanguage {english}{Blockchain}}}{23}{illustration.2.1}%
+\contentsline {illustration}{\numberline {2.2}{\ignorespaces Αρχιτεκτονική του \foreignlanguage {english}{Web3}}}{24}{illustration.2.2}%
 \addvspace {10\p@ }
+\contentsline {illustration}{\numberline {3.1}{\ignorespaces \foreignlanguage {english}{Use case diagram} της \foreignlanguage {english}{dApp}}}{30}{illustration.3.1}%
+\contentsline {illustration}{\numberline {3.2}{\ignorespaces \foreignlanguage {english}{Component diagram} της \foreignlanguage {english}{dApp}}}{32}{illustration.3.2}%
+\contentsline {illustration}{\numberline {3.3}{\ignorespaces \foreignlanguage {english}{Activity diagram} της \foreignlanguage {english}{dApp}}}{36}{illustration.3.3}%
 \addvspace {10\p@ }
+\contentsline {illustration}{\numberline {4.1}{\ignorespaces \foreignlanguage {english}{State machine} του \foreignlanguage {english}{Auction}, με βάση το \foreignlanguage {english}{AuctionState}}}{40}{illustration.4.1}%
 \addvspace {10\p@ }
+\contentsline {illustration}{\numberline {5.1}{\ignorespaces \foreignlanguage {english}{State machine} του \foreignlanguage {english}{Task}, με βάση το \foreignlanguage {english}{TaskState/PaymentState}}}{45}{illustration.5.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

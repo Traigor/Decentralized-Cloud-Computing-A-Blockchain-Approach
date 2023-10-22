@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.15)  18 OCT 2023 02:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.15)  22 OCT 2023 21:28
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1339,12 +1339,17 @@ LaTeX Font Info:    Font shape `LGR/mak/m/n' will be
 (Font)              scaled to size 12.0526pt on input line 256.
 LaTeX Font Info:    Font shape `LGR/mak/b/n' will be
 (Font)              scaled to size 12.0526pt on input line 256.
+<figures/blockchain_cover.png, id=8, 385.44pt x 385.44pt>
+File: figures/blockchain_cover.png Graphic file (type png)
+<use figures/blockchain_cover.png>
+Package pdftex.def Info: figures/blockchain_cover.png  used on input line 256.
+(pdftex.def)             Requested size: 154.17326pt x 154.17326pt.
 LaTeX Font Info:    Font shape `LGR/mak/b/n' will be
 (Font)              scaled to size 10.79993pt on input line 256.
 [1
 
 
-{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/gpkerkis.enc}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/kerkisec.enc} <./logo/pyrforos-eps-converted-to.pdf>]
+{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/gpkerkis.enc}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/kerkisec.enc} <./logo/pyrforos-eps-converted-to.pdf> <./figures/blockchain_cover.png>]
 LaTeX Font Info:    Font shape `LGR/mak/m/n' will be
 (Font)              scaled to size 5.39996pt on input line 256.
  [2
@@ -1546,19 +1551,31 @@ Overfull \hbox (23.00787pt too wide) in paragraph at lines 2--6
 [21
 
 
-] [22]
-Underfull \vbox (badness 2393) has occurred while \output is active []
-
- [23{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/kmath.enc}]
-Overfull \hbox (6.84512pt too wide) in paragraph at lines 82--82
+]
+<figures/figure-001.png, id=260, 246.6816pt x 93.4692pt>
+File: figures/figure-001.png Graphic file (type png)
+<use figures/figure-001.png>
+Package pdftex.def Info: figures/figure-001.png  used on input line 64.
+(pdftex.def)             Requested size: 298.75262pt x 113.2093pt.
+Package hyperref Info: bookmark level for unknown illustration defaults to 0 on input line 65.
+LaTeX Font Info:    Font shape `T1/mak/m/it' will be
+(Font)              scaled to size 9.85492pt on input line 65.
+ [22] [23 <./figures/figure-001.png>]
+<figures/figure-002.png, id=299, 346.896pt x 142.8537pt>
+File: figures/figure-002.png Graphic file (type png)
+<use figures/figure-002.png>
+Package pdftex.def Info: figures/figure-002.png  used on input line 85.
+(pdftex.def)             Requested size: 298.75262pt x 123.03487pt.
+ [24{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/kerkis/kmath.enc} <./figures/figure-002.png (PNG copy)>]
+Overfull \hbox (6.84512pt too wide) in paragraph at lines 108--108
 |[]\LGR/mak/b/n/14.4 ProhgoÔmenec er-ga-sÐec sqe-ti-kˆ me to a-po-ke-ntrw-mèno []\T1/mak/b/n/14.4 cloud
  []
 
-) [24] [25
+[25]) [26] [27
 
 
 
-] [26]
+] [28]
 \openout2 = `body_matter/chap3.aux'.
 
  (./body_matter/chap3.tex
@@ -1567,25 +1584,40 @@ Package lettrine.sty Info: Targeted height = 21.27205pt
 (lettrine.sty)             (for loversize=0, accent excluded),
 (lettrine.sty)             Lettrine height = 27.65382pt (\color {gray!50!brown!70!black}\scalebox {1.3}{Î£});
 (lettrine.sty)             reported on input line 2.
-LaTeX Font Info:    Font shape `T1/mak/m/it' will be
-(Font)              scaled to size 9.85492pt on input line 20.
-[27
+[29
 
 
-] [28] [29] [30] [31]
-Underfull \hbox (badness 10000) in paragraph at lines 112--113
+]
+<figures/figure-003.pdf, id=372, 475.63536pt x 554.36009pt>
+File: figures/figure-003.pdf Graphic file (type pdf)
+<use figures/figure-003.pdf>
+Package pdftex.def Info: figures/figure-003.pdf  used on input line 38.
+(pdftex.def)             Requested size: 213.39566pt x 248.71535pt.
+ [30 <./figures/figure-003.pdf>] [31]
+<figures/figure-004.pdf, id=402, 596.93681pt x 415.6587pt>
+File: figures/figure-004.pdf Graphic file (type pdf)
+<use figures/figure-004.pdf>
+Package pdftex.def Info: figures/figure-004.pdf  used on input line 82.
+(pdftex.def)             Requested size: 341.43436pt x 237.75877pt.
+ [32 <./figures/figure-004.pdf>] [33] [34]
+Underfull \hbox (badness 10000) in paragraph at lines 129--130
 
  []
 
+<figures/figure-005.pdf, id=437, 597.23125pt x 845.1575pt>
+File: figures/figure-005.pdf Graphic file (type pdf)
+<use figures/figure-005.pdf>
+Package pdftex.def Info: figures/figure-005.pdf  used on input line 134.
+(pdftex.def)             Requested size: 469.47307pt x 664.36572pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 115--116
-
+Overfull \hbox (42.68173pt too wide) in paragraph at lines 134--135
+ [][] 
  []
 
-[32]) [33]
+[35] [36 <./figures/figure-005.pdf>]) [37]
 \openout2 = `body_matter/chap4.aux'.
 
- (./body_matter/chap4.tex [34
+ (./body_matter/chap4.tex [38
 
 
 
@@ -1596,15 +1628,25 @@ Package lettrine.sty Info: Targeted height = 21.27205pt
 (lettrine.sty)             (for loversize=0, accent excluded),
 (lettrine.sty)             Lettrine height = 28.66905pt (\color {gray!50!brown!70!black}\scalebox {1.3}{ÎŸ});
 (lettrine.sty)             reported on input line 2.
-[35]
+<figures/figure-006.pdf, id=460, 381.1887pt x 263.64546pt>
+File: figures/figure-006.pdf Graphic file (type pdf)
+<use figures/figure-006.pdf>
+Package pdftex.def Info: figures/figure-006.pdf  used on input line 15.
+(pdftex.def)             Requested size: 341.43436pt x 236.14827pt.
+LaTeX Font Info:    Font shape `T1/mak/m/n' will be
+(Font)              scaled to size 8.99994pt on input line 20.
+[39]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\\' on input line 19.
+(hyperref)                removing `\\' on input line 33.
 
-[36]) [37]
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [40 <./figures/figure-006.pdf>]) [41]
 \openout2 = `body_matter/chap5.aux'.
 
- (./body_matter/chap5.tex [38
+ (./body_matter/chap5.tex [42
 
 
 
@@ -1615,48 +1657,69 @@ Package lettrine.sty Info: Targeted height = 21.27205pt
 (lettrine.sty)             (for loversize=0, accent excluded),
 (lettrine.sty)             Lettrine height = 27.65382pt (\color {gray!50!brown!70!black}\scalebox {1.3}{Î¤});
 (lettrine.sty)             reported on input line 2.
-[39]
+[43]
 Overfull \hbox (2.10518pt too wide) in paragraph at lines 19--20
 []\LGR/mak/m/n/10.95 Sumboloseirˆ e-pa-l jeu-shc: H mèjo-doc []\T1/mak/m/it/10.95 getVer-i-fi-ca-tion []\LGR/mak/m/n/10.95 e-ntìc thc e-kte-lo-Ôme-nhc klˆshc
  []
 
-[40]) [41]
+<figures/figure-007.pdf, id=501, 845.04686pt x 597.50786pt>
+File: figures/figure-007.pdf Graphic file (type pdf)
+<use figures/figure-007.pdf>
+Package pdftex.def Info: figures/figure-007.pdf  used on input line 38.
+(pdftex.def)             Requested size: 512.1483pt x 362.13612pt.
+
+Overfull \hbox (85.35696pt too wide) in paragraph at lines 38--39
+ [][] 
+ []
+
+
+Overfull \hbox (15.52806pt too wide) in paragraph at lines 42--44
+[][]
+ []
+
+[44] [45 <./figures/figure-007.pdf, page is rotated 270 degrees>]) [46]
 \openout2 = `body_matter/chap6.aux'.
 
- (./body_matter/chap6.tex [42
-
-
-
-
-]
+ (./body_matter/chap6.tex
 \textKappa \textepsilon \textphi \acctonos \textalpha \textlambda \textalpha \textiota \textomicron  6.
 Package lettrine.sty Info: Targeted height = 21.27205pt
 (lettrine.sty)             (for loversize=0, accent excluded),
 (lettrine.sty)             Lettrine height = 27.65382pt (\color {gray!50!brown!70!black}\scalebox {1.3}{H});
 (lettrine.sty)             reported on input line 2.
-
-Underfull \vbox (badness 2837) has occurred while \output is active []
-
- [43] [44]) [45] [46
+[47
 
 
 
-] [47] [48]
+
+] [48]) [49] [50
+
+
+
+] [51] [52]
 \openout2 = `body_matter/chap7.aux'.
 
  (./body_matter/chap7.tex
 \textKappa \textepsilon \textphi \acctonos \textalpha \textlambda \textalpha \textiota \textomicron  7.
-[49
+[53
 
 
-]) [50] LaTeX Warning: (ntua_thesis.cls): The "plain" option has been selected. CD label generation has been disabled.
+]) [54] (./main.bbl
+LaTeX Font Info:    Trying to load font information for T1+fvm on input line 11.
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/bera/t1fvm.fd
+File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
+)
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 8.2125pt on input line 11.
+ [55
+
+
+
+
+{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}] [56]) LaTeX Warning: (ntua_thesis.cls): The "plain" option has been selected. CD label generation has been disabled.
  
 LaTeX Warning: (ntua_thesis.cls): The "plain" option has been selected. CD cover generation has been disabled.
  
-[51
-
-
-] (./main.aux (./front_matter/abstract.aux) (./front_matter/acknowledgements.aux) (./body_matter/intro.aux) (./body_matter/chap2.aux) (./body_matter/chap3.aux) (./body_matter/chap4.aux) (./body_matter/chap5.aux) (./body_matter/chap6.aux) (./body_matter/chap7.aux))
+[57] (./main.aux (./front_matter/abstract.aux) (./front_matter/acknowledgements.aux) (./body_matter/intro.aux) (./body_matter/chap2.aux) (./body_matter/chap3.aux) (./body_matter/chap4.aux) (./body_matter/chap5.aux) (./body_matter/chap6.aux) (./body_matter/chap7.aux))
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-08-29>
@@ -1667,18 +1730,18 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 30895 strings out of 474934
- 553758 string characters out of 5759811
- 1930807 words of memory out of 5000000
- 51642 multiletter control sequences out of 15000+600000
- 610565 words of font info for 143 fonts, out of 8000000 for 9000
+ 31118 strings out of 474934
+ 557466 string characters out of 5759811
+ 1933807 words of memory out of 5000000
+ 51791 multiletter control sequences out of 15000+600000
+ 612423 words of font info for 148 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 99i,12n,107p,1495b,954s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Bold.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Italic.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-SmallCaps.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxr.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/txsy.pfb>
-Output written on main.pdf (57 pages, 233840 bytes).
+ 99i,12n,107p,1633b,948s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Bold.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Italic.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-SmallCaps.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/bera/fvmr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxr.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/txsy.pfb>
+Output written on main.pdf (63 pages, 691276 bytes).
 PDF statistics:
- 615 PDF objects out of 1000 (max. 8388607)
- 531 compressed objects within 6 object streams
- 146 named destinations out of 1000 (max. 500000)
- 386 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 880 PDF objects out of 1000 (max. 8388607)
+ 755 compressed objects within 8 object streams
+ 209 named destinations out of 1000 (max. 500000)
+ 450 words of extra memory for PDF output out of 10000 (max. 10000000)
 

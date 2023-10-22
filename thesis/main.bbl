@@ -1,58 +1,252 @@
 \begin{thebibliography}{10}
 
-\bibitem{goossens93}
-{{\latintext M.{ }Goossens, F.{ }Mittelbach \textgreek{kai} A.{ }Samarin}}.
-\newblock {{\latintext {\color{\colouredtextcolor} {\em The LaTeX Companion}}}}.
-\newblock {{\latintext Addison-Wesley}}, {{\latintext Reading, Massachusetts}}, 9\textgreek{h} \textgreek{'ekdosh}, 1993.
+\bibitem{ref1}
+{{\latintext Greg Boss; Padma Malladi; Dennis Quan; Linda Legregni; Harold{ }Hall}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Cloud Computing}}}}.
+\newblock {{\latintext {\em IBM white paper}}}, 2007.
 
-\bibitem{greekbook}
-{{\latintext { }\textgreek{Ι. Κάβουρας}}}.
-\newblock {{\latintext {\color{\colouredtextcolor} {\em \textgreek{Συστήματα Υπολογιστών}}}}}.
-\newblock {{\latintext \textgreek{Κλειδάριθμος}}}, {{\latintext \textgreek{Αθήνα}}}, 3\textgreek{h} \textgreek{'ekdosh}, 1991.
+\bibitem{ref2}
+{{\latintext Joe{ }Baguley}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em How cloud computing is changing the world ... without you knowing}}}}.
+\newblock {{\latintext \url{https://www.theguardian.com/media-network/media-network-blog/2013/sep/24/cloud-computing-changing-world-healthcare}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 20-10-2022.
 
-\bibitem{LiArTs13}
-{{\latintext J.{ }Liaperdos, A.{ }Arapoyanni \textgreek{kai} Y.{ }Tsiatouhas}}.
-\newblock {{\latintext {\color{\colouredtextcolor} {\em Adjustable {RF} Mixers' Alternate Test Efficiency Optimization by the Reduction of Test Observables}}}}.
-\newblock {{\latintext {\em {IEEE} Transactions on Computer-Aided Design of Integrated Circuits and Systems}}}, 32(9):1383--1394,   2013.
+\bibitem{ref3}
+{{\latintext Hong Xu; Baochun{ }Li}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em A Study of Pricing for Cloud Resources}}}}.
+\newblock {{\latintext {\em Performance Evaluation Review}}}, 40(4), 2013.
 
-\bibitem{dcis2011}
-{{\latintext I.{ }Liaperdos, L.{ }Dermentzoglou, A.{ }Arapoyanni \textgreek{kai} Y.{ }Tsiatouhas}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em Fault Detection in {RF} Mixers Combining Defect-Oriented and Alternate Test Strategies}}}}.
-\newblock {{\latintext  {\em 26th Conference on Design of Circuits and Integrated Systems (DCIS)}}}, {{\latintext San Sebastian, Spain}},   2011.
+\bibitem{ref4}
+{{\latintext Bhanu Sharma; Ruppa K. Thulasiram; Parimala Thulasiraman; Saurabh K.{ }Garg}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Pricing Cloud Compute Commodities: A Novel Financial Economic Model}}}}.
+\newblock {{\latintext {\em 12th IEEE/ACM International Symposium on Cluster, Cloud and Grid Computing}}}, 2012.
 
-\bibitem{LaTeXProject}
-{{\latintext {\color{\colouredtextcolor} {\em {LaTeX} Project}}}}.
-\newblock {{\latintext \url{http://www.latex-project.org}}}.
-\newblock \textgreek{Ημερομηνία πρόσβασης}: 13-11-2014.
+\bibitem{ref5}
+{{\latintext Hongyi Wang; Qingfeng Jing; Rishan Chen; Bingsheng He; Zhengping Qian; Lidong{ }Zhou}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Distributed Systems Meet Economics: Pricing in the Cloud}}}}.
+\newblock 2009.
 
-\bibitem{zoi04}
-{{\latintext { }\textgreek{Ζ. Καούδη}}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Πρότυπο Σύστημα Αποθήκευσης και Διαχείρισης Σχημάτων \en{RDFS}}}}}}.
-\newblock {{\latintext \textgreek{Diplwmatik'h ergas'ia}}}, {{\latintext \textgreek{Εθνικό Μετσόβιο Πολυτεχνείο}}},   2004.
+\bibitem{ref40}
+{{\latintext Dr. Rado{ }Danilak}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Why Energy Is A Big And Rapidly Growing Problem For Data Centers}}}}.
+\newblock {{\latintext \url{https://www.forbes.com/sites/forbestechcouncil/2017/12/15/why-energy-is-a-big-and-rapidly-growing-problem-for-data-centers/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
 
-\bibitem{elli05}
-{{\latintext { }\textgreek{Ε. Ανδρουλάκη}}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Υλοποίηση Ενεργού Μηχανισμού σε Σύστημα Ομότιμων Βάσεων}}}}}.
-\newblock {{\latintext \textgreek{Ptuqiak'h ergas'ia}}}, {{\latintext KDBS Lab, \textgreek{Εθνικό Μετσόβιο Πολυτεχνείο}}},   2005.
+\bibitem{ref41}
+{{\latintext Nicola{ }Jones}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em How to stop data centres from gobbling up the world’s electricity}}}}.
+\newblock 2018.
 
-\bibitem{master04}
-{{\latintext { }\textgreek{Ζ. Λάσκαρη}}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Κοινωνική Ανάλυση των Ταινιών της \en{Finos Films}}}}}}.
-\newblock {{\latintext \textgreek{Metaptuqiak'h diplwmatik'h ergas'ia}}}, {{\latintext \textgreek{Εθνικό Μετσόβιο Πολυτεχνείο}}},   2012.
+\bibitem{ref6}
+{{\latintext Michael Maximilien; David Hadas; Angelo Danducci II; Simon{ }Moser}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em The future is serverless}}}}.
+\newblock {{\latintext \url{https://developer.ibm.com/blogs/the-future-is-serverless}}}, 2022.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
 
-\bibitem{phd045}
-{{\latintext { }\textgreek{Ζ. Κουρούκλη}}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em \textgreek{Κατανεμημένα Συστήματα}}}}}.
-\newblock {{\latintext \textgreek{Didaktorik'h Diatrib'h}}}, {{\latintext \textgreek{ΤΕΙ Πελοποννήσου}}},   2013.
+\bibitem{ref7}
+{{\latintext Robert Cordingly; Hanfei Yu; Varik Hoang; Zohreh Sadeghi; David Foster; David Perez; Rashad Hatchett; Wes{ }Lloyd}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em The Serverless Application Analytics Framework: Enabling Design Trade-off Evaluation for Serverless Software}}}}.
+\newblock 2020.
 
-\bibitem{viswanathan2014convenient}
-{{\latintext P.{ }Viswanathan, G.{ }Winner \textgreek{kai} P.{ }Vyas}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em Convenient Provisioning of Embedded Devices with WiFi Capability}}}}.
-\newblock \textgreek{D'iplwma Euresiteqn'iac } \textlatin{US Patent 8,665,744}, 2014.
+\bibitem{ref8}
+{{\latintext Ioana Baldini; Paul Castro; Kerry Chang; Perry Cheng; Stephen Fin; Vatche Ishakian; Nick Mitchell; Vinod Muthusamy; Rodric Rabbah; Aleksander{ }Slominski \textgreek{kai} Philippe{ }Suter}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Serverless Computing: Current Trends and Open Problems}}}}.
+\newblock 2017.
 
-\bibitem{MSU-CSE-05-29}
-{{\latintext H. Cheng{ }J.~Gao \textgreek{kai} P. N.{ }Tan}}.
-\newblock {\color{\colouredtextcolor} {{\latintext {\em A Framework for Incorporating Labeled Examples into Anomaly Detection}}}}.
-\newblock \textgreek{Teqnik'h Anafor'a me arijm'o} \textlatin{MSU-CSE-05-29}, {{\latintext Department of Computer Science, Michigan State University}}, {{\latintext East Lansing, Michigan}}, 2005.
+\bibitem{ref9}
+{{\latintext Satoshi{ }Nakamoto}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Bitcoin: A Peer-to-Peer Electronic Cash System}}}}.
+\newblock 2008.
+\newblock \en{\url{https://bitcoin.org/bitcoin.pdf}}.
+
+\bibitem{ref10}
+{{\latintext Christian Cachin; Marko{ }Vukolic}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Blockchain Consensus Protocols in the Wild}}}}.
+\newblock 2017.
+
+\bibitem{ref11}
+{{\latintext {\color{\colouredtextcolor} {\em Blockchain explained and its application to payments}}}}.
+\newblock {{\latintext \url{https://www.paiementor.com/blockchain-explained-application-payments/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref12}
+{{\latintext V.{ }Buterin}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Ethereum White Paper: A Next Generation Smart Contract \& Decentralized Application Platform}}}}.
+\newblock 2014.
+\newblock \en{\url{https://ethereum.org/en/whitepaper/}}.
+
+\bibitem{ref13}
+{{\latintext Dr. Gavin{ }Wood}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Ethereum: A Secure Decentralised Generalised Transaction Ledger}}}}.
+\newblock 2023.
+\newblock \en{[Version: 2bcdb2d] \url{https://ethereum.github.io/yellowpaper/paper.pdf}}.
+
+\bibitem{ref14}
+{{\latintext Andreas M.{ }Antonopoulos \textgreek{kai} Gavin{ }Wood}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Mastering Ethereum: Building Smart Contracts and DApps}}}}.
+\newblock {{\latintext O'Reilly Media, Incorporated}}, 2018.
+
+\bibitem{ref15}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Introduction to smart contracts}}}}.
+\newblock {{\latintext \url{https://ethereum.org/en/smart-contracts/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref16}
+{{\latintext Konstantinos Christidis; Michael{ }Devetsikiotis}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Blockchains and Smart Contracts for the Internet of Things}}}}.
+\newblock 2016.
+
+\bibitem{ref17}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em What is a DApp?}}}}
+\newblock {{\latintext \url{https://ethereum.org/en/dapps/#beginner}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref18}
+{{\latintext Kaidong Wu; Yun Ma; Gang Huang; Xuanzhe{ }Liu}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em A First Look at Blockchain-based Decentralized Applications}}}}.
+\newblock 2019.
+
+\bibitem{ref19}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em What is Web3?}}}}
+\newblock {{\latintext \url{https://ethereum.org/en/web3/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref20}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em What is Ether (ETH)?}}}}
+\newblock {{\latintext \url{https://ethereum.org/en/eth/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref21}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Gas Fees}}}}.
+\newblock {{\latintext \url{https://ethereum.org/en/gas/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref22}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Ethereum's energy expenditure}}}}.
+\newblock {{\latintext \url{https://ethereum.org/en/energy-consumption/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref23}
+{{\latintext Mohammad{ }Musharraf}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em What is the Blockchain Trilemma?}}}}
+\newblock {{\latintext \url{https://www.ledger.com/academy/what-is-the-blockchain-trilemma}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref24}
+{{\latintext Ethereum{ }Foundation}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Layer 2}}}}.
+\newblock {{\latintext \url{https://ethereum.org/en/layer-2/}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
+
+\bibitem{ref25}
+{{\latintext Magnus Westerlund; Nane{ }Kratzke}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Towards Distributed Clouds}}}}.
+\newblock 2018.
+
+\bibitem{ref26}
+{{\latintext Eric Jonas; Qifan Pu; Shivaram Venkataraman; Ion Stoica; Benjamin{ }Recht}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Occupy the Cloud: Distributed Computing for the 99\%}}}}.
+\newblock 2017.
+
+\bibitem{ref27}
+{{\latintext Alex Kaplunovich; Karuna P. Joshi; Yelena{ }Yesha}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Scalability Analysis of Blockchain on a Serverless Cloud}}}}.
+\newblock 2019.
+
+\bibitem{ref28}
+{{\latintext Vladimir Yussupov; Ghareeb Falazi; Uwe Breitenbucher; Frank{ }Leymann}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em On the Serverless Nature of Blockchains and Smart Contracts}}}}.
+\newblock 2020.
+
+\bibitem{ref29}
+{{\latintext Ch. V. N. U. Bharathi Murthy; M. Lawanya Shri; Seifedine{ }Kadry}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Blockchain Based Cloud Computing: Architecture and Research Challenges}}}}.
+\newblock 2020.
+
+\bibitem{ref30}
+{{\latintext Jin Ho Park; Jong Hyuk{ }Park}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Blockchain Security in Cloud Computing: Use Cases, Challenges, and Solutions}}}}.
+\newblock 2017.
+
+\bibitem{ref31}
+{{\latintext {\color{\colouredtextcolor} {\em SONM}}}}.
+\newblock {{\latintext \url{https://docs.sonm.com}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref32}
+{{\latintext {\color{\colouredtextcolor} {\em Golem}}}}.
+\newblock {{\latintext \url{https://www.golem.network}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref33}
+{{\latintext {\color{\colouredtextcolor} {\em iExec}}}}.
+\newblock {{\latintext \url{https://iex.ec}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref34}
+{{\latintext {\color{\colouredtextcolor} {\em Filecoin}}}}.
+\newblock {{\latintext \url{https://filecoin.io}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref35}
+{{\latintext Jason Teutsch; Christian{ }Reitwießner}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em A scalable verification solution for blockchains}}}}.
+\newblock 2017.
+
+\bibitem{ref36}
+{{\latintext Katerina Doka; Tasos Bakogiannis; Ioannis{ }Mytilinis \textgreek{kai} Georgios{ }Goumas}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em CloudAgora: Democratizing the Cloud}}}}.
+\newblock 2019.
+
+\bibitem{ref37}
+{{\latintext Tasos Bakogiannis; Ioannis Mytilinis; Katerina{ }Doka \textgreek{kai} Georgios{ }Goumas}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Leveraging Blockchain Technology to Break the Cloud Computing Market Monopoly}}}}.
+\newblock 2020.
+
+\bibitem{ref38}
+{{\latintext Sara{ }Ghaemi}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Analysis and Design of Open Decentralized Serverless Computing Platforms}}}}.
+\newblock 2020.
+
+\bibitem{ref39}
+{{\latintext Sara Ghaemi; Hamzeh Khazaei; Petr{ }Musilek}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em ChainFaaS: An Open Blockchain-Based Serverless Platform}}}}.
+\newblock 2020.
+
+\bibitem{ref42}
+{{\latintext {\color{\colouredtextcolor} {\em IPFS}}}}.
+\newblock {{\latintext \url{https://ipfs.tech}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref44}
+{{\latintext {\color{\colouredtextcolor} {\em Hardhat}}}}.
+\newblock {{\latintext \url{https://hardhat.org}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref43}
+{{\latintext {\color{\colouredtextcolor} {\em MetaMask}}}}.
+\newblock {{\latintext \url{https://metamask.io}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref46}
+{{\latintext Fotis Loukidis – Andreou; Ioannis Giannakopoulos; Katerina{ }Doka \textgreek{kai} Nectarios{ }Koziris}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Docker-sec: A Fully Automated Container Security Enhancement Mechanism}}}}.
+\newblock 2018.
+
+\bibitem{ref47}
+{{\latintext Ioannis Giannakopoulos; Konstantinos Papazafeiropoulos; Katerina Doka; Nectarios{ }Koziris}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Isolation in Docker through Layer Encryption}}}}.
+\newblock 2020.
+
+\bibitem{ref45}
+{{\latintext {\color{\colouredtextcolor} {\em Swarm Ethereum}}}}.
+\newblock {{\latintext \url{https://www.ethswarm.org}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
 
 \end{thebibliography}

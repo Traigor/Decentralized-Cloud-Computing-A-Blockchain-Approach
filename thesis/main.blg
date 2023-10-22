@@ -1,0 +1,80 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: ntua.bst
+A level-1 auxiliary file: front_matter/abstract.aux
+A level-1 auxiliary file: front_matter/acknowledgements.aux
+A level-1 auxiliary file: body_matter/intro.aux
+A level-1 auxiliary file: body_matter/chap2.aux
+A level-1 auxiliary file: body_matter/chap3.aux
+A level-1 auxiliary file: body_matter/chap4.aux
+A level-1 auxiliary file: body_matter/chap5.aux
+A level-1 auxiliary file: body_matter/chap6.aux
+A level-1 auxiliary file: body_matter/chap7.aux
+Database file #1: references.bib
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Warning--empty journal in ref5
+Warning--empty journal in ref41
+Warning--empty journal in ref7
+Warning--empty journal in ref8
+Warning--empty journal in ref9
+Warning--empty journal in ref10
+Warning--empty journal in ref12
+Warning--empty journal in ref13
+Warning--empty journal in ref16
+Warning--empty journal in ref18
+Warning--empty journal in ref25
+Warning--empty journal in ref26
+Warning--empty journal in ref27
+Warning--empty journal in ref28
+Warning--empty journal in ref29
+Warning--empty journal in ref30
+Warning--empty journal in ref35
+Warning--empty journal in ref36
+Warning--empty journal in ref37
+Warning--empty journal in ref38
+Warning--empty journal in ref39
+Warning--empty journal in ref46
+Warning--empty journal in ref47
+You've used 47 entries,
+            3122 wiz_defined-function locations,
+            760 strings with 10088 characters,
+and the built_in function-call counts, 7451 in all, are:
+= -- 510
+> -- 176
+< -- 0
++ -- 90
+- -- 43
+* -- 502
+:= -- 988
+add.period$ -- 155
+call.type$ -- 47
+change.case$ -- 0
+chr.to.int$ -- 0
+cite$ -- 70
+duplicate$ -- 554
+empty$ -- 1001
+format.name$ -- 43
+if$ -- 1654
+int.to.chr$ -- 0
+int.to.str$ -- 47
+missing$ -- 28
+newline$ -- 252
+num.names$ -- 38
+pop$ -- 328
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 129
+stack$ -- 0
+substring$ -- 0
+swap$ -- 226
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 23
+while$ -- 38
+width$ -- 49
+write$ -- 459
+(There were 23 warnings)
