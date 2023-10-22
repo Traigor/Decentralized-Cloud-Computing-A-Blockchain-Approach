@@ -167,6 +167,8 @@
 \babel@toc {greek}{}\relax 
 \vspace \bigskipamount 
 \contentsline {chapter}{Βιβλιογραφία}{57}{chapter*.11}%
-\contentsline {subparagraph}{}{57}{chapter*.11}%
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {subparagraph}{}{58}{chapter*.11}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 

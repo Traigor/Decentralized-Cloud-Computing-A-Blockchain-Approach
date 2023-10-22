@@ -219,6 +219,12 @@
 \newblock {{\latintext {\color{\colouredtextcolor} {\em ChainFaaS: An Open Blockchain-Based Serverless Platform}}}}.
 \newblock 2020.
 
+\bibitem{ref49}
+{{\latintext Amir{ }Salihefendic}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em How Reddit ranking algorithms work}}}}.
+\newblock {{\latintext \url{https://medium.com/hacking-and-gonzo/how-reddit-ranking-algorithms-work-ef111e33d0d9}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 08-02-2023.
+
 \bibitem{ref42}
 {{\latintext {\color{\colouredtextcolor} {\em IPFS}}}}.
 \newblock {{\latintext \url{https://ipfs.tech}}}.
