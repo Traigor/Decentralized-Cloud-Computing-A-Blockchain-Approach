@@ -244,6 +244,11 @@
 \newblock {{\latintext {\color{\colouredtextcolor} {\em Isolation in Docker through Layer Encryption}}}}.
 \newblock 2020.
 
+\bibitem{ref48}
+{{\latintext {\color{\colouredtextcolor} {\em Chainlink}}}}.
+\newblock {{\latintext \url{https://chain.link}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
 \bibitem{ref45}
 {{\latintext {\color{\colouredtextcolor} {\em Swarm Ethereum}}}}.
 \newblock {{\latintext \url{https://www.ethswarm.org}}}.
