@@ -7,6 +7,8 @@ import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import AuctionsManagerSepolia from '../../constants/AuctionsManagerSepolia.json'
 import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
+import AuctionsManagerMumbai from '../../constants/AuctionsManagerMumbai.json'
+import TasksManagerMumbai from '../../constants/TasksManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import calculateScore from '../../utils/score'
 import compareAddresses from 'src/utils/compareAddresses'
@@ -36,11 +38,15 @@ function GetBids() {
       const auctionContract = new ethers.Contract(
         AuctionsManagerSepolia.address,
         AuctionsManagerSepolia.abi,
+        // AuctionsManagerMumbai.address,
+        // AuctionsManagerMumbai.abi,
         signer,
       )
       const taskContract = new ethers.Contract(
         TasksManagerSepolia.address,
         TasksManagerSepolia.abi,
+        // TasksManagerMumbai.address,
+        // TasksManagerMumbai.abi,
         signer,
       )
       setAuctionContract(auctionContract)
@@ -120,7 +126,7 @@ function GetBids() {
     },
     {
       key: 'score',
-      label: 'Score(%)',
+      label: "Provider's Score(%)",
       _props: { scope: 'col' },
     },
   ]

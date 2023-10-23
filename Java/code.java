@@ -1,0 +1,45 @@
+import java.math.BigInteger;
+class Code {
+  private String ver_string = "So Long, and Thanks for All the Fish";
+
+  public String getVerification()
+  {
+    return ver_string;
+  }
+
+  public String getComputation()
+  {
+    BigInteger ret = BigInteger.ZERO;
+    for (int i=0;i<100000;i++)
+      for(int j=0;j<10000;j++)
+       ret = ret.add(this.fibonacci(BigInteger.valueOf(42))); 
+       //calculates the fibonacci value again and again for testing purposes
+    return String.valueOf(ret);
+  }
+
+  private BigInteger fibonacci(BigInteger n) {
+        if (n.equals(BigInteger.ZERO)) return BigInteger.ZERO;
+        if (n.equals(BigInteger.ONE)) return BigInteger.ONE;
+
+        BigInteger n1 = BigInteger.ZERO;
+        BigInteger n2 = BigInteger.ONE;
+        BigInteger n3 = BigInteger.ZERO;
+
+        // Create a BigInteger for the loop counter i
+        BigInteger i = BigInteger.valueOf(2);
+
+        // Use the compareTo method to compare i with n
+        while (i.compareTo(n) < 0) {
+            n3 = n1.add(n2);
+            n1 = n2;
+            n2 = n3;
+            
+            // Increment i using the add method
+            i = i.add(BigInteger.ONE);
+        }
+        return n3;
+    }
+}
+
+
+

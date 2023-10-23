@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import AuctionsManagerSepolia from '../../constants/AuctionsManagerSepolia.json'
+import AuctionsManagerMumbai from '../../constants/AuctionsManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import { keccak256 } from '@ethersproject/keccak256'
 import { toUtf8Bytes } from '@ethersproject/strings'
@@ -29,6 +30,8 @@ function Auction() {
       const contract = new ethers.Contract(
         AuctionsManagerSepolia.address,
         AuctionsManagerSepolia.abi,
+        // AuctionsManagerMumbai.address,
+        // AuctionsManagerMumbai.abi,
         signer,
       )
       setContract(contract)

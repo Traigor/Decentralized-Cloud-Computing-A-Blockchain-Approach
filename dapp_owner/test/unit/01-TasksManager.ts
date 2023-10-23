@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { ethers, deployments, tasks } from "hardhat";
 import { TasksManager } from "../../typechain-types";
 import { BigNumber } from "ethers";
-
+//obsolete - needs fixing
 describe("TasksManager Unit Tests", function () {
   let tasksManager: TasksManager;
   let tasksManagerContract: TasksManager;

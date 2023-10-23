@@ -46,9 +46,15 @@ contract TasksManager {
         uint downVotes;
     }
 
+    struct clientRating {
+        uint upVotes;
+        uint downVotes;
+    }
+
     mapping (bytes32 => Task) private tasks;
     bytes32[] private bytes32_tasks;
-    mapping(address => providerRating) private performance;
+    mapping(address => providerRating) private providerPerformance;
+    mapping(address => clientRating) private clientPerformance;
 
     //Events
     event TaskCreated(bytes32 taskID, address client, address provider);
@@ -65,7 +71,8 @@ contract TasksManager {
     event TransferMadeToProvider(address provider, uint amount);
     event ProviderUpvoted(address provider, bytes32 taskID);
     event ProviderDownvoted(address provider, bytes32 taskID);
-    event TaskDeleted(bytes32 taskID);
+    event ClientUpvoted(address client, bytes32 taskID);
+    event ClientDownvoted(address client, bytes32 taskID);
 
     //Errors
     error NotCalledByOwner();
@@ -224,7 +231,7 @@ contract TasksManager {
             tasks[_taskID].client.transfer(tasks[_taskID].price * 2);
             emit TransferMadeToClient(tasks[_taskID].client, tasks[_taskID].price * 2);
             bank += tasks[_taskID].price * 10; //providerCollateral to bank
-            performance[tasks[_taskID].provider].downVotes += 1;
+            providerPerformance[tasks[_taskID].provider].downVotes += 1;
             emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
             tasks[_taskID].taskState = TaskState.CompletedUnsuccessfully;
             emit TaskCompletedUnsuccessfully(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
@@ -250,7 +257,7 @@ contract TasksManager {
         tasks[_taskID].results = _results;
         //gives 600 sec to provider to send the results, time received must be greater than completion time
         if ((receiptTime >= tasks[_taskID].completionTime)
-        && (receiptTime <= tasks[_taskID].completionTime + 600) 
+        && (receiptTime <= tasks[_taskID].completionTime + 86400) 
         && (receiptTime >= tasks[_taskID].activationTime + tasks[_taskID].duration) 
         && (tasks[_taskID].completionTime >= tasks[_taskID].activationTime + tasks[_taskID].duration)) 
         {
@@ -270,7 +277,7 @@ contract TasksManager {
             }
             tasks[_taskID].taskState = TaskState.ResultsReceivedSuccessfully;
             emit TaskReceivedResultsSuccessfully(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
-            performance[tasks[_taskID].provider].upVotes += 1;
+            providerPerformance[tasks[_taskID].provider].upVotes += 1;
             emit ProviderUpvoted(tasks[_taskID].provider,_taskID);
         }
         else {
@@ -279,7 +286,7 @@ contract TasksManager {
             bank += tasks[_taskID].price * 10; //providerCollateral to bank
             tasks[_taskID].taskState = TaskState.ResultsReceivedUnsuccessfully;
             emit TaskReceivedResultsUnsuccessfully(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
-            performance[tasks[_taskID].provider].downVotes += 1;
+            providerPerformance[tasks[_taskID].provider].downVotes += 1;
             emit ProviderDownvoted(tasks[_taskID].provider,_taskID);
         }
     }
@@ -303,13 +310,31 @@ contract TasksManager {
             revert PaymentNotInState(PaymentState.Pending);
         tasks[_taskID].provider.transfer(msg.value);
         emit TransferMadeToProvider(tasks[_taskID].provider, tasks[_taskID].price * tasks[_taskID].duration - tasks[_taskID].price * 2);
+        clientPerformance[tasks[_taskID].client].upVotes += 1;
+        emit ClientUpvoted(tasks[_taskID].client,_taskID);
         tasks[_taskID].paymentState = PaymentState.Completed;
         emit PaymentCompleted(_taskID, tasks[_taskID].client, tasks[_taskID].provider);
     }
 
+    function reportClient(bytes32 _taskID) public {
+       //registered task
+        if (tasks[_taskID].taskID == bytes32(0)) 
+            revert TaskDoesNotExist();
+        //provider only
+        if (msg.sender != tasks[_taskID].provider) 
+            revert NotCalledByProvider(); 
+        clientPerformance[tasks[_taskID].client].downVotes += 1;
+        emit ClientDownvoted(tasks[_taskID].client,_taskID);
+    }
 
-    function getPerformance(address provider) public view returns (providerRating memory) {
-        return performance[provider];
+
+    function getProviderPerformance(address provider) public view returns (providerRating memory) {
+        return providerPerformance[provider];
+        // tuple: upVotes, downVotes
+    }
+
+    function getClientPerformance(address client) public view returns (clientRating memory) {
+        return clientPerformance[client];
         // tuple: upVotes, downVotes
     }
 
@@ -411,26 +436,6 @@ contract TasksManager {
         if (msg.sender != owner) 
             revert NotCalledByOwner();
         return auctionAddress;
-    }
-
-    function deleteTask(bytes32 _taskID) public {
-        //owner only
-        if (msg.sender != owner) 
-            revert NotCalledByOwner();
-        //registered task
-        if (tasks[_taskID].taskID == bytes32(0)) 
-            revert TaskDoesNotExist();
-        delete tasks[_taskID];
-        for (uint i=0; i < bytes32_tasks.length; i++)
-        {
-            if (bytes32_tasks[i] == _taskID)
-            {
-                bytes32_tasks[i] = bytes32_tasks[bytes32_tasks.length - 1];
-                bytes32_tasks.pop();
-                break;
-            }
-        }
-        emit TaskDeleted(_taskID);
     }
 
     function getTasks() public view returns (Task[] memory) {

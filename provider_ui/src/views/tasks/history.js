@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
+import TasksManagerMumbai from '../../constants/TasksManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 import calculateScore from '../../utils/Score'
@@ -30,6 +31,8 @@ function TasksHistory() {
       const taskContract = new ethers.Contract(
         TasksManagerSepolia.address,
         TasksManagerSepolia.abi,
+        // TasksManagerMumbai.address,
+        // TasksManagerMumbai.abi,
         signer,
       )
       setTaskContract(taskContract)
@@ -53,7 +56,9 @@ function TasksHistory() {
 
       const getScore = async () => {
         if (taskContract && window.ethereum.selectedAddress) {
-          const performance = await taskContract.getPerformance(window.ethereum.selectedAddress)
+          const performance = await taskContract.getProviderPerformance(
+            window.ethereum.selectedAddress,
+          )
           const score = (
             calculateScore(performance.upVotes.toNumber(), performance.downVotes.toNumber()) * 100
           ).toFixed(2)

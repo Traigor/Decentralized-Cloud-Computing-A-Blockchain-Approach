@@ -20,6 +20,8 @@ import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import AuctionsManagerSepolia from '../../constants/AuctionsManagerSepolia.json'
 import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
+import AuctionsManagerMumbai from '../../constants/AuctionsManagerMumbai.json'
+import TasksManagerMumbai from '../../constants/TasksManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import calculateScore from '../../utils/Score'
 import compareAddresses from 'src/utils/compareAddresses'
@@ -48,11 +50,15 @@ function GetAuctions() {
       const auctionContract = new ethers.Contract(
         AuctionsManagerSepolia.address,
         AuctionsManagerSepolia.abi,
+        // AuctionsManagerMumbai.address,
+        // AuctionsManagerMumbai.abi,
         signer,
       )
       const taskContract = new ethers.Contract(
         TasksManagerSepolia.address,
         TasksManagerSepolia.abi,
+        // TasksManagerMumbai.address,
+        // TasksManagerMumbai.abi,
         signer,
       )
       setAuctionContract(auctionContract)
@@ -65,7 +71,9 @@ function GetAuctions() {
   useEffect(() => {
     const getScore = async () => {
       if (taskContract && window.ethereum.selectedAddress) {
-        const performance = await taskContract.getPerformance(window.ethereum.selectedAddress)
+        const performance = await taskContract.getProviderPerformance(
+          window.ethereum.selectedAddress,
+        )
         const score = (
           calculateScore(performance.upVotes.toNumber(), performance.downVotes.toNumber()) * 100
         ).toFixed(2)
@@ -150,6 +158,11 @@ function GetAuctions() {
       label: 'TaskDeadline(sec)',
       _props: { scope: 'col' },
     },
+    {
+      key: 'score',
+      label: "Client's Score(%)",
+      _props: { scope: 'col' },
+    },
   ]
 
   const mapAuctions = (auctions) => {
@@ -162,17 +175,26 @@ function GetAuctions() {
               name="exampleRadios"
               id="exampleRadios1"
               value="option1"
-              onChange={() => auctionRadioHandler(auction.auctionID)}
-              checked={selectedRadio === auction.auctionID}
+              onChange={() => auctionRadioHandler(auction.auction.auctionID)}
+              checked={selectedRadio === auction.auction.auctionID}
             />
           ),
-          auctionId: auction.auctionID.slice(0, 6) + '...' + auction.auctionID.slice(-4),
-          timeCreated: new Date(auction.creationTime.toNumber() * 1000).toLocaleString('en-GB'),
+          auctionId:
+            auction.auction.auctionID.slice(0, 6) + '...' + auction.auction.auctionID.slice(-4),
+          timeCreated: new Date(auction.auction.creationTime.toNumber() * 1000).toLocaleString(
+            'en-GB',
+          ),
           auctionDeadline: new Date(
-            (auction.creationTime.toNumber() + auction.auctionDeadline.toNumber()) * 1000,
+            (auction.auction.creationTime.toNumber() + auction.auction.auctionDeadline.toNumber()) *
+              1000,
           ).toLocaleString('en-GB'),
-          taskDeadline: auction.taskDeadline.toNumber(),
-          deadlineEpoch: auction.creationTime.toNumber() + auction.auctionDeadline.toNumber(),
+          taskDeadline: auction.auction.taskDeadline.toNumber(),
+          deadlineEpoch:
+            auction.auction.creationTime.toNumber() + auction.auction.auctionDeadline.toNumber(),
+          score: (
+            calculateScore(auction.clientUpVotes.toNumber(), auction.clientDownVotes.toNumber()) *
+            100
+          ).toFixed(2),
         }
       })
       //sort auctions by deadline time in ascending order

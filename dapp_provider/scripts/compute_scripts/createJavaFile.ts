@@ -12,8 +12,8 @@ export async function createJavaFileSepolia({ taskID }: TCreateJavaFile) {
   const codeCID = await getCodeRequestSepolia({ taskID });
   console.log("Code CID:", codeCID);
 
-  const mainCodeCID = "QmSALY9C3HYXheDd2eAzuUgB2VMpfyFohMi9fykiMeSy8N";
-  const timeCodeCID = "QmbnXNXNeYgRMy6og8XnJ1zcNjYBXeK2rZ4ZRZwei2eDeW";
+  const mainCodeCID = "QmWzMCNderiptFM7rksAZdyUvDUNj5sEpAX5tibjJjGyKB";
+  const timeCodeCID = "QmYCK97zguaBzWwTCgCT3LEB7aotXYuQAWoMVL6jMjXRTC";
 
   const IPFS_SH = `#!/bin/sh
 (cd .Task_${taskID}/Java;
@@ -30,8 +30,8 @@ ipfs cat ${timeCodeCID} > Time.class;)`;
 export async function createJavaFileMumbai({ taskID }: TCreateJavaFile) {
   const codeCID = await getCodeRequestMumbai({ taskID });
 
-  const mainCodeCID = "QmSALY9C3HYXheDd2eAzuUgB2VMpfyFohMi9fykiMeSy8N";
-  const timeCodeCID = "QmbnXNXNeYgRMy6og8XnJ1zcNjYBXeK2rZ4ZRZwei2eDeW";
+  const mainCodeCID = "QmWzMCNderiptFM7rksAZdyUvDUNj5sEpAX5tibjJjGyKB";
+  const timeCodeCID = "QmYCK97zguaBzWwTCgCT3LEB7aotXYuQAWoMVL6jMjXRTC";
 
   const IPFS_SH = `#!/bin/sh
 (cd .Task_${taskID}/Java;

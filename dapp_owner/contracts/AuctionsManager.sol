@@ -39,7 +39,14 @@ contract AuctionsManager {
         uint bid;
     }
 
+    struct ActiveAuction {
+        Auction auction;
+        uint clientUpVotes;
+        uint clientDownVotes;
+    }
+
     mapping (bytes32 => Auction) private auctions;
+
     bytes32[] private bytes32_auctions;
 
     //Events
@@ -139,16 +146,16 @@ contract AuctionsManager {
         if(providerExists == true)
         {
             auctions[_auctionID].providerBids[providerIndex].bid = _bid;
-            auctions[_auctionID].providerBids[providerIndex].providerUpVotes = tasksManager.getPerformance(msg.sender).upVotes;
-            auctions[_auctionID].providerBids[providerIndex].providerDownVotes = tasksManager.getPerformance(msg.sender).downVotes;
+            auctions[_auctionID].providerBids[providerIndex].providerUpVotes = tasksManager.getProviderPerformance(msg.sender).upVotes;
+            auctions[_auctionID].providerBids[providerIndex].providerDownVotes = tasksManager.getProviderPerformance(msg.sender).downVotes;
         }
         else 
         {
             ProviderBid memory currentBid;
             currentBid.provider = msg.sender;
             currentBid.bid = _bid;
-            currentBid.providerUpVotes = tasksManager.getPerformance(msg.sender).upVotes;
-            currentBid.providerDownVotes = tasksManager.getPerformance(msg.sender).downVotes;
+            currentBid.providerUpVotes = tasksManager.getProviderPerformance(msg.sender).upVotes;
+            currentBid.providerDownVotes = tasksManager.getProviderPerformance(msg.sender).downVotes;
             auctions[_auctionID].providerBids.push(currentBid);
         }
         emit BidPlaced(_auctionID, msg.sender, _bid);
@@ -190,27 +197,7 @@ contract AuctionsManager {
         tasksManager.createTask{value: clientCollateral}(taskID, currentAuction.client, _provider,  _winnerBid.bid, currentAuction.taskDeadline, currentAuction.clientVerification,currentAuction.code);
     }
 
-    function deleteAuction(bytes32 _auctionID) public {
-        //existing auction
-        if (auctions[_auctionID].auctionID == bytes32(0))
-            revert AuctionDoesNotExist();
-        //owner only
-        if (msg.sender != owner) 
-            revert NotCalledByOwner();
-        delete(auctions[_auctionID]);
-        for (uint i=0; i < bytes32_auctions.length; i++)
-        {
-            if (bytes32_auctions[i] == _auctionID)
-            {
-                bytes32_auctions[i] = bytes32_auctions[bytes32_auctions.length - 1];
-                bytes32_auctions.pop();
-                break;
-            }
-        }
-        emit AuctionDeleted(_auctionID);
-    }
-
-    function getActiveAuctions() public view returns (Auction[] memory) {
+    function getActiveAuctions() public view returns (ActiveAuction[] memory) {
         Auction[] memory activeAuctions = new Auction[](bytes32_auctions.length);
         uint auctionsLength = 0;
         for (uint i = 0; i < bytes32_auctions.length; i++)
@@ -221,10 +208,12 @@ contract AuctionsManager {
                 auctionsLength++;
             }
         }
-         Auction[] memory result = new Auction[](auctionsLength);
+         ActiveAuction[] memory result = new ActiveAuction[](auctionsLength);
         for (uint i = 0; i < auctionsLength; i++) 
         {
-            result[i] = activeAuctions[i];
+            result[i].auction = activeAuctions[i];
+            result[i].clientUpVotes = tasksManager.getProviderPerformance(activeAuctions[i].client).upVotes;
+            result[i].clientDownVotes = tasksManager.getProviderPerformance(activeAuctions[i].client).downVotes;
         }
         return result;
     }
