@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.15)  23 OCT 2023 09:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.15)  23 OCT 2023 09:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1783,12 +1783,27 @@ Overfull \hbox (61.69142pt too wide) in paragraph at lines 17--24
 
  (./back_matter/appA.tex
 \textPi \textalpha \textrho \acctonos \textalpha \textrho \texttau \texteta \textmu \textalpha  {\greekscript \textAlpha \textnumeralsigngreek }.
-LaTeX Font Info:    Trying to load font information for T1+fvm on input line 22.
+LaTeX Font Info:    Trying to load font information for T1+fvm on input line 9.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/bera/t1fvm.fd
 File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
 )
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 8.2125pt on input line 22.
+(Font)              scaled to size 8.2125pt on input line 9.
+
+Overfull \hbox (1.78197pt too wide) in paragraph at lines 9--10
+[]\T1/mak/m/n/10.95 TasksManager[]\LGR/mak/m/n/10.95 : []\T1/mak/m/n/10.95 0xF56Ac472cA72d0bB7E6808E2B14A0DAEdb251D79 []\LGR/mak/m/n/10.95 [[][]$\T1/fvm/m/n/10.95 https :
+ []
+
+
+Overfull \hbox (4.55118pt too wide) in paragraph at lines 10--11
+[]\T1/mak/m/n/10.95 AuctionsManager[]\LGR/mak/m/n/10.95 : []\T1/mak/m/n/10.95 0xB37b0AA4D3b8132ec894A65374f07ebE23f3E668 []\LGR/mak/m/n/10.95 [[][]$\T1/fvm/m/n/10.95 https :
+ []
+
+
+Overfull \hbox (2.84628pt too wide) in paragraph at lines 15--16
+[]\T1/mak/m/n/10.95 AuctionsManager[]\LGR/mak/m/n/10.95 : []\T1/mak/m/n/10.95 0x4f114e226000f0dE019C890692E1e6229F89d1C3 []\LGR/mak/m/n/10.95 [[][]$\T1/fvm/m/n/10.95 https :
+ []
+
 ) [59
 
 
@@ -1847,10 +1862,10 @@ Here is how much of TeX's memory you used:
  1142 hyphenation exceptions out of 8191
  99i,17n,107p,1902b,2328s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Bold.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-Italic.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis-SmallCaps.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/kerkis/Kerkis.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/bera/fvmr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxr.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/txsy.pfb>
-Output written on main.pdf (73 pages, 720142 bytes).
+Output written on main.pdf (73 pages, 721149 bytes).
 PDF statistics:
- 1060 PDF objects out of 1200 (max. 8388607)
- 921 compressed objects within 10 object streams
+ 1068 PDF objects out of 1200 (max. 8388607)
+ 929 compressed objects within 10 object streams
  278 named destinations out of 1000 (max. 500000)
  538 words of extra memory for PDF output out of 10000 (max. 10000000)
 
