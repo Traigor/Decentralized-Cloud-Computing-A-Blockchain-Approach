@@ -1,37 +1,56 @@
-\chapter{Απόδειξη της σχέσης (8.1)}
-Στο κεφάλαιο αυτό παρουσιάζεται η μελέτη που έγινε για την
-υλοποίηση του συστήματος. Αρχικά περιγράφεται η αρχιτεκτονική του
-συστήματος και γίνεται ο διαχωρισμός του στα επιμέρους
-υποσυστήματα, ενώ στη συνέχεια περιγράφονται οι εφαρμογές του
-συστήματος. \expandafter\textgreek{ελένη}
-
-\section{Ανάλυση - περιγραφή αρχιτεκτονικής}
-Στην ενότητα αυτή παρουσιάζεται η ανάλυση του συστήματος και ο
-χωρισμός του σε υποσυστήματα όσον αφορά την αρχιτεκτονική.
-
-\subsection{Διαχωρισμός υποσυστημάτων}
-Το σύστημα αποτελείται από τους απλούς κόμβους και ένα κόμβο
-διαχειριστή. Στο σημείο αυτό αναλύουμε το σύστημα ενός απλού
-κόμβου, το οποίο αποτελείται από τα εξής υποσυστήματα:
-
-\begin{itemize}
-\item Υποσύστημα δημιουργίας σχήματος.
-\item Υποσύστημα ενσωμάτωσης δεδομένων στο σχήμα.
-\item Υποσύστημα επικοινωνίας κόμβου.
-\end{itemize}
+\chapter{Υπολογιστική Εργασία \en{Java}}
+Η \en{Java} εργασία που χρησιμοποιήθηκε στο κεφάλαιο 7 για την πειραματική αξιολόγηση της \en{dApp} είναι η ακόλουθη:
 
 
-\begin{figure}[!ht] \centering
-\includegraphics{figures/2.png} \caption{Προσομοίωση Πύλης \en{NOR}}\label{figureB.1}
-\end{figure}
+\begin{otherlanguage}{english}
 
-Το Σχήμα~\ref{figureB.1} απεικονίζει .................
+\begin{lstlisting}[language=Java]
+
+import java.math.BigInteger;
+class Code {
+  private String ver_string = "So Long, and Thanks for All the Fish";
+
+  public String getVerification()
+  {
+    return ver_string;
+  }
+
+  public String getComputation()
+  {
+    BigInteger ret = BigInteger.ZERO;
+    for (int i=0;i<100000;i++)
+      for(int j=0;j<10000;j++)
+       ret = ret.add(this.fibonacci(BigInteger.valueOf(42))); 
+       //calculates the fibonacci value again and again for testing purposes
+    return String.valueOf(ret);
+  }
+
+  private BigInteger fibonacci(BigInteger n) {
+        if (n.equals(BigInteger.ZERO)) return BigInteger.ZERO;
+        if (n.equals(BigInteger.ONE)) return BigInteger.ONE;
+
+        BigInteger n1 = BigInteger.ZERO;
+        BigInteger n2 = BigInteger.ONE;
+        BigInteger n3 = BigInteger.ZERO;
+
+        // Create a BigInteger for the loop counter i
+        BigInteger i = BigInteger.valueOf(2);
+
+        // Use the compareTo method to compare i with n
+        while (i.compareTo(n) < 0) {
+            n3 = n1.add(n2);
+            n1 = n2;
+            n2 = n3;
+            
+            // Increment i using the add method
+            i = i.add(BigInteger.ONE);
+        }
+        return n3;
+    }
+}
+\end{lstlisting}
+\end{otherlanguage}
 
 
-\subsection{Περιγραφή υποσυστημάτων}
-Παρακάτω δίνεται λεπτομερής περιγραφή για καθένα από τα συστήματα
-που αναφέραμε. Η περιγραφή αυτή γίνεται με βάση τα διαγράμματα
-ροής δεδομένων.
 
-\subsubsection{Υποσύστημα δημιουργίας σχήματος}
-Το υποσύστημα αυτό ...............
+Σημειώνεται ότι η συνάρτηση \textit{\en{getComputation}} σκοπό είχε να είναι τόσο χρονοβόρα ώστε να προσφέρει τρόπο σύγκρισης του χρόνου εκτέλεσης της εργασίας και όχι να είναι αποδοτική.

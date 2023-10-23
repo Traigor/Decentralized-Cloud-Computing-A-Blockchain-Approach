@@ -49,6 +49,7 @@
 \usepackage[hyphens]{url}
 \usepackage{relsize} % used for font scaling
 
+
 \pagestyle{fancy}
 
 % Define macros to set thesis variables
@@ -1231,6 +1232,7 @@
     ^^00% end marker
   }%
 \endgroup
+
 	
 
 

@@ -245,6 +245,7 @@
 %
 % add custom hyphenation rules here
 \hyphenation{ο-ποί-α} 
+\usepackage{pgfplots}
 %
 %%%%
 %
@@ -265,7 +266,7 @@
 % Πίνακας Περιεχομένων
 	\tableofcontents
 % Κατάλογος Σχημάτων
-	\listoffigures
+	% \listoffigures
 % Κατάλογος Εικόνων
 	\listofillustrations
 % Κατάλογος Πινάκων
@@ -288,20 +289,20 @@
 	\include{body_matter/chap4}
 	\include{body_matter/chap5}
 	\include{body_matter/chap6}
-    \part{Επίλογος}
 	\include{body_matter/chap7}
-% //TODO: Παραρτήματα, Βιβλιογραφία, Συντομογραφίες, Γλωσσάριο, Ευρετήριο Όρων
+    \part{Επίλογος}
+	\include{body_matter/chap8}
 % % Παραρτήματα
-% 	\appendices
-% 	\include{back_matter/appA}
-% 	\include{back_matter/appB}
+	\appendices
+	\include{back_matter/appA}
+	\include{back_matter/appB}
 %     \include{back_matter/appC}
 %     \include{back_matter/appD}
 %     \include{back_matter/appE} 
 % Βιβλιογραφία - Αναφορές
 	\bibliography{references}
 % % Συντομογραφίες - Αρκτικόλεξα - Ακρωνύμια
-% 	\includeabbreviations{back_matter/abbreviations}
+	\includeabbreviations{back_matter/abbreviations}
 % % Γλωσσάριο
 % 	\includeglossary{back_matter/glossary}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

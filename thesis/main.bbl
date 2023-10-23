@@ -144,6 +144,15 @@
 \newblock {{\latintext \url{https://ethereum.org/en/layer-2/}}}.
 \newblock \textgreek{Ημερομηνία πρόσβασης}: 14-10-2023.
 
+\bibitem{ref50}
+{{\latintext {\color{\colouredtextcolor} {\em Polygon}}}}.
+\newblock {{\latintext \url{https://wiki.polygon.technology}}}.
+\newblock \textgreek{Ημερομηνία πρόσβασης}: 21-10-2023.
+
+\bibitem{ref51}
+{{\latintext Mihailo Bjelic; Sandeep Nailwal; Amit Chaudhary; Wenxuan{ }Deng}}.
+\newblock {{\latintext {\color{\colouredtextcolor} {\em Polygon Whitepaper: POL: One token for all Polygon chains}}}}.
+
 \bibitem{ref25}
 {{\latintext Magnus Westerlund; Nane{ }Kratzke}}.
 \newblock {{\latintext {\color{\colouredtextcolor} {\em Towards Distributed Clouds}}}}.

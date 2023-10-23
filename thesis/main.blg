@@ -11,6 +11,9 @@ A level-1 auxiliary file: body_matter/chap4.aux
 A level-1 auxiliary file: body_matter/chap5.aux
 A level-1 auxiliary file: body_matter/chap6.aux
 A level-1 auxiliary file: body_matter/chap7.aux
+A level-1 auxiliary file: body_matter/chap8.aux
+A level-1 auxiliary file: back_matter/appA.aux
+A level-1 auxiliary file: back_matter/appB.aux
 Database file #1: references.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Warning--empty journal in ref5
@@ -23,6 +26,8 @@ Warning--empty journal in ref12
 Warning--empty journal in ref13
 Warning--empty journal in ref16
 Warning--empty journal in ref18
+Warning--empty journal in ref51
+Warning--empty year in ref51
 Warning--empty journal in ref25
 Warning--empty journal in ref26
 Warning--empty journal in ref27
@@ -36,45 +41,45 @@ Warning--empty journal in ref38
 Warning--empty journal in ref39
 Warning--empty journal in ref46
 Warning--empty journal in ref47
-You've used 49 entries,
+You've used 51 entries,
             3122 wiz_defined-function locations,
-            768 strings with 10335 characters,
-and the built_in function-call counts, 7758 in all, are:
-= -- 532
-> -- 181
+            777 strings with 10568 characters,
+and the built_in function-call counts, 8049 in all, are:
+= -- 550
+> -- 186
 < -- 0
-+ -- 93
-- -- 44
-* -- 520
-:= -- 1020
-add.period$ -- 162
-call.type$ -- 49
++ -- 96
+- -- 45
+* -- 542
+:= -- 1052
+add.period$ -- 167
+call.type$ -- 51
 change.case$ -- 0
 chr.to.int$ -- 0
-cite$ -- 72
-duplicate$ -- 574
-empty$ -- 1049
-format.name$ -- 44
-if$ -- 1729
+cite$ -- 76
+duplicate$ -- 597
+empty$ -- 1092
+format.name$ -- 45
+if$ -- 1795
 int.to.chr$ -- 0
-int.to.str$ -- 49
-missing$ -- 28
-newline$ -- 263
-num.names$ -- 39
-pop$ -- 346
+int.to.str$ -- 51
+missing$ -- 29
+newline$ -- 272
+num.names$ -- 40
+pop$ -- 363
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 134
+skip$ -- 140
 stack$ -- 0
 substring$ -- 0
-swap$ -- 237
+swap$ -- 246
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 23
-while$ -- 39
-width$ -- 51
-write$ -- 479
-(There were 23 warnings)
+warning$ -- 25
+while$ -- 40
+width$ -- 53
+write$ -- 495
+(There were 25 warnings)
