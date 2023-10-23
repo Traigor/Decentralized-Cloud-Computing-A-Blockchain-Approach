@@ -7,7 +7,7 @@ import {
   address as TasksManagerAddress,
   abi as TasksManagerAbi,
 } from "../../deployments/localhost/TasksManager.json";
-
+//obsolete - needs fixing
 describe("Auctions Manager", function () {
   let auctionsManager: AuctionsManager;
   let auctionsManagerContract: AuctionsManager;

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import TasksManagerSepolia from '../../constants/TasksManagerSepolia.json'
+import TasksManagerMumbai from '../../constants/TasksManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 
@@ -28,8 +29,11 @@ function ActivateTask() {
       const taskContract = new ethers.Contract(
         TasksManagerSepolia.address,
         TasksManagerSepolia.abi,
+        // TasksManagerMumbai.address,
+        // TasksManagerMumbai.abi,
         signer,
       )
+
       setTaskContract(taskContract)
     }
 

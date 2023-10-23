@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
 import AuctionsManagerSepolia from '../../constants/AuctionsManagerSepolia.json'
+import AuctionsManagerMumbai from '../../constants/AuctionsManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 
@@ -21,6 +22,8 @@ function ActiveBids() {
       const auctionContract = new ethers.Contract(
         AuctionsManagerSepolia.address,
         AuctionsManagerSepolia.abi,
+        // AuctionsManagerMumbai.address,
+        // AuctionsManagerMumbai.abi,
         signer,
       )
       setAuctionContract(auctionContract)

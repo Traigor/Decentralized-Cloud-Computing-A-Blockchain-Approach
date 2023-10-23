@@ -11,7 +11,7 @@ async function getPerformance(provider: string) {
     abi,
     ethers.provider.getSigner()
   );
-  const performance = await tasksManager.getPerformance(provider);
+  const performance = await tasksManager.getProviderPerformance(provider);
 
   return performance;
 }
