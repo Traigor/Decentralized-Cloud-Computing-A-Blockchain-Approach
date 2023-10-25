@@ -91,9 +91,9 @@
 \contentsline {subsection}{\numberline {3.4.2}Εναλλακτικές ροές εργασιών}{32}{subsection.3.4.2}%
 \contentsline {subsubsection}{Ανεπιτυχής ολοκλήρωση της εργασίας λόγω ασυμφωνίας επαλήθευσης \\ή καθυστερημένης εκτέλεσης}{32}{subsection.3.4.2}%
 \contentsline {subsubsection}{Καθυστέρηση του παρόχου στην υποβολή των αποτελεσμάτων}{32}{subsection.3.4.2}%
-\contentsline {subsubsection}{Δικαίωμα ακύρωσης του πελάτη πριν από την ενεργοποίηση της \\εργασίας}{32}{subsection.3.4.2}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
+\contentsline {subsubsection}{Δικαίωμα ακύρωσης του πελάτη πριν από την ενεργοποίηση της \\εργασίας}{33}{subsection.3.4.2}%
 \contentsline {subsubsection}{Δικαίωμα ακύρωσης του πελάτη για καθυστερημένη ολοκλήρωση}{33}{subsection.3.4.2}%
 \contentsline {subsubsection}{Μη ολοκλήρωση πληρωμής από τον πελάτη}{33}{subsection.3.4.2}%
 \babel@toc {greek}{}\relax 

@@ -1,7 +1,17 @@
 import React from 'react'
-import { CButton, CFormCheck, CTable, CSpinner, CAlert } from '@coreui/react'
+import {
+  CButton,
+  CFormCheck,
+  CTable,
+  CSpinner,
+  CAlert,
+  CRow,
+  CCol,
+  CWidgetStatsE,
+} from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCheckCircle } from '@coreui/icons'
+import { CChartPie } from '@coreui/react-chartjs'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Card } from 'react-bootstrap'
@@ -10,8 +20,9 @@ import TasksManagerMumbai from '../../constants/TasksManagerMumbai.json'
 import { Web3Provider } from '@ethersproject/providers'
 import compareAddresses from 'src/utils/compareAddresses'
 import calculatePayment from 'src/utils/calculatePayment'
+import calculateScore from 'src/utils/score'
 
-function ActiveTasks() {
+function Tasks() {
   const [taskContract, setTaskContract] = useState(null)
   const [taskID, setTaskID] = useState(null)
   const [tasks, setTasks] = useState(null)
@@ -24,6 +35,9 @@ function ActiveTasks() {
   const [visiblePending, setVisiblePending] = useState(false)
   const [visibleCompleted, setVisibleCompleted] = useState(false)
   const [visibleTasks, setVisibleTasks] = useState(false)
+  const [score, setScore] = useState(null)
+  const [upVotes, setUpvotes] = useState(null)
+  const [downVotes, setDownvotes] = useState(null)
 
   useEffect(() => {
     const contractData = async () => {
@@ -84,6 +98,23 @@ function ActiveTasks() {
           }, 60000)
         }
       }
+
+      const getScore = async () => {
+        if (taskContract && window.ethereum.selectedAddress) {
+          const performance = await taskContract.getClientPerformance(
+            window.ethereum.selectedAddress,
+          )
+          const score = (
+            calculateScore(performance.upVotes.toNumber(), performance.downVotes.toNumber()) * 100
+          ).toFixed(2)
+
+          setUpvotes(performance.upVotes.toNumber())
+          setDownvotes(performance.downVotes.toNumber())
+          setScore(score)
+        }
+      }
+
+      getScore()
 
       taskContract.on('PaymentPending', paymentPendingHandler)
       taskContract.on('PaymentCompleted', paymentCompletedHandler)
@@ -253,6 +284,48 @@ function ActiveTasks() {
     <div className="App">
       {/* Calling all values which we 
    have stored in usestate */}
+      <CRow>
+        <CCol xs={15}>
+          <CWidgetStatsE
+            className="mb-3 widget"
+            chart={
+              <CChartPie
+                className="mx-auto"
+                style={{ height: '100%' }}
+                data={{
+                  labels: ['Successful Tasks', 'Unsuccessful Tasks'],
+                  datasets: [
+                    {
+                      backgroundColor: ['#2eb85c', '#e55353'],
+                      borderColor: 'transparent',
+                      borderWidth: 1,
+                      data: [`${upVotes}`, `${downVotes}`],
+                    },
+                  ],
+                }}
+                options={{
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                  scales: {
+                    x: {
+                      display: false,
+                    },
+                    y: {
+                      display: false,
+                    },
+                  },
+                }}
+              />
+            }
+            title="My Performance"
+            value={`${score}%`}
+          />
+        </CCol>
+      </CRow>
       <Card className="text-center">
         <CButton color="primary" onClick={getTasksBtnhandler}>
           My Tasks
@@ -295,4 +368,4 @@ function ActiveTasks() {
   )
 }
 
-export default ActiveTasks
+export default Tasks
