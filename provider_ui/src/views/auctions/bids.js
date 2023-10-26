@@ -38,6 +38,7 @@ function ActiveBids() {
     setAuctions(auctions)
   }
 
+  const GWEI = 1000000000
   const auctionsColumns = [
     {
       key: 'auctionID',
@@ -46,7 +47,7 @@ function ActiveBids() {
     },
     {
       key: 'bid',
-      label: 'Bid',
+      label: 'Bid[Gwei]',
       _props: { scope: 'col' },
     },
     {
@@ -66,9 +67,10 @@ function ActiveBids() {
       const mappedAuctions = auctions.map((auction) => {
         return {
           auctionID: auction.auctionID.slice(0, 6) + '...' + auction.auctionID.slice(-4),
-          bid: auction.providerBids
-            .find((bid) => compareAddresses(bid.provider, window.ethereum.selectedAddress))
-            .bid.toNumber(),
+          bid:
+            auction.providerBids
+              .find((bid) => compareAddresses(bid.provider, window.ethereum.selectedAddress))
+              .bid.toNumber() / GWEI,
           creationTime: new Date(auction.creationTime.toNumber() * 1000).toLocaleString('en-GB'),
           auctionDeadline: new Date(
             (auction.creationTime.toNumber() + auction.auctionDeadline.toNumber()) * 1000,

@@ -212,8 +212,8 @@ contract AuctionsManager {
         for (uint i = 0; i < auctionsLength; i++) 
         {
             result[i].auction = activeAuctions[i];
-            result[i].clientUpVotes = tasksManager.getProviderPerformance(activeAuctions[i].client).upVotes;
-            result[i].clientDownVotes = tasksManager.getProviderPerformance(activeAuctions[i].client).downVotes;
+            result[i].clientUpVotes = tasksManager.getClientPerformance(activeAuctions[i].client).upVotes;
+            result[i].clientDownVotes = tasksManager.getClientPerformance(activeAuctions[i].client).downVotes;
         }
         return result;
     }

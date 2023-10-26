@@ -104,7 +104,7 @@ function TasksHistory() {
     },
     {
       key: 'price',
-      label: 'Price',
+      label: 'Price[Gwei]',
       _props: { scope: 'col' },
     },
     {
@@ -124,10 +124,12 @@ function TasksHistory() {
     },
     {
       key: 'paymentState',
-      label: 'PaymentState[wei]',
+      label: 'PaymentState[Gwei]',
       _props: { scope: 'col' },
     },
   ]
+
+  const GWEI = 1000000000
 
   const mapTasks = (tasks) => {
     if (tasks) {
@@ -142,7 +144,7 @@ function TasksHistory() {
                       (task.activationTime.toNumber() + task.deadline.toNumber()) * 1000,
                     ).toLocaleString('en-GB')
                   : '-',
-              price: task.price.toNumber(),
+              price: task.price.toNumber() / GWEI,
               activationTime:
                 task.activationTime.toNumber() !== 0
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
@@ -153,11 +155,12 @@ function TasksHistory() {
                   return 'Initialized'
                 } else if (task.paymentState === 1) {
                   return `Pending[${
-                    calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending
+                    calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending / GWEI
                   }]`
                 } else if (task.paymentState === 2) {
                   return `Completed[${
-                    calculatePayment(task.price.toNumber(), task.duration.toNumber()).completed
+                    calculatePayment(task.price.toNumber(), task.duration.toNumber()).completed /
+                    GWEI
                   }]`
                 }
               })(),

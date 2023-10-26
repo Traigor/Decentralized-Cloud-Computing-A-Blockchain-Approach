@@ -127,9 +127,10 @@ function GetAuctions() {
     setBidSelected(!bidSelected)
   }
 
+  const GWEI = 1000000000
   const makeBidHandler = async () => {
     setLoading(true)
-    await auctionContract.bid(auctionID, bid)
+    await auctionContract.bid(auctionID, bid * GWEI)
   }
 
   const auctionsColumns = [
@@ -168,6 +169,7 @@ function GetAuctions() {
   const mapAuctions = (auctions) => {
     if (auctions) {
       const mappedAuctions = auctions.map((auction) => {
+        console.log('auction', auction)
         return {
           button: (
             <CFormCheck
@@ -284,7 +286,7 @@ function GetAuctions() {
                   <CFormInput
                     type="number"
                     id="bid"
-                    text="Wei per second of execution"
+                    text="Gwei per second of execution"
                     value={bid}
                     onChange={handleBidChange}
                     step={10}

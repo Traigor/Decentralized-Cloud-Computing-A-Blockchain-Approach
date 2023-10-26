@@ -106,7 +106,7 @@ function ActivateTask() {
     },
     {
       key: 'price',
-      label: 'Price',
+      label: 'Price[Gwei]',
       _props: { scope: 'col' },
     },
     {
@@ -120,6 +120,8 @@ function ActivateTask() {
       _props: { scope: 'col' },
     },
   ]
+
+  const GWEI = 1000000000
 
   const mapTasks = (tasks) => {
     if (tasks) {
@@ -138,7 +140,7 @@ function ActivateTask() {
               ),
               taskID: task.taskID.slice(0, 6) + '...' + task.taskID.slice(-4),
               deadline: task.deadline.toNumber(),
-              price: task.price.toNumber(),
+              price: task.price.toNumber() / GWEI,
               taskState: TaskState[task.taskState],
             }
           : {}
@@ -172,7 +174,7 @@ function ActivateTask() {
       {taskID && taskState === 0 ? (
         <Card className="text-center">
           <CTooltip
-            content={`You will be charged ${providerCollateral} wei as collateral`}
+            content={`You will be charged ${providerCollateral / GWEI} Gwei as collateral`}
             placement="bottom"
           >
             <CButton color="success" onClick={activateHandler}>

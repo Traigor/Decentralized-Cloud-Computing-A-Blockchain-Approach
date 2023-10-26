@@ -126,6 +126,8 @@ function Tasks() {
     }
   }, [taskContract])
 
+  const GWEI = 1000000000
+
   const payHandler = async () => {
     setLoading(true)
     const task = tasks.find((task) => task.taskID === taskID)
@@ -167,7 +169,7 @@ function Tasks() {
     },
     {
       key: 'price',
-      label: 'Price',
+      label: 'Price[Gwei]',
       _props: { scope: 'col' },
     },
     {
@@ -187,7 +189,7 @@ function Tasks() {
     },
     {
       key: 'paymentState',
-      label: 'PaymentState[wei]',
+      label: 'PaymentState[Gwei]',
       _props: { scope: 'col' },
     },
   ]
@@ -196,10 +198,12 @@ function Tasks() {
     if (task.paymentState === 0) {
       return 'Initialized'
     } else if (task.paymentState === 1) {
-      return `Pending[${calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending}]`
+      return `Pending[${
+        calculatePayment(task.price.toNumber(), task.duration.toNumber()).pending / GWEI
+      }]`
     } else if (task.paymentState === 2) {
       return `Completed[${
-        calculatePayment(task.price.toNumber(), task.duration.toNumber()).completed
+        calculatePayment(task.price.toNumber(), task.duration.toNumber()).completed / GWEI
       }]`
     }
   }
@@ -226,7 +230,7 @@ function Tasks() {
                       (task.activationTime.toNumber() + task.deadline.toNumber()) * 1000,
                     ).toLocaleString('en-GB')
                   : '-',
-              price: task.price.toNumber(),
+              price: task.price.toNumber() / GWEI,
               activationTime:
                 task.activationTime.toNumber() !== 0
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
@@ -253,7 +257,7 @@ function Tasks() {
                       (task.activationTime.toNumber() + task.deadline.toNumber()) * 1000,
                     ).toLocaleString('en-GB')
                   : '-',
-              price: task.price.toNumber(),
+              price: task.price.toNumber() / GWEI,
               activationTime:
                 task.activationTime.toNumber() !== 0
                   ? new Date(task.activationTime.toNumber() * 1000).toLocaleString('en-GB')
@@ -331,12 +335,9 @@ function Tasks() {
           My Tasks
         </CButton>
       </Card>
-      <Card className="text-center">
-        {visibleTasks && tasks ? <CTable columns={tasksColumns} items={mapTasks(tasks)} /> : null}
-      </Card>
       {taskID && taskState === 6 && paymentState === 1 ? (
         <Card className="text-center">
-          <CButton color="primary" onClick={payHandler}>
+          <CButton color="info" onClick={payHandler}>
             {loading ? <CSpinner size="sm" aria-hidden="true" /> : null}
             {''} Complete Payment
           </CButton>
@@ -344,12 +345,15 @@ function Tasks() {
       ) : null}
       {taskID && taskState === 6 && paymentState === 2 ? (
         <Card className="text-center">
-          <CButton color="primary" onClick={resultsHandler}>
+          <CButton color="info" onClick={resultsHandler}>
             Receive Results
           </CButton>
           {results}
         </Card>
       ) : null}
+      <Card className="text-center">
+        {visibleTasks && tasks ? <CTable columns={tasksColumns} items={mapTasks(tasks)} /> : null}
+      </Card>
       {visiblePending && payment ? (
         <CAlert color="warning" className="d-flex align-items-center" dismissible>
           <CIcon icon={cilCheckCircle} className="flex-shrink-0 me-2" width={24} height={24} />

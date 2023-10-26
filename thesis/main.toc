@@ -150,11 +150,11 @@
 \contentsline {chapter}{\numberline {7}Πειραματική αξιολόγηση}{49}{chapter.7}%
 \contentsline {section}{\numberline {7.1}Σύγκριση εκτέλεσης εργασίας με χρήση της \foreignlanguage {english}{dApp} και τοπικά}{49}{section.7.1}%
 \contentsline {subsection}{\numberline {7.1.1}Επιπρόσθετο κόστος εκτέλεσης της εργασίας}{49}{subsection.7.1.1}%
-\contentsline {subsection}{\numberline {7.1.2}Αύξηση συνολικού χρόνου εκτέλεσης της εργασίας}{49}{subsection.7.1.2}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 
+\contentsline {subsection}{\numberline {7.1.2}Αύξηση συνολικού χρόνου εκτέλεσης της εργασίας}{50}{subsection.7.1.2}%
 \contentsline {section}{\numberline {7.2}Σχολιασμός Αποτελεσμάτων}{50}{section.7.2}%
 \babel@toc {greek}{}\relax 
 \babel@toc {greek}{}\relax 

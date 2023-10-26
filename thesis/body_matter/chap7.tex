@@ -8,18 +8,38 @@
 \subsection{Επιπρόσθετο κόστος εκτέλεσης της εργασίας}
 Για την σύγκριση του κόστους που προσθέτει η \en{dApp} σε σχέση με τον τοπικό υπολογισμό μιας εργασίας, εκτελέστηκε η ροή επιτυχημένης εκτέλεσής της στο \en{ehereum} δίκτυο του {hardhat} που προσομοιώνει το \en{Ethereum}, στο \en{Sepolia Testnet (Ethereum)} και στο \en{Mumbai Testnet (Polygon)}.
 
-Τα αποτελέσματα της εκτέλεσης, ως προς το συνολικό κόστος που προστίθεται για καθέναν από τον \en{deployer}, τον \en{client} και τον \en{provider}, παρουσιάζονται στον παρακάτω πίνακα:
+Τα αποτελέσματα της εκτέλεσης, ως προς το συνολικό κόστος που προστίθεται για καθέναν από τον \en{deployer}, τον \en{client} και τον \en{provider} σε κάθε περίπτωση είναι τα εξής:
+\begin{itemize}
+    \item \textbf{\en{Hardhat Ethereum}}:
+        \begin{itemize}
+            \item[-] \en{Deployer}: 0.283491576 \en{ETH} = 478.09 \$
+            \item[] \en{Client}:  0.016952904 \en{ETH} = 28.59 \$
+            \item[] \en{Provider}: 0.023493096 \en{ETH}  = 39.62 \$
+        \end{itemize} 
+    \item \textbf{\en{Sepolia Testnet}}:
+        \begin{itemize}
+            \item[-] \en{Deployer}:  0.01474686 \en{ETH} = 24.71 \$
+            \item[] \en{Client}:  0.00084412 \en{ETH} = 1.42 \$
+            \item[] \en{Provider}:  0.00106625 \en{ETH} = 1.80 \$
+        \end{itemize} 
+    \item \textbf{\en{Mumbai Testnet}}:
+        \begin{itemize}
+            \item[-] \en{Deployer}:  0.11896957549 \en{MATIC} = 0.07 \$
+            \item[] \en{Client}:  0.0009054505 \en{MATIC} = 0 \$
+            \item[] \en{Provider}:  0.00150822329 \en{MATIC} = 0 \$
+        \end{itemize} 
+\end{itemize}
+όπου η ισοτιμία των \en{ETH} και \en{MATIC} σε δολάρια (\$) είναι με βάση τις τιμές της 21/10/2023.
 
 \begin{table}[h]
     \centering
     \small  % Decrease the font size
-    \setlength{\tabcolsep}{2pt}  % Adjust column separation
     \begin{tabular}{|l|c|c|c|}
     \hline
     & \textbf{\en{Deployer}} & \textbf{\en{Provider}} & \textbf{\en{Client}} \\ \hline
-    \textbf{\en{Hardhat Ethereum}} & 0.283491576 \en{ETH} = 478.09\$ & 0.016952904 \en{ETH} = 28.59\$ & 0.023493096 \en{ETH}  = 39.62\$\\ \hline
-    \textbf{\en{Sepolia Testnet}} & 0.01474686 \en{ETH} = 24.71\$ & 0.00084412 \en{ETH} = 1.42\$& 0.00106625 \en{ETH} = 1.80\$\\ \hline
-    \textbf{\en{Mumbai Testnet}} & 0.11896957549 \en{MATIC} = 0.07\$ &  0.0009054505 \en{MATIC} = 0\$ & 0.00150822329 \en{MATIC} = 0\$ \\ \hline
+    \textbf{\en{Hardhat Ethereum}} & 478.09 \$ & 28.59 \$ &  39.62 \$ \\ \hline
+    \textbf{\en{Sepolia Testnet}} & 24.71 \$ & 1.42 \$& 1.80 \$ \\ \hline
+    \textbf{\en{Mumbai Testnet}} & 0.07 \$ &  0.00 \$ &0.00 \$ \\ \hline
     \end{tabular}
     \caption{\en{Gas Fees}}
 \end{table}

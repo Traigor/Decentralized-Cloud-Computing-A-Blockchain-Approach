@@ -218,7 +218,7 @@ contract TasksManager {
         if (tasks[_taskID].taskState != TaskState.Active) 
             revert TaskNotInState(TaskState.Active);
         tasks[_taskID].completionTime = _timeReceivedProvider;
-        tasks[_taskID].duration = _duration;
+        tasks[_taskID].duration = _duration + 1;
         //in time and correct verification
         if ((tasks[_taskID].completionTime <= tasks[_taskID].activationTime + tasks[_taskID].deadline) 
             && (tasks[_taskID].duration <= tasks[_taskID].deadline) 
@@ -255,7 +255,7 @@ contract TasksManager {
             revert PaymentNotInState(PaymentState.Initialized);
         uint receiptTime = block.timestamp;
         tasks[_taskID].results = _results;
-        //gives 600 sec to provider to send the results, time received must be greater than completion time
+        //gives 1 day to provider to send the results, time received must be greater than completion time
         if ((receiptTime >= tasks[_taskID].completionTime)
         && (receiptTime <= tasks[_taskID].completionTime + 86400) 
         && (receiptTime >= tasks[_taskID].activationTime + tasks[_taskID].duration) 

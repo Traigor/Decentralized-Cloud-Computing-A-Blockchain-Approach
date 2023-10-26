@@ -41,45 +41,45 @@ Warning--empty journal in ref38
 Warning--empty journal in ref39
 Warning--empty journal in ref46
 Warning--empty journal in ref47
-You've used 51 entries,
+You've used 54 entries,
             3122 wiz_defined-function locations,
-            777 strings with 10568 characters,
-and the built_in function-call counts, 8049 in all, are:
-= -- 550
-> -- 186
+            786 strings with 10798 characters,
+and the built_in function-call counts, 8469 in all, are:
+= -- 580
+> -- 189
 < -- 0
-+ -- 96
++ -- 99
 - -- 45
-* -- 542
-:= -- 1052
-add.period$ -- 167
-call.type$ -- 51
+* -- 566
+:= -- 1085
+add.period$ -- 176
+call.type$ -- 54
 change.case$ -- 0
 chr.to.int$ -- 0
-cite$ -- 76
-duplicate$ -- 597
-empty$ -- 1092
+cite$ -- 79
+duplicate$ -- 627
+empty$ -- 1164
 format.name$ -- 45
-if$ -- 1795
+if$ -- 1903
 int.to.chr$ -- 0
-int.to.str$ -- 51
+int.to.str$ -- 54
 missing$ -- 29
-newline$ -- 272
+newline$ -- 287
 num.names$ -- 40
-pop$ -- 363
+pop$ -- 393
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 140
+skip$ -- 149
 stack$ -- 0
 substring$ -- 0
-swap$ -- 246
+swap$ -- 261
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 25
 while$ -- 40
-width$ -- 53
-write$ -- 495
+width$ -- 56
+write$ -- 522
 (There were 25 warnings)

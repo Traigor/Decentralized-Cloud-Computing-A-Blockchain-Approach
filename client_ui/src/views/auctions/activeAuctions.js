@@ -116,7 +116,7 @@ function GetBids() {
     },
     {
       key: 'bid',
-      label: 'Bid',
+      label: 'Bid[Gwei]',
       _props: { scope: 'col' },
     },
     {
@@ -159,6 +159,7 @@ function GetBids() {
     },
   ]
 
+  const GWEI = 1000000000
   const mapBids = (bids) => {
     if (bids) {
       const mappedBids = bids.map((bid) => {
@@ -173,7 +174,7 @@ function GetBids() {
               checked={selectedBidRadio === bid.provider}
             />
           ),
-          bid: bid.bid.toNumber(),
+          bid: bid.bid.toNumber() / GWEI,
           provider: bid.provider,
           score: (
             calculateScore(bid.providerUpVotes.toNumber(), bid.providerDownVotes.toNumber()) * 100
@@ -266,7 +267,7 @@ function GetBids() {
       <Card className="text-center">
         {bidsSelected && bids ? (
           <CTooltip
-            content={`You will be charged ${clientCollateral} wei as collateral`}
+            content={`You will be charged ${clientCollateral / GWEI} Gwei as collateral`}
             placement="bottom"
           >
             <CButton color="success" onClick={finalizeBtnHandler}>
