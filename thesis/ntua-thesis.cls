@@ -553,8 +553,8 @@
                 \@thesisPlaceDate
             %
             \fi
-            \new@tpage
-            \cleardoublepage
+            % \new@tpage
+            % \cleardoublepage
             \if@twoside\new@tpage
 		\ifnewlogooption
             		\vspace{-1cm}
@@ -900,7 +900,9 @@
                 \\\nohyphens{%
                 \extractname{\n}%
                 {\@authorNameGR}}%
-                \end{spacing}}~~
+				\end{spacing}}~~
+				\\
+				\\Διπλωματούχος Ηλεκτρολόγος Μηχανικός και Μηχανικός Υπολογιστών Ε.Μ.Π.
                 \ifx\n\numberofauthorsGR
                 	\ifx\numberofauthorsEN 0
        				\else
