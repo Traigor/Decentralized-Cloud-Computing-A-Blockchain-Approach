@@ -198,6 +198,9 @@ contract AuctionsManager {
     }
 
     function getActiveAuctions() public view returns (ActiveAuction[] memory) {
+        //tasks manager set
+        if (address(tasksManager) == address(0))
+            revert TasksManagerNotSet();
         Auction[] memory activeAuctions = new Auction[](bytes32_auctions.length);
         uint auctionsLength = 0;
         for (uint i = 0; i < bytes32_auctions.length; i++)

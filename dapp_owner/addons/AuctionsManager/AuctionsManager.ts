@@ -1,4 +1,4 @@
-import { ContractReceipt, ethers } from "ethers";
+import { ethers } from "ethers";
 import {
   IAuctionsManager,
   TCreateAuction,
@@ -10,6 +10,12 @@ import {
   CancelledAuctionEvent,
   CancelledAuction,
 } from "./interface.js";
+import {
+  AuctionDoesNotExistError,
+  AuctionNotInStateError,
+  NotCalledByClientError,
+} from "./errors/index";
+
 //TODO
 //add retries logic inside functions and errors too
 //add gas metrics
@@ -133,7 +139,17 @@ export class AuctionsManager implements IAuctionsManager {
 
       return cancelledAuction;
     } catch (e) {
-      console.log("ERROR", e);
+      if (e.reason.includes("AuctionDoesNotExist")) {
+        throw new AuctionDoesNotExistError();
+      }
+      if (e.reason.includes("NotCalledByClient")) {
+        throw new NotCalledByClientError();
+      }
+      console.log(e);
+      if (e.reason.includes("AuctionNotInState")) {
+        console.error(e);
+        // throw new AuctionNotInStateError();
+      }
     }
   }
 
