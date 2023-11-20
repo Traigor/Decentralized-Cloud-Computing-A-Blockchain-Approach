@@ -3,8 +3,6 @@ export interface IError {
 }
 
 export abstract class AuctionsManagerError extends Error implements IError {
-  public message: string;
-
   constructor(message: string) {
     super(message);
   }
@@ -37,5 +35,23 @@ export class TasksManagerNotSetError extends AuctionsManagerError {
 export class AuctionNotInStateError extends AuctionsManagerError {
   constructor() {
     super("Auction not in correct state");
+  }
+}
+
+export class ClientCannotBidError extends AuctionsManagerError {
+  constructor() {
+    super("Client cannot bid");
+  }
+}
+
+export class AuctionDeadlineHasPassedError extends AuctionsManagerError {
+  constructor() {
+    super("Auction deadline has passed");
+  }
+}
+
+export class BidNotLowerThanCurrentBidError extends AuctionsManagerError {
+  constructor() {
+    super("Bid not lower than current bid");
   }
 }

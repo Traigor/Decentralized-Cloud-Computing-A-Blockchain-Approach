@@ -9,12 +9,19 @@ import {
   CreatedAuctionEvent,
   CancelledAuctionEvent,
   CancelledAuction,
+  BidAuction,
+  BidAuctionEvent,
 } from "./interface.js";
 import {
+  AuctionDeadlineHasPassedError,
   AuctionDoesNotExistError,
   AuctionNotInStateError,
+  BidNotLowerThanCurrentBidError,
+  ClientCannotBidError,
   NotCalledByClientError,
+  TasksManagerNotSetError,
 } from "./errors/index";
+import { WithRetry } from "../decorator/retry";
 
 //TODO
 //add retries logic inside functions and errors too
@@ -55,6 +62,7 @@ export class AuctionsManager implements IAuctionsManager {
     return;
   }
 
+  @WithRetry()
   public async createAuction({
     auctionDeadline,
     taskDeadline,
@@ -101,6 +109,7 @@ export class AuctionsManager implements IAuctionsManager {
     return createdAuction;
   }
 
+  @WithRetry()
   public async cancelAuction(auctionId: string): Promise<CancelledAuction> {
     try {
       const tx = await this.auctionsManagerContract.cancelAuction(auctionId);
@@ -153,10 +162,66 @@ export class AuctionsManager implements IAuctionsManager {
     }
   }
 
-  public async bid(auctionId: string, bid: string): Promise<void> {
-    const tx = await this.auctionsManagerContract.bid(auctionId, bid);
-    tx.wait();
-    return tx;
+  @WithRetry()
+  public async bid(auctionId: string, bid: number): Promise<BidAuction> {
+    try {
+      const tx = await this.auctionsManagerContract.bid(auctionId, bid);
+      const {
+        to,
+        from,
+        contractAddress,
+        gasUsed,
+        blockHash,
+        transactionHash,
+        confirmations,
+        cumulativeGasUsed,
+        effectiveGasPrice,
+        status,
+        events,
+      } = await tx.wait();
+
+      const bidAuctionEvent: BidAuctionEvent = {
+        name: events[0].event,
+        auctionID: events[0].args.auctionID,
+        provider: events[0].args.provider,
+        bid: events[0].args.bid.toNumber(),
+      };
+
+      const bidAuction: BidAuction = {
+        to,
+        from,
+        contractAddress,
+        gasUsed: gasUsed.toNumber(),
+        blockHash,
+        transactionHash,
+        confirmations,
+        cumulativeGasUsed: cumulativeGasUsed.toNumber(),
+        effectiveGasPrice: effectiveGasPrice.toNumber(),
+        status,
+        event: bidAuctionEvent,
+      };
+
+      return bidAuction;
+    } catch (e) {
+      if (e.reason.includes("AuctionDoesNotExist")) {
+        throw new AuctionDoesNotExistError();
+      }
+      if (e.reason.includes("AuctionNotInState")) {
+        throw new AuctionNotInStateError();
+      }
+      if (e.reason.includes("TasksManagerNotSet")) {
+        throw new TasksManagerNotSetError();
+      }
+      if (e.reason.includes("Client cannot bid")) {
+        throw new ClientCannotBidError();
+      }
+      if (e.reason.includes("AuctionDeadlineHasPassed")) {
+        throw new AuctionDeadlineHasPassedError();
+      }
+      if (e.reason.includes("BidNotLowerThanCurrentBid")) {
+        throw new BidNotLowerThanCurrentBidError();
+      }
+    }
   }
 
   public async finalize(auctionId: string, provider: string): Promise<void> {
@@ -173,7 +238,6 @@ export class AuctionsManager implements IAuctionsManager {
     return await this.auctionsManagerContract.owner();
   }
 
-  //TODO FIX AUCTION
   public async getActiveAuctions(): Promise<ActiveAuction[]> {
     const activeAuctions =
       await this.auctionsManagerContract.getActiveAuctions();

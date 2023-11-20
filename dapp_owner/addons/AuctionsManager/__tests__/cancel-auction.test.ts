@@ -6,7 +6,7 @@ import {
 import { address as TASKS_MANAGER_ADDRESS } from "../../../deployments/localhost/TasksManager.json";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { AuctionDoesNotExistError } from "../errors";
+
 describe("cancel auction on AuctionsManager on localhost hardhat network", () => {
   let auctionsManager: AuctionsManager;
   let auctionDeadline: number;
@@ -97,7 +97,7 @@ describe("cancel auction on AuctionsManager on localhost hardhat network", () =>
     }
   });
 
-  //TODO Fix test: implemen bid and finalize and then come back to this test
+  //TODO Fix test: implement bid and finalize and then come back to this test
   it.skip("should fail to cancel auction if auction is not in state Created", async () => {
     try {
       const createdAuction = await auctionsManager.createAuction({
@@ -108,7 +108,7 @@ describe("cancel auction on AuctionsManager on localhost hardhat network", () =>
       });
       auctionID = createdAuction.event.auctionID;
       auctionsManager.connect(signerAsProvider);
-      await auctionsManager.bid(auctionID, "1");
+      await auctionsManager.bid(auctionID, 100);
       auctionsManager.connect(signerAsClient);
       auctionsManager.finalize(auctionID, clientAddress);
       await auctionsManager.cancelAuction(auctionID);

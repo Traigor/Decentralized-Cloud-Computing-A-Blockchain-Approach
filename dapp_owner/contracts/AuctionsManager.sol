@@ -120,11 +120,11 @@ contract AuctionsManager {
         //in auction state Created
         if (auctions[_auctionID].auctionState != AuctionState.Created) 
             revert AuctionNotInState(AuctionState.Created);
-        require(msg.sender != auctions[_auctionID].client, "Client can't bid to this auction"); 
-        require(
-            (block.timestamp <= auctions[_auctionID].creationTime + auctions[_auctionID].auctionDeadline),
-            "Time has expired."
-        );
+        if (msg.sender == auctions[_auctionID].client)
+            revert("Client cannot bid");
+        if (block.timestamp > auctions[_auctionID].creationTime + auctions[_auctionID].auctionDeadline)
+            revert ("Auction deadline has passed");
+        
         uint providerIndex = 0;
         bool providerExists = false;
         if(auctions[_auctionID].providerBids.length != 0)
@@ -136,10 +136,8 @@ contract AuctionsManager {
             }
             if (providerIndex <= auctions[_auctionID].providerBids.length)
             {
-                require(
-                _bid < auctions[_auctionID].providerBids[providerIndex].bid,
-                "Bid is not lower than than the previous one."
-                );
+                if (_bid > auctions[_auctionID].providerBids[providerIndex].bid)
+                    revert("Bid not lower than than current bid.");
                 providerExists = true;
             }
         }

@@ -52,7 +52,7 @@ export interface IAuctionsManager {
     code,
   }: TCreateAuction): Promise<CreatedAuction>;
   cancelAuction(auctionId: string): Promise<CancelledAuction>;
-  bid(auctionId: string, bid: string): Promise<void>;
+  bid(auctionId: string, bid: number): Promise<BidAuction>;
   finalize(auctionId: string, provider: string): Promise<void>;
   getActiveAuctions(): Promise<ActiveAuction[]>;
   getAuctionBids(auctionId: string): Promise<ProviderBid[]>;
@@ -92,10 +92,20 @@ export interface CancelledAuctionEvent {
   client: string;
 }
 
+export interface BidAuctionEvent {
+  name: string;
+  auctionID: string;
+  provider: string;
+  bid: number;
+}
 export interface CreatedAuction extends TransactionReceipt {
   event: CreatedAuctionEvent;
 }
 
 export interface CancelledAuction extends TransactionReceipt {
   event: CancelledAuctionEvent;
+}
+
+export interface BidAuction extends TransactionReceipt {
+  event: BidAuctionEvent;
 }
