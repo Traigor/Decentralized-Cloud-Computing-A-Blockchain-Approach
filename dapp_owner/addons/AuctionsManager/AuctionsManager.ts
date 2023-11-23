@@ -11,7 +11,9 @@ import {
   CancelledAuction,
   BidAuction,
   BidAuctionEvent,
-} from "./interface.js";
+  AuctionState,
+  AuctionStateLabels,
+} from "./interface";
 import {
   AuctionDeadlineHasPassedError,
   AuctionDoesNotExistError,
@@ -26,6 +28,7 @@ import { WithRetry } from "../decorator/retry";
 //TODO
 //add retries logic inside functions and errors too
 //add gas metrics
+
 export class AuctionsManager implements IAuctionsManager {
   private auctionsManagerContract: ethers.Contract;
   constructor(
@@ -207,7 +210,14 @@ export class AuctionsManager implements IAuctionsManager {
         throw new AuctionDoesNotExistError();
       }
       if (e.reason.includes("AuctionNotInState")) {
-        throw new AuctionNotInStateError();
+        let state: AuctionStateLabels;
+        if (e.reason.includes(AuctionState.Created))
+          state = AuctionStateLabels.Created;
+        if (e.reason.includes(AuctionState.Cancelled))
+          state = AuctionStateLabels.Cancelled;
+        if (e.reason.includes(AuctionState.Finalized))
+          state = AuctionStateLabels.Finalized;
+        throw new AuctionNotInStateError(state);
       }
       if (e.reason.includes("TasksManagerNotSet")) {
         throw new TasksManagerNotSetError();

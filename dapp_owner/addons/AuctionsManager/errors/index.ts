@@ -1,3 +1,5 @@
+import { AuctionStateLabels } from "../interface";
+
 export interface IError {
   message: string;
 }
@@ -33,8 +35,8 @@ export class TasksManagerNotSetError extends AuctionsManagerError {
 }
 
 export class AuctionNotInStateError extends AuctionsManagerError {
-  constructor() {
-    super("Auction not in correct state");
+  constructor(state: AuctionStateLabels) {
+    super(`Auction not in state ${state}`);
   }
 }
 

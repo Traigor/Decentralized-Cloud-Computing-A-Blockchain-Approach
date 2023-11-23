@@ -11,6 +11,12 @@ export enum AuctionState {
   Finalized,
 }
 
+export enum AuctionStateLabels {
+  Created = "Created",
+  Cancelled = "Cancelled",
+  Finalized = "Finalized",
+}
+
 export type WinnerBid = {
   provider: string;
   bid: number;

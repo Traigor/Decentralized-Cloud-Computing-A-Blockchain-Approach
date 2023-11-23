@@ -6,8 +6,13 @@ import {
 import { address as TASKS_MANAGER_ADDRESS } from "../../../deployments/localhost/TasksManager.json";
 
 import { ethers } from "hardhat";
-import { AuctionDoesNotExistError, TasksManagerNotSetError } from "../errors";
+import {
+  AuctionDoesNotExistError,
+  AuctionNotInStateError,
+  TasksManagerNotSetError,
+} from "../errors";
 import { expect, assert } from "chai";
+import { reset } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("bid to auction on AuctionsManager on localhost hardhat network", () => {
   let auctionsManager: AuctionsManager;
@@ -30,6 +35,9 @@ describe("bid to auction on AuctionsManager on localhost hardhat network", () =>
   const signerAsProvider = provider.getSigner(2);
 
   beforeEach(async () => {
+    // await hre.network.provider.send("hardhat_reset");
+    // await reset();
+    // await ethers.provider.send("hardhat_reset", []);
     auctionDeadline = 100;
     taskDeadline = 200;
     clientVerification =
@@ -55,6 +63,20 @@ describe("bid to auction on AuctionsManager on localhost hardhat network", () =>
     auctionID = createdAuction.event.auctionID;
   });
 
+  it("should fail to bid to auction if tasks manager is not set", async () => {
+    // this test is first because for the other tests we need to set the tasks manager
+    //TODO find how to reset network
+    try {
+      auctionsManager.connect(signerAsProvider);
+      await auctionsManager.bid(auctionID, bid);
+
+      assert.fail("Expected an error but none was thrown");
+    } catch (error) {
+      expect(error).to.be.instanceOf(TasksManagerNotSetError);
+      expect(error.message).to.equal("TasksManager not set");
+    }
+  });
+
   it("should bid to auction successfully", async () => {
     auctionsManager.connect(signerAsOwner);
     await auctionsManager.setTasksManager(TASKS_MANAGER_ADDRESS);
@@ -67,17 +89,6 @@ describe("bid to auction on AuctionsManager on localhost hardhat network", () =>
     expect(event.bid).to.equal(100);
   });
 
-  it.only("should fail to bid to auction if tasks manager is not set", async () => {
-    try {
-      auctionsManager.connect(signerAsProvider);
-      await auctionsManager.bid(auctionID, bid);
-      assert.fail("Expected an error but none was thrown");
-    } catch (error) {
-      expect(error).to.be.instanceOf(TasksManagerNotSetError);
-      expect(error.message).to.equal("TasksManager not set");
-    }
-  });
-
   it("should fail to bid to auction if auction does not exist", async () => {
     try {
       auctionsManager.connect(signerAsOwner);
@@ -85,7 +96,7 @@ describe("bid to auction on AuctionsManager on localhost hardhat network", () =>
       auctionsManager.connect(signerAsProvider);
       await auctionsManager.bid("0x0", bid);
     } catch (error) {
-      console.error(error);
+      expect(error).to.be.instanceOf(AuctionDoesNotExistError);
       expect(error.message).to.equal("Auction does not exist");
     }
   });
@@ -99,8 +110,8 @@ describe("bid to auction on AuctionsManager on localhost hardhat network", () =>
       auctionsManager.connect(signerAsProvider);
       await auctionsManager.bid(auctionID, bid);
     } catch (error) {
-      console.error(error);
-      expect(error.message).to.equal("Auction is not in state created");
+      expect(error).to.be.instanceOf(AuctionNotInStateError);
+      expect(error.message).to.equal("Auction not in state Created");
     }
   });
 });
