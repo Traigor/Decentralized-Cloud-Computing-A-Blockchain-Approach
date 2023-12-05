@@ -1,5 +1,6 @@
 class Time
 {
+  //TODO make functions static
   private long startTime;
   private long endTime;
   public void start()

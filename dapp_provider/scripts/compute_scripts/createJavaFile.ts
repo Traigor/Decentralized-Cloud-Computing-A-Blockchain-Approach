@@ -15,11 +15,13 @@ export async function createJavaFileSepolia({ taskID }: TCreateJavaFile) {
   const mainCodeCID = "QmWzMCNderiptFM7rksAZdyUvDUNj5sEpAX5tibjJjGyKB";
   const timeCodeCID = "QmYCK97zguaBzWwTCgCT3LEB7aotXYuQAWoMVL6jMjXRTC";
 
+  // Client will provide jar file with code and possible and files if needed
   const IPFS_SH = `#!/bin/sh
 (cd .Task_${taskID}/Java;
-ipfs cat ${codeCID} > Code.class;
+ipfs cat ${codeCID} > jar-file.jar;
 ipfs cat ${mainCodeCID} > Main.class;
-ipfs cat ${timeCodeCID} > Time.class;)`;
+ipfs cat ${timeCodeCID} > Time.class;
+jar -xf jar-file.jar;)`;
 
   if (!fs.existsSync(`.Task_${taskID}/Java`)) {
     fs.mkdirSync(`.Task_${taskID}/Java`);

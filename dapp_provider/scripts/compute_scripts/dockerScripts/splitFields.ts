@@ -5,7 +5,7 @@ export const splitFields = (): {
   duration: number;
   time: number;
 } => {
-  const fields = fs.readFileSync("output.txt", "utf8").split("\n")[0];
+  const fields = fs.readFileSync("output.txt", "utf8");
   const javaFields = fields.split(SEPERATOR);
   const computation = javaFields[0];
   const verification = javaFields[1];
